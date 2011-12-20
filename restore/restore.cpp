@@ -41,6 +41,11 @@ void Restore::fileSelected(QModelIndex index){
 	int row = 0;
 	int column = 0;
 
+
+	QTableWidgetItem *testItem = new QTableWidgetItem("test");
+	tableWidget->setItem(row, 0, testItem);
+	row++;
+
 	while((pos = logReg.indexIn(gitOut, pos)) != -1){
 		
 		QString commit = logReg.cap(1);
