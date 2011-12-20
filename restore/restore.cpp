@@ -41,6 +41,8 @@ void Restore::fileSelected(QModelIndex index){
 	int row = 0;
 	int column = 0;
 
+	tableWidget->clear();
+
 
 	QTableWidgetItem *testItem = new QTableWidgetItem("test");
 	tableWidget->setItem(row, 0, testItem);
