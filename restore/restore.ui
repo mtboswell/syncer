@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>533</width>
-    <height>452</height>
+    <width>807</width>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,6 +30,16 @@
        <property name="columnCount">
         <number>6</number>
        </property>
+       <row>
+        <property name="text">
+         <string>Test row</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Test 2 Row</string>
+        </property>
+       </row>
        <column>
         <property name="text">
          <string>Date</string>
