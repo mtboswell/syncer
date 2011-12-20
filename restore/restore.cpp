@@ -42,7 +42,7 @@ void Restore::fileSelected(QModelIndex index){
 
 	qDebug() << "Git log output:" << gitOut;
 
-	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\s]+)\\nDate:\\s+([\\w:-\\s]+)\\n([\\w\\\"\\s]+)\n");
+	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\s]+)\\nDate:\\s+([\\w:-\\s]+)\\n\\n([\\w\\\"\\s]+)\\n?");
 
 	int pos = 0;
 
