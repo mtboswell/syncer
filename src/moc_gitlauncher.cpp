@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'gitlauncher.h'
 **
-** Created: Thu Dec 15 20:45:57 2011
+** Created: Mon Dec 19 23:37:10 2011
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_GitLauncher[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -34,6 +34,7 @@ static const uint qt_meta_data_GitLauncher[] = {
       18,   13,   12,   12, 0x0a,
       39,   13,   12,   12, 0x0a,
       65,   12,   12,   12, 0x0a,
+      82,   12,   12,   12, 0x08,
 
        0        // eod
 };
@@ -41,6 +42,7 @@ static const uint qt_meta_data_GitLauncher[] = {
 static const char qt_meta_stringdata_GitLauncher[] = {
     "GitLauncher\0\0path\0fileChanged(QString)\0"
     "directoryChanged(QString)\0checkForUpdate()\0"
+    "doPush()\0"
 };
 
 const QMetaObject GitLauncher::staticMetaObject = {
@@ -75,9 +77,10 @@ int GitLauncher::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 0: fileChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 1: directoryChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 2: checkForUpdate(); break;
+        case 3: doPush(); break;
         default: ;
         }
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }

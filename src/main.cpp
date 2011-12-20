@@ -2,14 +2,19 @@
 #include <QApplication>
 #include <QStringList>
 #include <QFileSystemWatcher>
+#include <QDir>
+#include <QFileInfoList>
 #include <QObject>
 #include <QTimer>
+#include <QDebug>
 #include "gitlauncher.h"
+
+QStringList recursePaths(QString baseDir);
 
 int main(int argc, char** argv){
 	QApplication app(argc, argv);
 
-	QStringList pathsToMonitor;
+	QStringList inputPaths, pathsToMonitor;
 
 	QStringList args = app.arguments();
 	args.removeFirst();
@@ -17,30 +22,16 @@ int main(int argc, char** argv){
 		if(arg.startsWith("--")){
 		
 		}else{
-			pathsToMonitor << arg;
-		}
-	}
-
-	QStringList subPaths;
-
-	foreach(QString path, pathsToMonitor){
-		QFileInfo info(path);
-		if(info.isDir()){
-			subPaths << path;
-			QDir dir(path);
-			dir.setFilter(QDir::Dirs | QDir::NoDotDot);
-
-			QFileInfoList dirlist = dir.entryInfoList();
-
-			for(int i = 0; i < dirlist.size(); ++i){
-				QFileInfo dirInfo = dirlist.at(i);
-				this(dirInfo.fileName());
-			}
-
+			inputPaths << arg;
 		}
 	}
 
 
+	foreach(QString path, inputPaths){
+		pathsToMonitor << recursePaths(path);
+	}
+
+	qDebug() << "Monitoring:" << pathsToMonitor;
 
 	QFileSystemWatcher watch;
 
@@ -55,8 +46,36 @@ int main(int argc, char** argv){
 
 	QObject::connect(&pullTimer, SIGNAL(timeout()), gitlauncher, SLOT(checkForUpdate()));
 
-	pullTimer.start(5000);
+	pullTimer.start(60000);
+
+	foreach(QString path, pathsToMonitor){
+		gitlauncher->directoryChanged(path);
+	}
 
 	app.exec();
+
+}
+
+
+
+QStringList recursePaths(QString baseDir){
+	QStringList subPaths;
+
+	QFileInfo info(baseDir);
+	if(info.isDir()){
+		subPaths << baseDir;
+		QDir dir(baseDir);
+		dir.setFilter(QDir::Dirs | QDir::NoDotDot | QDir::NoDot);
+
+		QFileInfoList dirlist = dir.entryInfoList();
+
+		for(int i = 0; i < dirlist.size(); ++i){
+			QFileInfo dirInfo = dirlist.at(i);
+			//qDebug() << "Found subdir:" << dirInfo.fileName();
+			subPaths << recursePaths(dir.cleanPath(baseDir) + "/" + dirInfo.fileName());
+		}
+
+	}else qDebug() << "Error:" << baseDir << "is not a directory";
+	return subPaths;
 
 }

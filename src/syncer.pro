@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = ../bin/syncer
 DEPENDPATH += .
 INCLUDEPATH += .
 
