@@ -1,7 +1,9 @@
 Auto-synchronization for Git repositories.
 
-Run bin/syncer with your Git root as the first argument.
-Technically works if you give it any dir in your repo.
+Set up git such that "git push" works with no other args, and "git commit -m ..." works as well.
+
+Run bin/syncer with your Git base dir as the first argument.
+Technically works if you give it any dir in your repo, but only watches for changes in subdirs of the dir you provide.
 
 Pulls every minute, commits and pushes if there are no changes for 5 seconds.
 
