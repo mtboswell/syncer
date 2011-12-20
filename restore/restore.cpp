@@ -65,6 +65,8 @@ void Restore::fileSelected(QModelIndex index){
 		QString date = logReg.cap(3);
 		QString message = logReg.cap(4);
 
+		qDebug() << "Processing commit" << commit;
+
 		QTableWidgetItem *authorItem = new QTableWidgetItem(author);
 		tableWidget->setItem(row, 0, authorItem);
 
