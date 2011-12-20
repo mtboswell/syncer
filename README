@@ -4,3 +4,5 @@ Run bin/syncer with your Git root as the first argument.
 Technically works if you give it any dir in your repo.
 
 Pulls every minute, commits and pushes if there are no changes for 5 seconds.
+
+Make sure you have a good .gitignore!
