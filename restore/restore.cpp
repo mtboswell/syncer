@@ -30,19 +30,36 @@ void Restore::fileSelected(QModelIndex index){
 	gitproc->start(git, logArgs);
 	if(!gitproc->waitForStarted()) return;
 	if(!gitproc->waitForFinished()) return;
-	QByteArray gitOut = gitproc->readAll();
+	QString gitOut = gitproc->readAll();
 
 	qDebug() << "Git log output:" << gitOut;
 
 	QRegExp logReg("commit (\\w+)\\nAuthor:\\s([\\w<>]+)\\nDate:\\s([\\w:-]+)\\n([\w\\\"]+)\n");
 
+	int pos = 0;
 
 	int row = 0;
 	int column = 0;
 
+	while((pos = logReg.indexIn(gitOut, pos)) != -1){
+		
+		QString commit = logReg.cap(1);
+		QString author = logReg.cap(2);
+		QString date = logReg.cap(3);
+		QString message = logReg.cap(4);
 
-	QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((row+1)*(column+1)));
-	tableWidget->setItem(row, column, newItem);
+		QTableWidgetItem *authorItem = new QTableWidgetItem(author);
+		tableWidget->setItem(row, 0, authorItem);
+
+		QTableWidgetItem *dateItem = new QTableWidgetItem(date);
+		tableWidget->setItem(row, 1, dateItem);
+
+		QTableWidgetItem *commitItem = new QTableWidgetItem(commit);
+		tableWidget->setItem(row, 2, commitItem);
+
+		pos += logReg.matchedLength();
+		row++;
+	}
 
 
 }
