@@ -61,5 +61,6 @@ void Restore::fileSelected(QModelIndex index){
 		row++;
 	}
 
+	if(pos == 0) qDebug() << "No matches found!";
 
 }
