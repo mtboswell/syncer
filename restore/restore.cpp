@@ -11,6 +11,8 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 
 	connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(fileSelected(QModelIndex)));
 	
+	QTableWidgetItem *testItem = new QTableWidgetItem("test");
+	tableWidget->setItem(0, 0, testItem);
 
 }
 
