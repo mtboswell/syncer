@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'restore.ui'
 **
-** Created: Tue Dec 20 00:35:17 2011
+** Created: Tue Dec 20 01:18:15 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -38,7 +38,7 @@ public:
     {
         if (RestoreWidget->objectName().isEmpty())
             RestoreWidget->setObjectName(QString::fromUtf8("RestoreWidget"));
-        RestoreWidget->resize(533, 452);
+        RestoreWidget->resize(807, 609);
         horizontalLayout = new QHBoxLayout(RestoreWidget);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         treeView = new QTreeView(RestoreWidget);
@@ -58,6 +58,12 @@ public:
         tableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
         tableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem2);
+        if (tableWidget->rowCount() < 2)
+            tableWidget->setRowCount(2);
+        QTableWidgetItem *__qtablewidgetitem3 = new QTableWidgetItem();
+        tableWidget->setVerticalHeaderItem(0, __qtablewidgetitem3);
+        QTableWidgetItem *__qtablewidgetitem4 = new QTableWidgetItem();
+        tableWidget->setVerticalHeaderItem(1, __qtablewidgetitem4);
         tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
         tableWidget->setColumnCount(6);
 
@@ -92,6 +98,10 @@ public:
         ___qtablewidgetitem1->setText(QApplication::translate("RestoreWidget", "Author", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
         ___qtablewidgetitem2->setText(QApplication::translate("RestoreWidget", "Commit ID", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem3 = tableWidget->verticalHeaderItem(0);
+        ___qtablewidgetitem3->setText(QApplication::translate("RestoreWidget", "Test row", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem4 = tableWidget->verticalHeaderItem(1);
+        ___qtablewidgetitem4->setText(QApplication::translate("RestoreWidget", "Test 2 Row", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QApplication::translate("RestoreWidget", "PushButton", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
