@@ -34,7 +34,7 @@ void Restore::fileSelected(QModelIndex index){
 
 	qDebug() << "Git log output:" << gitOut;
 
-	QRegExp logReg("commit (\\w+)\\nAuthor:\\s([\\w<@>]+)\\nDate:\\s([\\w:-]+)\\n([\\w\\\"]+)\n");
+	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\s]+)\\nDate:\\s+([\\w:-\\s]+)\\n([\\w\\\"\\s]+)\n");
 
 	int pos = 0;
 
@@ -61,6 +61,5 @@ void Restore::fileSelected(QModelIndex index){
 		row++;
 	}
 
-	if(pos == 0) qDebug() << "No matches found!";
 
 }
