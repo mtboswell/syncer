@@ -10,6 +10,8 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 	treeView->setRootIndex(files->index(path));
 
 	connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(fileSelected(QModelIndex)));
+
+	tableWidget->setColumnCount(3);
 	
 	QTableWidgetItem *testItem = new QTableWidgetItem("test");
 	tableWidget->setItem(1, 1, testItem);
