@@ -13,10 +13,12 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 
 	tableWidget->setColumnCount(3);
 	
-	QTableWidgetItem *testItem = new QTableWidgetItem("test");
-	tableWidget->setItem(0, 0, testItem);
-	tableWidget->setItem(0, 1, testItem);
-	tableWidget->setItem(0, 2, testItem);
+	QTableWidgetItem *testItem0 = new QTableWidgetItem("test");
+	tableWidget->setItem(0, 0, testItem0);
+	QTableWidgetItem *testItem1 = new QTableWidgetItem("test");
+	tableWidget->setItem(0, 1, testItem1);
+	QTableWidgetItem *testItem2 = new QTableWidgetItem("test");
+	tableWidget->setItem(0, 2, testItem2);
 
 }
 
