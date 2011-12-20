@@ -61,7 +61,7 @@ void GitLauncher::doPush(){
 	// note that the commit happens in the last dir that git add was run in. This means we don't support multiple repos per process.
 
 	QStringList commitArgs;
-	commitArgs << "commit" << "-m" << "\"Autosync commit\"";
+	commitArgs << "commit" << "-m" << "Autosync commit";
 	qDebug() << "Commit args:" << commitArgs;
 
 	gitproc->start(git, commitArgs);
