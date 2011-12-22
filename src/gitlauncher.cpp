@@ -21,6 +21,11 @@ void GitLauncher::directoryChanged(QString path){
 }
 
 void GitLauncher::checkForUpdate(){
+
+	// cd to watched directory
+
+
+
 	// git pull
 	
 	QStringList pullArgs;
