@@ -26,9 +26,20 @@ void Restore::on_pushButton_clicked(){
 	QModelIndex selectedFileIndex = treeView->currentIndex();
 	QFileInfo selectedFileInfo = files->fileInfo(selectedFileIndex);
 	QString selectedFilePath = files->filePath(selectedFileIndex);
-	
 
 	qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
+
+	QProcess *gitproc = new QProcess();
+	QString git = "git";
+	QStringList checkoutArgs;
+	checkoutArgs << "checkout" << commit << selectedFilePath;
+
+	gitproc->start(git, checkoutArgs);
+	if(!gitproc->waitForStarted()) return;
+	if(!gitproc->waitForFinished()) return;
+	QString gitOut = gitproc->readAll();
+
+	qDebug() << "Git checkout output:" << gitOut;
 	
 }
 
