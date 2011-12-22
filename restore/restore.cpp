@@ -11,18 +11,24 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 
 	connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(fileSelected(QModelIndex)));
 
-	tableWidget->setColumnCount(3);
-	
-	QTableWidgetItem *testItem0 = new QTableWidgetItem("test");
-	tableWidget->setItem(0, 0, testItem0);
-	QTableWidgetItem *testItem1 = new QTableWidgetItem("test");
-	tableWidget->setItem(0, 1, testItem1);
-	QTableWidgetItem *testItem2 = new QTableWidgetItem("test");
-	tableWidget->setItem(0, 2, testItem2);
+	treeWidget->setColumnCount(3);
+	QStringList headers;
+	headers << "Date" << "Author" << "Commit ID";
+	treeWidget->setHeaderLabels(headers);
 
 }
 
 void Restore::on_pushButton_clicked(){
+
+	QTreeWidgetItem* selectedCommit = treeWidget->currentItem();
+	QString commit = selectedCommit->text(2);
+
+	QModelIndex selectedFileIndex = treeView->currentIndex();
+	QFileInfo selectedFileInfo = files->fileInfo(selectedFileIndex);
+	QString selectedFilePath = files->filePath(selectedFileIndex);
+	
+
+	qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
 	
 }
 
@@ -42,21 +48,18 @@ void Restore::fileSelected(QModelIndex index){
 
 	qDebug() << "Git log output:" << gitOut;
 
-	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\s]+)\\nDate:\\s+([\\w:-\\s]+)\\n\\n([\\w\\\"\\s]+)\\n?");
+	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\.\\s]+)\\nDate:\\s+([\\w:-\\s]+) -[\\d]{4}\\n\\n([\\w\"\\s]+)\\n?");
 
 	int pos = 0;
 
 	int row = 0;
 	int column = 0;
 
-	tableWidget->clearContents();
+	treeWidget->clear();
 
 	row++;
 
-
-	QTableWidgetItem *testItem = new QTableWidgetItem("test");
-	tableWidget->setItem(row, 0, testItem);
-	row++;
+	QList<QTreeWidgetItem *> items;
 
 	while((pos = logReg.indexIn(gitOut, pos)) != -1){
 		
@@ -65,20 +68,24 @@ void Restore::fileSelected(QModelIndex index){
 		QString date = logReg.cap(3);
 		QString message = logReg.cap(4);
 
+		// Mon Dec 19 22:24:49 2011 -0500
+		QDateTime datetime = QDateTime::fromString(date, "ddd MMM dd HH:mm:ss yyyy");
+
 		qDebug() << "Processing commit" << commit;
+		qDebug() << "With Date:" << datetime;
 
-		QTableWidgetItem *authorItem = new QTableWidgetItem(author);
-		tableWidget->setItem(row, 0, authorItem);
+		QStringList item;
+		item << date << author << commit;
 
-		QTableWidgetItem *dateItem = new QTableWidgetItem(date);
-		tableWidget->setItem(row, 1, dateItem);
+		QTreeWidgetItem* treeItem = new QTreeWidgetItem((QTreeWidget*)0, item);
 
-		QTableWidgetItem *commitItem = new QTableWidgetItem(commit);
-		tableWidget->setItem(row, 2, commitItem);
+		items.append(treeItem);
 
 		pos += logReg.matchedLength();
 		row++;
 	}
 
+	treeWidget->insertTopLevelItems(0, items);
+	treeWidget->sortItems(0, Qt::DescendingOrder);
 
 }

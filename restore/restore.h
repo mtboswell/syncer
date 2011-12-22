@@ -1,6 +1,7 @@
 #include "ui_restore.h"
 #include <QFileSystemModel>
 #include <QProcess>
+#include <QDateTime>
 #include <QDebug>
 
 class Restore : public QWidget, private Ui::RestoreWidget {

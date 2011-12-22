@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'restore.ui'
 **
-** Created: Tue Dec 20 01:18:15 2011
+** Created: Wed Dec 21 19:21:53 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -17,8 +17,8 @@
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QPushButton>
-#include <QtGui/QTableWidget>
 #include <QtGui/QTreeView>
+#include <QtGui/QTreeWidget>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
 
@@ -30,7 +30,7 @@ public:
     QHBoxLayout *horizontalLayout;
     QTreeView *treeView;
     QVBoxLayout *verticalLayout;
-    QTableWidget *tableWidget;
+    QTreeWidget *treeWidget;
     QHBoxLayout *horizontalLayout_2;
     QPushButton *pushButton;
 
@@ -48,26 +48,14 @@ public:
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        verticalLayout->setContentsMargins(0, -1, -1, 0);
-        tableWidget = new QTableWidget(RestoreWidget);
-        if (tableWidget->columnCount() < 6)
-            tableWidget->setColumnCount(6);
-        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
-        tableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
-        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
-        tableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
-        QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
-        tableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem2);
-        if (tableWidget->rowCount() < 2)
-            tableWidget->setRowCount(2);
-        QTableWidgetItem *__qtablewidgetitem3 = new QTableWidgetItem();
-        tableWidget->setVerticalHeaderItem(0, __qtablewidgetitem3);
-        QTableWidgetItem *__qtablewidgetitem4 = new QTableWidgetItem();
-        tableWidget->setVerticalHeaderItem(1, __qtablewidgetitem4);
-        tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
-        tableWidget->setColumnCount(6);
+        verticalLayout->setContentsMargins(0, 0, -1, 0);
+        treeWidget = new QTreeWidget(RestoreWidget);
+        QTreeWidgetItem *__qtreewidgetitem = new QTreeWidgetItem();
+        __qtreewidgetitem->setText(0, QString::fromUtf8("1"));
+        treeWidget->setHeaderItem(__qtreewidgetitem);
+        treeWidget->setObjectName(QString::fromUtf8("treeWidget"));
 
-        verticalLayout->addWidget(tableWidget);
+        verticalLayout->addWidget(treeWidget);
 
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
@@ -92,17 +80,7 @@ public:
     void retranslateUi(QWidget *RestoreWidget)
     {
         RestoreWidget->setWindowTitle(QApplication::translate("RestoreWidget", "Form", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
-        ___qtablewidgetitem->setText(QApplication::translate("RestoreWidget", "Date", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
-        ___qtablewidgetitem1->setText(QApplication::translate("RestoreWidget", "Author", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
-        ___qtablewidgetitem2->setText(QApplication::translate("RestoreWidget", "Commit ID", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem3 = tableWidget->verticalHeaderItem(0);
-        ___qtablewidgetitem3->setText(QApplication::translate("RestoreWidget", "Test row", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem4 = tableWidget->verticalHeaderItem(1);
-        ___qtablewidgetitem4->setText(QApplication::translate("RestoreWidget", "Test 2 Row", 0, QApplication::UnicodeUTF8));
-        pushButton->setText(QApplication::translate("RestoreWidget", "PushButton", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QApplication::translate("RestoreWidget", "Restore", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
