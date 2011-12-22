@@ -1,15 +1,32 @@
-#include "restore.h"
+#include "undelete.h"
 
-Restore::Restore(QString path, QWidget* parent):QWidget(parent){
+Undelete::Undelete(QString path, QWidget* parent):QWidget(parent){
 	setupUi(this);
+	
+	gitproc = new QProcess(this);
+	git = "git";
 
-	files = new QFileSystemModel;
-	files->setRootPath(path);
+	gitproc->setWorkingDirectory(path);
+	QStringList logArgs;
+	//git log --all --pretty=format: --name-only --diff-filter=D
+	logArgs << "log" << "--all" << "--pretty=format:" << "--name-only" << "--diff-filter=D";
 
-	treeView->setModel(files);
-	treeView->setRootIndex(files->index(path));
+	gitproc->start(git, logArgs);
+	if(!gitproc->waitForStarted()) return;
+	if(!gitproc->waitForFinished()) return;
+	QString gitOut = gitproc->readAll();
 
-	connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(fileSelected(QModelIndex)));
+	qDebug() << "Git log output:" << gitOut;
+
+	QStringList files = gitOut.split('\n');
+
+
+	foreach(QString file, files){
+		if(file != "")
+			new QListWidgetItem(file, listWidget);
+	}
+
+	connect(listWidget, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(fileSelected(QListWidgetItem*)));
 
 	treeWidget->setColumnCount(3);
 	QStringList headers;
@@ -18,21 +35,14 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 
 }
 
-void Restore::on_pushButton_clicked(){
-
+void Undelete::on_pushButton_clicked(){
 	QTreeWidgetItem* selectedCommit = treeWidget->currentItem();
 	QString commit = selectedCommit->text(2);
 
-	QModelIndex selectedFileIndex = treeView->currentIndex();
-	QFileInfo selectedFileInfo = files->fileInfo(selectedFileIndex);
-	QString selectedFilePath = files->filePath(selectedFileIndex);
-
 	qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
 
-	QProcess *gitproc = new QProcess();
-	QString git = "git";
 	QStringList checkoutArgs;
-	checkoutArgs << "checkout" << commit << selectedFilePath;
+	checkoutArgs << "checkout" << commit+"^" << "--" << selectedFilePath;
 
 	gitproc->start(git, checkoutArgs);
 	if(!gitproc->waitForStarted()) return;
@@ -43,14 +53,13 @@ void Restore::on_pushButton_clicked(){
 	
 }
 
-void Restore::fileSelected(QModelIndex index){
-	QString path = files->filePath(index);
+void Undelete::fileSelected(QListWidgetItem* item){
+	QString path = item->text();
+	selectedFilePath = path;
 
 
-	QProcess *gitproc = new QProcess();
-	QString git = "git";
 	QStringList logArgs;
-	logArgs << "log" << path;
+	logArgs << "log" << "--" << path;
 
 	gitproc->start(git, logArgs);
 	if(!gitproc->waitForStarted()) return;
@@ -98,5 +107,4 @@ void Restore::fileSelected(QModelIndex index){
 
 	treeWidget->insertTopLevelItems(0, items);
 	treeWidget->sortItems(0, Qt::DescendingOrder);
-
 }
