@@ -3,11 +3,11 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = ../bin/restore
+TARGET = ../bin/undelete
 DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += restore.h
-FORMS += restore.ui
-SOURCES += main.cpp restore.cpp
+HEADERS += undelete.h
+FORMS += undelete.ui
+SOURCES += main.cpp undelete.cpp
