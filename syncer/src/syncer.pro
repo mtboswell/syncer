@@ -3,10 +3,10 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = bin/syncer
-DEPENDPATH += . src
-INCLUDEPATH += . src
+TARGET = ../bin/syncer
+DEPENDPATH += . 
+INCLUDEPATH += . 
 
 # Input
-HEADERS += src/gitlauncher.h
-SOURCES += src/gitlauncher.cpp src/main.cpp
+HEADERS += gitlauncher.h
+SOURCES += gitlauncher.cpp main.cpp

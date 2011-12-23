@@ -13,5 +13,6 @@ class Restore : public QWidget, private Ui::RestoreWidget {
 		void fileSelected(QModelIndex index);
 
 	private:
-		QFileSystemModel *files;
+        QFileSystemModel *files;
+        QString git;
 };

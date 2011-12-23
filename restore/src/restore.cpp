@@ -2,6 +2,13 @@
 
 Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 	setupUi(this);
+	retranslateUi(this);
+
+#ifdef Q_WS_WIN
+    git = "git.cmd";
+#else
+    git = "git";
+#endif
 
 	files = new QFileSystemModel;
 	files->setRootPath(path);
@@ -15,6 +22,7 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 	QStringList headers;
 	headers << "Date" << "Author" << "Commit ID";
 	treeWidget->setHeaderLabels(headers);
+
 
 }
 
@@ -30,7 +38,6 @@ void Restore::on_pushButton_clicked(){
 	qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
 
 	QProcess *gitproc = new QProcess();
-	QString git = "git";
 	QStringList checkoutArgs;
 	checkoutArgs << "checkout" << commit << selectedFilePath;
 
@@ -48,7 +55,6 @@ void Restore::fileSelected(QModelIndex index){
 
 
 	QProcess *gitproc = new QProcess();
-	QString git = "git";
 	QStringList logArgs;
 	logArgs << "log" << path;
 
