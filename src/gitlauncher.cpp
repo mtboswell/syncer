@@ -2,7 +2,7 @@
 #include <QDebug>
 
 GitLauncher::GitLauncher(){
-	git = "git";
+	git = "git.cmd";
 	gitproc = new QProcess();
 	pushTimer = new QTimer();
 	connect(pushTimer, SIGNAL(timeout()), this, SLOT(doPush()));
@@ -42,8 +42,9 @@ void GitLauncher::checkForUpdate(){
 
 void GitLauncher::doPush(){
 	pushTimer->stop();
-	// git add each dir 
+	// git add each dir
 	foreach(QString path, dirsChanged){
+		qDebug() << "Adding" << path;
 		gitproc->setWorkingDirectory(path);
 
 		// git add dir
@@ -52,8 +53,14 @@ void GitLauncher::doPush(){
 		addArgs << "add" << "--all";
 
 		gitproc->start(git, addArgs);
-		if(!gitproc->waitForStarted()) return;
-		if(!gitproc->waitForFinished()) return;
+		if(!gitproc->waitForStarted()){
+			qDebug() << "Error: git did not start" << gitproc->error();
+			return;
+		}
+		if(!gitproc->waitForFinished()){
+			qDebug() << "Error: git did not finish" << gitproc->error();
+			return;
+		}
 		gitOut = gitproc->readAll();
 
 		qDebug() << "Git add output:" << gitOut;
