@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'restore.ui'
 **
-** Created: Wed Dec 21 19:21:53 2011
-**      by: Qt User Interface Compiler version 4.7.4
+** Created: Fri Dec 23 14:50:10 2011
+**      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -38,7 +38,7 @@ public:
     {
         if (RestoreWidget->objectName().isEmpty())
             RestoreWidget->setObjectName(QString::fromUtf8("RestoreWidget"));
-        RestoreWidget->resize(807, 609);
+        RestoreWidget->resize(662, 394);
         horizontalLayout = new QHBoxLayout(RestoreWidget);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         treeView = new QTreeView(RestoreWidget);
@@ -79,7 +79,7 @@ public:
 
     void retranslateUi(QWidget *RestoreWidget)
     {
-        RestoreWidget->setWindowTitle(QApplication::translate("RestoreWidget", "Form", 0, QApplication::UnicodeUTF8));
+        RestoreWidget->setWindowTitle(QApplication::translate("RestoreWidget", "Restore", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QApplication::translate("RestoreWidget", "Restore", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

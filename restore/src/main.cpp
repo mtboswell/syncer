@@ -9,5 +9,7 @@ int main(int argc, char** argv){
 	Restore restore(args[0]);
 	restore.show();
 
-	app.exec();
+    app.exec();
+
+    return 0;
 }

@@ -2,8 +2,12 @@
 #include <QDebug>
 
 GitLauncher::GitLauncher(){
-	git = "git.cmd";
-	gitproc = new QProcess();
+#ifdef Q_WS_WIN
+        git = "git.cmd";
+#else
+        git = "git";
+#endif
+        gitproc = new QProcess();
 	pushTimer = new QTimer();
 	connect(pushTimer, SIGNAL(timeout()), this, SLOT(doPush()));
 }
