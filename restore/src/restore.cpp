@@ -12,11 +12,16 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 
 	files = new QFileSystemModel;
 	files->setRootPath(path);
+	fileRootPath->setText(files->rootPath());
+
+	connect(files, SIGNAL(directoryLoaded(QString)), this, SLOT(onDirLoaded(QString)));
 
 	treeView->setModel(files);
 	treeView->setRootIndex(files->index(path));
 
 	connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(fileSelected(QModelIndex)));
+	connect(treeView, SIGNAL(expanded(QModelIndex)), this, SLOT(selectExpanded(QModelIndex)));
+
 
 	treeWidget->setColumnCount(3);
 	QStringList headers;
@@ -26,7 +31,7 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 
 }
 
-void Restore::on_pushButton_clicked(){
+void Restore::on_restoreButton_clicked(){
 
 	QTreeWidgetItem* selectedCommit = treeWidget->currentItem();
 	QString commit = selectedCommit->text(2);
@@ -105,4 +110,30 @@ void Restore::fileSelected(QModelIndex index){
 	treeWidget->insertTopLevelItems(0, items);
 	treeWidget->sortItems(0, Qt::DescendingOrder);
 
+}
+
+
+void Restore::on_upButton_clicked(){
+	files->setRootPath(files->rootPath() + "/..");
+	fileRootPath->setText(files->rootPath());
+	treeView->setRootIndex(files->index(files->rootPath()));
+}
+
+void Restore::on_goButton_clicked(){
+	files->setRootPath(fileRootPath->text());
+	fileRootPath->setText(files->rootPath());
+	treeView->setRootIndex(files->index(files->rootPath()));
+}
+
+void Restore::selectExpanded(QModelIndex index){
+	//treeView->resizeColumnToContents(0);
+}
+
+void Restore::onDirLoaded(QString path){
+	treeView->expandAll();
+	treeView->resizeColumnToContents(0);
+	treeView->resizeColumnToContents(1);
+	treeView->resizeColumnToContents(2);
+	treeView->resizeColumnToContents(3);
+	treeView->collapseAll();
 }

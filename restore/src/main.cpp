@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QFileDialog>
 #include "restore.h"
 
 int main(int argc, char** argv){
@@ -6,7 +7,17 @@ int main(int argc, char** argv){
 	QStringList args = app.arguments();
 	args.removeFirst();
 
-	Restore restore(args[0]);
+	QString path;
+
+	if(args.size() == 0)
+//        path = QDir::currentPath();
+		path = QFileDialog::getExistingDirectory(0, "Open Git Repository Base Directory",
+														 QDir::homePath(),
+														 QFileDialog::ShowDirsOnly
+														 | QFileDialog::DontResolveSymlinks);
+	else path = args[0];
+
+	Restore restore(path);
 	restore.show();
 
     app.exec();
