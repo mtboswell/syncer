@@ -4,7 +4,7 @@
 SyncerLauncher::SyncerLauncher(QObject *parent) :
 	QObject(parent)
 {
-	syncerPath = "../../syncer/build/release/syncer.exe";
+	syncerPath = "../../../syncer/build/release/syncer.exe";
 	trayIcon = new QSystemTrayIcon(QIcon("s_icon.svg"));
 	trayIcon->show();
 
@@ -62,7 +62,7 @@ void SyncerLauncher::start(QString path){
 }
 void SyncerLauncher::stop(QString path){
 	if(!syncers.contains(path)) syncers[path] = new QProcess();
-	syncers[path]->terminate();
+	syncers[path]->kill();
 }
 void SyncerLauncher::remove(QString path){
 	stop(path);
