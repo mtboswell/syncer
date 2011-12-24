@@ -2,7 +2,7 @@
 #include "ui_syncergui.h"
 
 SyncerGui::SyncerGui(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::SyncerGui)
 {
     ui->setupUi(this);

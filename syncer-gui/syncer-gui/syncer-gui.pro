@@ -11,8 +11,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        syncergui.cpp
+        syncergui.cpp \
+    syncerlauncher.cpp
 
-HEADERS  += syncergui.h
+HEADERS  += syncergui.h \
+    syncerlauncher.h
 
 FORMS    += syncergui.ui
