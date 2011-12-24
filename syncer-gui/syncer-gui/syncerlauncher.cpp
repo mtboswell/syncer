@@ -4,10 +4,10 @@
 SyncerLauncher::SyncerLauncher(QObject *parent) :
 	QObject(parent)
 {
-	syncerPath = "../../../syncer/build/release/syncer.exe";
+	//syncerPath = "../../../syncer/build/release/syncer.exe";
+	syncerPath = "syncer.exe";
 	settings = new QSettings("MiBoSoft", "Syncer");
-	trayIcon = new QSystemTrayIcon(QIcon("s_icon.svg"));
-	trayIcon->show();
+	trayIcon = new QSystemTrayIcon(QIcon(":/s_icon.svg"));
 
 	syncMenu = new QMenu;
 
@@ -30,6 +30,8 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	foreach(QString dir, dirs){
 		addPath(dir);
 	}
+
+	trayIcon->show();
 
 }
 
