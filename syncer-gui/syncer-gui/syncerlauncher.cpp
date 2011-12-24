@@ -5,6 +5,7 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	QObject(parent)
 {
 	syncerPath = "../../../syncer/build/release/syncer.exe";
+	settings = new QSettings("MiBoSoft", "Syncer");
 	trayIcon = new QSystemTrayIcon(QIcon("s_icon.svg"));
 	trayIcon->show();
 
@@ -23,28 +24,39 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 					 this, SLOT(doAction(const QString &)));
 
 	trayIcon->setContextMenu(syncMenu);
+
+	QStringList dirs = settings->value("syncDirs").toStringList();
+
+	foreach(QString dir, dirs){
+		addPath(dir);
+	}
+
 }
 
 void SyncerLauncher::addPath(){
 
 	QString dir = QFileDialog::getExistingDirectory(0, "Open Git Repository Base Directory",
 				QDir::homePath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	addPath(dir);
+
+	QStringList dirs = settings->value("syncDirs").toStringList();
+
+	dirs << dir;
+
+	settings->setValue("syncDirs", dirs);
+}
+
+void SyncerLauncher::addPath(QString dir){
 
 	syncDirs << dir;
 
 	dirMenus[dir] = syncMenu->addMenu(dir);
 
-	QAction* startAction = dirMenus[dir]->addAction("Start Syncing");
-	connect(startAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
-	menuMapper->setMapping(startAction, "Start:" + dir);
-
-	QAction* stopAction = dirMenus[dir]->addAction("Stop Syncing");
-	connect(stopAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
-	menuMapper->setMapping(stopAction, "Stop:" + dir);
-
 	QAction* removeAction = dirMenus[dir]->addAction("Forget Direcctory");
 	connect(removeAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
 	menuMapper->setMapping(removeAction, "Remove:" + dir);
+
+	start(dir);
 }
 
 void SyncerLauncher::doAction(QString action){
@@ -59,15 +71,34 @@ void SyncerLauncher::start(QString path){
 	args << path;
 	syncers[path]->start(syncerPath, args);
 	if(!syncers[path]->waitForStarted()) qDebug() << "Error: syncer did not start";
+
+	dirMenus[path]->removeAction(findMenuItem(dirMenus[path], "Start Syncing"));
+
+	QAction* stopAction = dirMenus[path]->addAction("Stop Syncing");
+	connect(stopAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
+	menuMapper->setMapping(stopAction, "Stop:" + path);
+
 }
 void SyncerLauncher::stop(QString path){
 	if(!syncers.contains(path)) syncers[path] = new QProcess();
 	syncers[path]->kill();
+
+	dirMenus[path]->removeAction(findMenuItem(dirMenus[path], "Stop Syncing"));
+
+	QAction* startAction = dirMenus[path]->addAction("Start Syncing");
+	connect(startAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
+	menuMapper->setMapping(startAction, "Start:" + path);
 }
+
 void SyncerLauncher::remove(QString path){
 	stop(path);
 	syncMenu->removeAction(findMenuItem(syncMenu, path));
-	delete dirMenus[path];
+
+	QStringList dirs = settings->value("syncDirs").toStringList();
+
+	dirs.removeAll(path);
+
+	settings->setValue("syncDirs", dirs);
 }
 
 QAction* SyncerLauncher::findMenuItem(QMenu* menu, QString item){

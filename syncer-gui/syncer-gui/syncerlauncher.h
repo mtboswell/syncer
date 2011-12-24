@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QDir>
+#include <QSettings>
 
 class SyncerLauncher : public QObject
 {
@@ -23,6 +24,7 @@ class SyncerLauncher : public QObject
 		
 	public slots:
 		void addPath();
+		void addPath(QString dir);
 
 	private slots:
 		void doAction(QString action);
@@ -39,6 +41,7 @@ class SyncerLauncher : public QObject
 		QMenu* syncMenu;
 		QSignalMapper* menuMapper;
 		QMap<QString, QMenu*> dirMenus;
+		QSettings* settings;
 
 };
 
