@@ -5,7 +5,7 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	QObject(parent)
 {
 	//syncerPath = "../../../syncer/build/release/syncer.exe";
-	syncerPath = "syncer.exe";
+	syncerPath = "syncer";
 	settings = new QSettings("MiBoSoft", "Syncer");
 	trayIcon = new QSystemTrayIcon(QIcon(":/s_icon.svg"));
 
