@@ -16,7 +16,7 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	syncMenu->addSeparator();
 
 	connect(addAction, SIGNAL(triggered()), this, SLOT(addPath()));
-	connect(quitAction, SIGNAL(triggered()), this, SIGNAL(quit()));
+	connect(quitAction, SIGNAL(triggered()), this, SLOT(quitAll()));
 
 	menuMapper = new QSignalMapper();
 
@@ -106,4 +106,12 @@ QAction* SyncerLauncher::findMenuItem(QMenu* menu, QString item){
 		if(action->text() == item) return action;
 	}
 	return new QAction("Dummy", this);
+}
+
+void SyncerLauncher::quitAll(){
+	foreach(QString dir, syncDirs){
+		stop(dir);
+	}
+
+	emit quit();
 }
