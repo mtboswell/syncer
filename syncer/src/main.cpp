@@ -17,7 +17,10 @@ int main(int argc, char** argv){
 	QStringList inputPaths, pathsToMonitor;
 
 	QStringList args = app.arguments();
-	args.removeFirst();
+    args.removeFirst();
+
+    if(args.size() == 0) return 1;
+
 	foreach(QString arg, args){
 		if(arg.startsWith("--")){
 		

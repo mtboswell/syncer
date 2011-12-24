@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = ../bin/restore
+TARGET = restore
 DEPENDPATH += . 
 INCLUDEPATH += . 
 
