@@ -1,13 +1,13 @@
 #ifndef SYNCERGUI_H
 #define SYNCERGUI_H
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
 class SyncerGui;
 }
 
-class SyncerGui : public QWidget
+class SyncerGui : public QDialog
 {
     Q_OBJECT
     

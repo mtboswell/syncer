@@ -1,7 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>SyncerGui</class>
- <widget class="QWidget" name="SyncerGui" >
-  <property name="geometry" >
+ <widget class="QWidget" name="SyncerGui">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,12 +13,11 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>SyncerGui</string>
   </property>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>
