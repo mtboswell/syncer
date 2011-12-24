@@ -16,4 +16,9 @@ SOURCES += main.cpp\
 HEADERS  += \
     syncerlauncher.h
 
-FORMS    += syncergui.ui
+FORMS    +=
+
+OTHER_FILES +=
+
+RESOURCES += \
+    icons.qrc
