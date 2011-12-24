@@ -31,6 +31,7 @@ class SyncerLauncher : public QObject
 		void start(QString path);
 		void stop(QString path);
 		void remove(QString path);
+		void quitAll();
 
 	private:
 		QAction* findMenuItem(QMenu* menu, QString item);
