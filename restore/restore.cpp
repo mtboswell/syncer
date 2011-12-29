@@ -40,7 +40,7 @@ void Restore::on_restoreButton_clicked(){
 	QFileInfo selectedFileInfo = files->fileInfo(selectedFileIndex);
 	QString selectedFilePath = files->filePath(selectedFileIndex);
 
-	qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
+	//qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
 
 	QProcess *gitproc = new QProcess();
 	QStringList checkoutArgs;
@@ -51,7 +51,9 @@ void Restore::on_restoreButton_clicked(){
 	if(!gitproc->waitForFinished()) return;
 	QString gitOut = gitproc->readAll();
 
-	qDebug() << "Git checkout output:" << gitOut;
+	//qDebug() << "Git checkout output:" << gitOut;
+
+	 QMessageBox::information (this, "Restored filed", "Successfully restored file: " + selectedFilePath)
 	
 }
 
@@ -68,7 +70,7 @@ void Restore::fileSelected(QModelIndex index){
 	if(!gitproc->waitForFinished()) return;
 	QString gitOut = gitproc->readAll();
 
-	qDebug() << "Git log output:" << gitOut;
+	//qDebug() << "Git log output:" << gitOut;
 
 	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\.\\s]+)\\nDate:\\s+([\\w:-\\s]+) -[\\d]{4}\\n\\n([^\\n]+)\\n\\n?");
 
@@ -93,8 +95,8 @@ void Restore::fileSelected(QModelIndex index){
 		// Mon Dec 19 22:24:49 2011 -0500
 		QDateTime datetime = QDateTime::fromString(date, "ddd MMM dd HH:mm:ss yyyy");
 
-		qDebug() << "Processing commit" << commit;
-		qDebug() << "With Date:" << date << datetime;
+		//qDebug() << "Processing commit" << commit;
+		//qDebug() << "With Date:" << date << datetime;
 
 		QStringList item;
 		item << datetime.toString("yyyy-MM-dd hh:mm:ss ap") << author << commit;
