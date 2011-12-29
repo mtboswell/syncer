@@ -132,7 +132,7 @@ void SyncerLauncher::remove(QString path){
 
 
 void SyncerLauncher::restore(QString path){
-	QProcess restoreProc();
+	QProcess restoreProc;
 	QStringList args;
 	args << path;
 	restoreProc.start("restore", args);
@@ -140,7 +140,7 @@ void SyncerLauncher::restore(QString path){
 }
 
 void SyncerLauncher::undelete(QString path){
-	QProcess undeleteProc();
+	QProcess undeleteProc;
 	QStringList args;
 	args << path;
 	undeleteProc.start("undelete", args);
