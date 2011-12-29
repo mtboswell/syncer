@@ -78,6 +78,7 @@ void SyncerLauncher::doAction(QString action){
 	if(action.startsWith("Start:")) start(action.right(action.length()-6));
 	else if(action.startsWith("Stop:")) stop(action.right(action.length()-5));
 	else if(action.startsWith("Remove:")) remove(action.right(action.length()-7));
+	else if(action.startsWith("Restore:")) restore(action.right(action.length()-8));
 }
 
 void SyncerLauncher::start(QString path){
