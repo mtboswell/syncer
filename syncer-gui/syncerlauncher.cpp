@@ -130,6 +130,27 @@ void SyncerLauncher::remove(QString path){
 	settings->setValue("syncDirs", dirs);
 }
 
+
+void SyncerLauncher::restore(QString path){
+	QProcess restoreProc();
+	QStringList args;
+	args << path;
+	restoreProc.start("restore", args);
+	if(!restoreProc.waitForStarted()) qWarning("Error: restore did not start");
+}
+
+void SyncerLauncher::undelete(QString path){
+	QProcess undeleteProc();
+	QStringList args;
+	args << path;
+	undeleteProc.start("undelete", args);
+	if(!undeleteProc.waitForStarted()) qWarning("Error: undelete did not start");
+}
+
+
+
+
+
 QAction* SyncerLauncher::findMenuItem(QMenu* menu, QString item){
 	foreach(QAction* action, menu->actions()){
 		if(action->text() == item) return action;
