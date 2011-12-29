@@ -2,13 +2,13 @@ TEMPLATE = app
 
 CONFIG(debug, debug|release){
 	message("Debug")
-	TARGET = undelete
+	TARGET = syncer-undelete
 	DESTDIR = debug
 	OBJECTS_DIR = debug
 	MOC_DIR = debug
 }else{
 	message("Release")
-	TARGET = undelete
+	TARGET = syncer-undelete
 	DESTDIR = ../bin
 	OBJECTS_DIR = release
 	MOC_DIR = release
