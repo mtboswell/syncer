@@ -2,7 +2,8 @@ TEMPLATE = app
 
 
 release {
-        TARGET = ../../bin/syncer-gui
+        TARGET = syncer-gui
+        DESTDIR = ../bin
         OBJECTS_DIR = release
         MOC_DIR = release
 }
