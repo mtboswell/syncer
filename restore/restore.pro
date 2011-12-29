@@ -2,12 +2,12 @@ TEMPLATE = app
 
 CONFIG(debug, debug|release){
 	message("Debug")
-        TARGET = restore
+        TARGET = syncer-restore
 	DESTDIR = debug
         OBJECTS_DIR = debug
         MOC_DIR = debug
 } else {
-        TARGET = restore
+        TARGET = syncer-restore
 	DESTDIR = ../bin
         OBJECTS_DIR = release
         MOC_DIR = release
