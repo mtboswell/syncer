@@ -16,7 +16,7 @@ Undelete::Undelete(QString path, QWidget* parent):QWidget(parent){
 	if(!gitproc->waitForFinished()) return;
 	QString gitOut = gitproc->readAll();
 
-	qDebug() << "Git log output:" << gitOut;
+	//qDebug() << "Git log output:" << gitOut;
 
 	QStringList files = gitOut.split('\n');
 
@@ -39,7 +39,7 @@ void Undelete::on_pushButton_clicked(){
 	QTreeWidgetItem* selectedCommit = treeWidget->currentItem();
 	QString commit = selectedCommit->text(2);
 
-	qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
+	//qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
 
 	QStringList checkoutArgs;
 	checkoutArgs << "checkout" << commit+"^" << "--" << selectedFilePath;
@@ -49,7 +49,9 @@ void Undelete::on_pushButton_clicked(){
 	if(!gitproc->waitForFinished()) return;
 	QString gitOut = gitproc->readAll();
 
-	qDebug() << "Git checkout output:" << gitOut;
+	//qDebug() << "Git checkout output:" << gitOut;
+
+	QMessageBox::information (this, "Restore succeeded", "Successfully restored file " + selectedFilePath + " from commit " + commit);
 	
 }
 
@@ -68,7 +70,7 @@ void Undelete::fileSelected(QListWidgetItem* item){
 
 	qDebug() << "Git log output:" << gitOut;
 
-	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\.\\s]+)\\nDate:\\s+([\\w:-\\s]+) -[\\d]{4}\\n\\n([\\w\"\\s]+)\\n?");
+	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\.\\s]+)\\nDate:\\s+([\\w:-\\s]+) -[\\d]{4}\\n\\n([^\\n]+)\\n\\n?");
 
 	int pos = 0;
 
@@ -85,17 +87,17 @@ void Undelete::fileSelected(QListWidgetItem* item){
 		
 		QString commit = logReg.cap(1);
 		QString author = logReg.cap(2);
-		QString date = logReg.cap(3);
+		QString date = logReg.cap(3).simplified();
 		QString message = logReg.cap(4);
 
 		// Mon Dec 19 22:24:49 2011 -0500
 		QDateTime datetime = QDateTime::fromString(date, "ddd MMM dd HH:mm:ss yyyy");
 
-		qDebug() << "Processing commit" << commit;
-		qDebug() << "With Date:" << datetime;
+		//qDebug() << "Processing commit" << commit;
+		//qDebug() << "With Date:" << datetime;
 
 		QStringList item;
-		item << date << author << commit;
+		item << datetime.toString("yyyy-MM-dd hh:mm:ss ap") << author << commit;
 
 		QTreeWidgetItem* treeItem = new QTreeWidgetItem((QTreeWidget*)0, item);
 
