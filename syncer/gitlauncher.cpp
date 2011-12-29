@@ -90,7 +90,7 @@ void GitLauncher::doPush(){
 	QTextStream out(stdout);
 
 	//qDebug() << "Git commit output:" << gitOut;
-	if(!gitOut.isEmpty()) out << "Syncing";
+	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Syncing";
 
 
 	// git push
