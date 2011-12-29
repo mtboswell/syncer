@@ -31,6 +31,8 @@ class SyncerLauncher : public QObject
 		void start(QString path);
 		void stop(QString path);
 		void remove(QString path);
+		void restore(QString path);
+		void undelete(QString path);
 		void quitAll();
 		void readProcOut(const QString & path);
 
