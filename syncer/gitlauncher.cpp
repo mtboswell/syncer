@@ -43,7 +43,7 @@ void GitLauncher::checkForUpdate(){
 	//qDebug() << "Git pull output:" << gitOut;
 
 	QTextStream out(stdout);
-	if(!gitOut.isEmpty()) out << "Pulled";
+	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")) out << "Pulled";
 }
 
 void GitLauncher::doPush(){
