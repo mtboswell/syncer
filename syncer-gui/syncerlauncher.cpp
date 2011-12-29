@@ -4,10 +4,19 @@
 SyncerLauncher::SyncerLauncher(QObject *parent) :
 	QObject(parent)
 {
-	//syncerPath = "../../../syncer/build/release/syncer.exe";
-    syncerPath = "./syncer";
 	settings = new QSettings("MiBoSoft", "Syncer");
 	trayIcon = new QSystemTrayIcon(QIcon(":/s_icon.svg"));
+
+	//syncerPath = "../../../syncer/build/release/syncer.exe";
+	if(settings->contains("syncerPath")){
+		syncerPath = settings->value("syncerPath").toString();
+	}else{
+#ifdef Q_WS_WIN
+		syncerPath = "syncer.exe";
+#else
+		syncerPath = "./syncer";
+#endif
+	}
 
 	syncMenu = new QMenu;
 
@@ -72,7 +81,7 @@ void SyncerLauncher::start(QString path){
 	QStringList args;
 	args << path;
 	syncers[path]->start(syncerPath, args);
-    if(!syncers[path]->waitForStarted()) qFatal("Error: syncer did not start");
+	if(!syncers[path]->waitForStarted()) qFatal("Error: syncer did not start");
 
 	dirMenus[path]->removeAction(findMenuItem(dirMenus[path], "Start Syncing"));
 
