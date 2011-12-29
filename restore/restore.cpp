@@ -87,7 +87,7 @@ void Restore::fileSelected(QModelIndex index){
 		
 		QString commit = logReg.cap(1);
 		QString author = logReg.cap(2);
-		QString date = logReg.cap(3).trim();
+		QString date = logReg.cap(3).simplified();
 		QString message = logReg.cap(4);
 
 		// Mon Dec 19 22:24:49 2011 -0500
