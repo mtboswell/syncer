@@ -94,7 +94,7 @@ void Restore::fileSelected(QModelIndex index){
 		QDateTime datetime = QDateTime::fromString(date, "ddd MMM dd HH:mm:ss yyyy");
 
 		qDebug() << "Processing commit" << commit;
-		qDebug() << "With Date:" << datetime;
+		qDebug() << "With Date:" << date << datetime;
 
 		QStringList item;
 		item << date << author << commit;
