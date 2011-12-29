@@ -63,7 +63,7 @@ void SyncerLauncher::addPath(QString dir){
 
 	dirMenus[dir] = syncMenu->addMenu(dir);
 
-	QAction* removeAction = dirMenus[dir]->addAction("Forget Direcctory");
+	QAction* removeAction = dirMenus[dir]->addAction("Forget Directory");
 	connect(removeAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
 	menuMapper->setMapping(removeAction, "Remove:" + dir);
 
