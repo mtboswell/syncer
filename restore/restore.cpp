@@ -97,7 +97,7 @@ void Restore::fileSelected(QModelIndex index){
 		qDebug() << "With Date:" << date << datetime;
 
 		QStringList item;
-		item << date << author << commit;
+		item << datetime.toString() << author << commit;
 
 		QTreeWidgetItem* treeItem = new QTreeWidgetItem((QTreeWidget*)0, item);
 
