@@ -132,19 +132,19 @@ void SyncerLauncher::remove(QString path){
 
 
 void SyncerLauncher::restore(QString path){
-	QProcess restoreProc;
+	QProcess* restoreProc = new QProcess();
 	QStringList args;
 	args << path;
-	restoreProc.start("restore", args);
-	if(!restoreProc.waitForStarted()) qWarning("Error: restore did not start");
+	restoreProc->start("restore", args);
+	if(!restoreProc->waitForStarted()) qWarning("Error: restore did not start");
 }
 
 void SyncerLauncher::undelete(QString path){
-	QProcess undeleteProc;
+	QProcess* undeleteProc;
 	QStringList args;
 	args << path;
-	undeleteProc.start("undelete", args);
-	if(!undeleteProc.waitForStarted()) qWarning("Error: undelete did not start");
+	undeleteProc->start("undelete", args);
+	if(!undeleteProc->waitForStarted()) qWarning("Error: undelete did not start");
 }
 
 
