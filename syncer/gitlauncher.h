@@ -2,6 +2,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QStringList>
+#include <QTextStream>
 
 class GitLauncher : public QObject {
 	Q_OBJECT

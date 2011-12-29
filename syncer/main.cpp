@@ -13,17 +13,18 @@ QStringList recursePaths(QString baseDir);
 
 int main(int argc, char** argv){
 	QApplication app(argc, argv);
+	QTextStream out(stdout);
 
 	QStringList inputPaths, pathsToMonitor;
 
 	QStringList args = app.arguments();
-    args.removeFirst();
+	args.removeFirst();
 
-    if(args.size() == 0) return 1;
+	if(args.size() == 0) return 1;
 
 	foreach(QString arg, args){
 		if(arg.startsWith("--")){
-		
+			// options go here
 		}else{
 			inputPaths << arg;
 		}
@@ -34,7 +35,7 @@ int main(int argc, char** argv){
 		pathsToMonitor << recursePaths(path);
 	}
 
-	qDebug() << "Monitoring:" << pathsToMonitor;
+	//qDebug() << "Monitoring:" << pathsToMonitor;
 
 	QFileSystemWatcher watch;
 
