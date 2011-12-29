@@ -71,6 +71,14 @@ void SyncerLauncher::addPath(QString dir){
 	connect(removeAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
 	menuMapper->setMapping(removeAction, "Remove:" + dir);
 
+	QAction* restoreAction = dirMenus[dir]->addAction("Restore Files");
+	connect(restoreAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
+	menuMapper->setMapping(restoreAction, "Restore:" + dir);
+
+	QAction* undeleteAction = dirMenus[dir]->addAction("Undelete Files");
+	connect(undeleteAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
+	menuMapper->setMapping(undeleteAction, "Undelete:" + dir);
+
 	start(dir);
 }
 
@@ -79,6 +87,7 @@ void SyncerLauncher::doAction(QString action){
 	else if(action.startsWith("Stop:")) stop(action.right(action.length()-5));
 	else if(action.startsWith("Remove:")) remove(action.right(action.length()-7));
 	else if(action.startsWith("Restore:")) restore(action.right(action.length()-8));
+	else if(action.startsWith("Undelete:")) undelete(action.right(action.length()-9));
 }
 
 void SyncerLauncher::start(QString path){
