@@ -53,7 +53,7 @@ void Restore::on_restoreButton_clicked(){
 
 	//qDebug() << "Git checkout output:" << gitOut;
 
-	 QMessageBox::information (this, "Restored filed", "Successfully restored file: " + selectedFilePath)
+	 QMessageBox::information (this, "Restored filed", "Successfully restored file: " + selectedFilePath);
 	
 }
 
