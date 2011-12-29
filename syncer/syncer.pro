@@ -1,3 +1,4 @@
+
 TEMPLATE = app
 
 release{
@@ -14,6 +15,9 @@ debug{
         OBJECTS_DIR = debug
         MOC_DIR = debug
 }
+
+target.path = $$[QT_INSTALL_BINS]
+INSTALLS += target
 
 DEPENDPATH += .
 INCLUDEPATH += . 
