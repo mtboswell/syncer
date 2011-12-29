@@ -2,6 +2,7 @@
 #include <QFileSystemModel>
 #include <QProcess>
 #include <QDateTime>
+#include <QMessageBox>
 #include <QDebug>
 
 class Restore : public QWidget, private Ui::RestoreWidget {
