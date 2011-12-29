@@ -89,7 +89,7 @@ void GitLauncher::doPush(){
 
 	QTextStream out(stdout);
 
-	qDebug() << "Git commit output:" << gitOut;
+	//qDebug() << "Git commit output:" << gitOut;
 	if(!gitOut.isEmpty()) out << "Syncing";
 
 
@@ -103,7 +103,7 @@ void GitLauncher::doPush(){
 	if(!gitproc->waitForFinished()) return;
 	gitOut = gitproc->readAll();
 
-	qDebug() << "Git push output:" << gitOut;
+	//qDebug() << "Git push output:" << gitOut;
 	
 }
 
