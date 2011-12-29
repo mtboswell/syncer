@@ -12,9 +12,9 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 		syncerPath = settings->value("syncerPath").toString();
 	}else{
 #ifdef Q_WS_WIN
-		syncerPath = "syncer.exe";
+		syncerPath = "syncer";
 #else
-		syncerPath = "./syncer";
+		syncerPath = "syncer";
 #endif
 	}
 
