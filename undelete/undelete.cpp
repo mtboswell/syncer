@@ -68,7 +68,7 @@ void Undelete::fileSelected(QListWidgetItem* item){
 	if(!gitproc->waitForFinished()) return;
 	QString gitOut = gitproc->readAll();
 
-	qDebug() << "Git log output:" << gitOut;
+	//qDebug() << "Git log output:" << gitOut;
 
 	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\.\\s]+)\\nDate:\\s+([\\w:-\\s]+) -[\\d]{4}\\n\\n([^\\n]+)\\n\\n?");
 
