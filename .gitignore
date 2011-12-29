@@ -1,5 +1,6 @@
 *.swp
 *~
 *.o
-moc_*
+moc_*.cpp
+qrc_*.cpp
 Makefile
