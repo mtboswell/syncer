@@ -32,6 +32,7 @@ class SyncerLauncher : public QObject
 		void stop(QString path);
 		void remove(QString path);
 		void quitAll();
+		void readProcOut(const QString & path);
 
 	private:
 		QAction* findMenuItem(QMenu* menu, QString item);
@@ -41,6 +42,7 @@ class SyncerLauncher : public QObject
 		QStringList syncDirs;
 		QMenu* syncMenu;
 		QSignalMapper* menuMapper;
+		QSignalMapper* procOutMapper;
 		QMap<QString, QMenu*> dirMenus;
 		QSettings* settings;
 

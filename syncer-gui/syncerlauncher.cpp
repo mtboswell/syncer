@@ -7,6 +7,10 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	settings = new QSettings("MiBoSoft", "Syncer");
 	trayIcon = new QSystemTrayIcon(QIcon(":/s_icon.svg"));
 
+	procOutMapper = new QSignalMapper(this);
+
+	connect(procOutMapper, SIGNAL(mapped(const QString &)), this, SLOT(readProcOut(const QString &)));
+
 	//syncerPath = "../../../syncer/build/release/syncer.exe";
 	if(settings->contains("syncerPath")){
 		syncerPath = settings->value("syncerPath").toString();
@@ -77,7 +81,11 @@ void SyncerLauncher::doAction(QString action){
 }
 
 void SyncerLauncher::start(QString path){
-	if(!syncers.contains(path)) syncers[path] = new QProcess();
+	if(!syncers.contains(path)){
+		syncers[path] = new QProcess();
+		connect(syncers[path], SIGNAL(readyReadStandardOutput()), procOutMapper, SLOT(map()));
+		procOutMapper->setMapping(syncers[path], path);
+	}
 	QStringList args;
 	args << path;
 	syncers[path]->start(syncerPath, args);
@@ -125,4 +133,9 @@ void SyncerLauncher::quitAll(){
 	}
 
 	emit quit();
+}
+
+void SyncerLauncher::readProcOut(const QString & path){
+	QByteArray procOut = syncers[path]->readAllStandardOutput();
+	trayIcon->showMessage(procOut, path);
 }
