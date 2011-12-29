@@ -13,11 +13,11 @@ GitLauncher::GitLauncher(){
 }
 
 void GitLauncher::fileChanged(QString path){
-	qDebug() << "File Changed:" << path;
+	//qDebug() << "File Changed:" << path;
 
 }
 void GitLauncher::directoryChanged(QString path){
-	qDebug() << "Directory Changed:" << path;
+	//qDebug() << "Directory Changed:" << path;
 	if(!dirsChanged.contains(path))
 		dirsChanged << path;
 	pushTimer->start(5000);
@@ -40,15 +40,17 @@ void GitLauncher::checkForUpdate(){
 	if(!gitproc->waitForFinished()) return;
 	gitOut = gitproc->readAll();
 
-	qDebug() << "Git pull output:" << gitOut;
+	//qDebug() << "Git pull output:" << gitOut;
 
+	QTextStream out(stdout);
+	if(!gitOut.isEmpty()) out << "Pulled";
 }
 
 void GitLauncher::doPush(){
 	pushTimer->stop();
 	// git add each dir
 	foreach(QString path, dirsChanged){
-		qDebug() << "Adding" << path;
+		//qDebug() << "Adding" << path;
 		gitproc->setWorkingDirectory(path);
 
 		// git add dir
@@ -67,7 +69,7 @@ void GitLauncher::doPush(){
 		}
 		gitOut = gitproc->readAll();
 
-		qDebug() << "Git add output:" << gitOut;
+		//qDebug() << "Git add output:" << gitOut;
 	}
 	dirsChanged.clear();
 
@@ -78,14 +80,17 @@ void GitLauncher::doPush(){
 
 	QStringList commitArgs;
 	commitArgs << "commit" << "-m" << "Autosync commit";
-	qDebug() << "Commit args:" << commitArgs;
+	//qDebug() << "Commit args:" << commitArgs;
 
 	gitproc->start(git, commitArgs);
 	if(!gitproc->waitForStarted()) return;
 	if(!gitproc->waitForFinished()) return;
 	gitOut = gitproc->readAll();
 
+	QTextStream out(stdout);
+
 	qDebug() << "Git commit output:" << gitOut;
+	if(!gitOut.isEmpty()) out << "Syncing";
 
 
 	// git push
@@ -99,5 +104,6 @@ void GitLauncher::doPush(){
 	gitOut = gitproc->readAll();
 
 	qDebug() << "Git push output:" << gitOut;
+	
 }
 
