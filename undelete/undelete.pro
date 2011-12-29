@@ -1,5 +1,19 @@
 TEMPLATE = app
-TARGET = undelete
+
+CONFIG(debug, debug|release){
+	message("Debug")
+	TARGET = undelete
+	DESTDIR = debug
+	OBJECTS_DIR = debug
+	MOC_DIR = debug
+}else{
+	message("Release")
+	TARGET = undelete
+	DESTDIR = ../bin
+	OBJECTS_DIR = release
+	MOC_DIR = release
+}
+
 DEPENDPATH += . 
 INCLUDEPATH += . 
 
