@@ -1,16 +1,20 @@
 TEMPLATE = app
 
-release {
-        TARGET = ../../bin/restore
+CONFIG(debug, debug|release){
+	message("Debug")
+        TARGET = restore
+	DESTDIR = debug
+        OBJECTS_DIR = debug
+        MOC_DIR = debug
+} else {
+        TARGET = restore
+	DESTDIR = ../bin
         OBJECTS_DIR = release
         MOC_DIR = release
 }
-debug {
-        TARGET = restore
-        OBJECTS_DIR = debug
-        MOC_DIR = debug
-}
 
+unix:target.path = /usr/bin
+unix:INSTALLS += target
 
 DEPENDPATH += . 
 INCLUDEPATH += . 
