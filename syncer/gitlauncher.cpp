@@ -61,11 +61,11 @@ void GitLauncher::doPush(){
 
 		gitproc->start(git, addArgs);
 		if(!gitproc->waitForStarted()){
-			out << "Error: git did not start (" + gitproc->error() + ")";
+			out << "Error: git did not start (" << gitproc->error() << ")";
 			return;
 		}
 		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" + gitproc->error() + ")";
+			out << "Error: git did not finish (" << gitproc->error() << ")";
 			return;
 		}
 		gitOut = gitproc->readAll();
@@ -85,11 +85,11 @@ void GitLauncher::doPush(){
 
 	gitproc->start(git, commitArgs);
 	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" + gitproc->error() + ")";
+		out << "Error: git did not start (" << gitproc->error() << ")";
 		return;
 	}
 	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" + gitproc->error() + ")";
+		out << "Error: git did not finish (" << gitproc->error() << ")";
 		return;
 	}
 	gitOut = gitproc->readAll();
