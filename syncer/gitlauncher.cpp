@@ -8,6 +8,7 @@ GitLauncher::GitLauncher(){
         git = "git";
 #endif
         gitproc = new QProcess();
+	gitproc->setProcessChannelMode(QProcess:MergedChannels);
 	pushTimer = new QTimer();
 	connect(pushTimer, SIGNAL(timeout()), this, SLOT(doPush()));
 }
