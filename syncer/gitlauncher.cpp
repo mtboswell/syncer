@@ -84,8 +84,14 @@ void GitLauncher::doPush(){
 	//qDebug() << "Commit args:" << commitArgs;
 
 	gitproc->start(git, commitArgs);
-	if(!gitproc->waitForStarted()) return;
-	if(!gitproc->waitForFinished()) return;
+	if(!gitproc->waitForStarted()){
+		out << "Error: git did not start (" + gitproc->error() + ")";
+		return;
+	}
+	if(!gitproc->waitForFinished()){
+		out << "Error: git did not finish (" + gitproc->error() + ")";
+		return;
+	}
 	gitOut = gitproc->readAll();
 
 
