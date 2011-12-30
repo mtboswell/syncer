@@ -68,6 +68,7 @@ void Restore::fileSelected(QModelIndex index){
 	gitproc->start(git, logArgs);
 	if(!gitproc->waitForStarted()) {
 		qDebug() << "Error: Could not start git";
+		QMessageBox::information (this, "Error", "Could not start Git!");
 		return;
 	}
 	if(!gitproc->waitForFinished()) {
