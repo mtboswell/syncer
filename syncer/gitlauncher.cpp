@@ -48,6 +48,7 @@ void GitLauncher::checkForUpdate(){
 
 void GitLauncher::doPush(){
 	pushTimer->stop();
+	QTextStream out(stdout);
 	// git add each dir
 	foreach(QString path, dirsChanged){
 		//qDebug() << "Adding" << path;
@@ -60,11 +61,11 @@ void GitLauncher::doPush(){
 
 		gitproc->start(git, addArgs);
 		if(!gitproc->waitForStarted()){
-			qDebug() << "Error: git did not start" << gitproc->error();
+			out << "Error: git did not start (" + gitproc->error() + ")";
 			return;
 		}
 		if(!gitproc->waitForFinished()){
-			qDebug() << "Error: git did not finish" << gitproc->error();
+			out << "Error: git did not finish (" + gitproc->error() + ")";
 			return;
 		}
 		gitOut = gitproc->readAll();
@@ -87,7 +88,6 @@ void GitLauncher::doPush(){
 	if(!gitproc->waitForFinished()) return;
 	gitOut = gitproc->readAll();
 
-	QTextStream out(stdout);
 
 	//qDebug() << "Git commit output:" << gitOut;
 	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Syncing";
