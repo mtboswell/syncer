@@ -36,14 +36,28 @@ void GitLauncher::checkForUpdate(){
 	pullArgs << "pull";
 
 	gitproc->start(git, pullArgs);
-	if(!gitproc->waitForStarted()) return;
-	if(!gitproc->waitForFinished()) return;
+	if(!gitproc->waitForStarted()){
+		out << "Error: git did not start (" << gitproc->error() << ")";
+		return;
+	}
+	if(!gitproc->waitForFinished()){
+		out << "Error: git did not finish (" << gitproc->error() << ")";
+		return;
+	}
 	gitOut = gitproc->readAll();
 
 	//qDebug() << "Git pull output:" << gitOut;
 
 	QTextStream out(stdout);
-	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")) out << "Pulled";
+	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
+		if(gitOut.contains("fatal"))
+			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:"));
+		else if(gitOut.contains("Updating"))
+			out << "Synchronized from server";
+		else
+			out << "Unknown Error";
+		
+	}
 }
 
 void GitLauncher::doPush(){
@@ -96,7 +110,8 @@ void GitLauncher::doPush(){
 
 
 	//qDebug() << "Git commit output:" << gitOut;
-	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Syncing";
+	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Synchronized with local";
+	else return;
 
 
 	// git push
@@ -110,6 +125,15 @@ void GitLauncher::doPush(){
 	gitOut = gitproc->readAll();
 
 	//qDebug() << "Git push output:" << gitOut;
+	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
+		if(gitOut.contains("fatal"))
+			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:"));
+		else if(gitOut.contains("Updating"))
+			out << "Synchronized to server";
+		else
+			out << "Unknown Error";
+		
+	}
 	
 }
 
