@@ -53,7 +53,7 @@ void GitLauncher::checkForUpdate(){
 
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
-			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:"));
+			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6);
 		else if(gitOut.contains("Updating"))
 			out << "Synchronized from server";
 		else
