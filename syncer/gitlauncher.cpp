@@ -77,11 +77,11 @@ void GitLauncher::doPush(){
 
 		gitproc->start(git, addArgs);
 		if(!gitproc->waitForStarted()){
-			out << "Error: git did not start (" << gitproc->error() << ")";
+			out << "Error: git did not start (" << gitproc->error() << ")\n";
 			return;
 		}
 		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" << gitproc->error() << ")";
+			out << "Error: git did not finish (" << gitproc->error() << ")\n";
 			return;
 		}
 		gitOut = gitproc->readAll();
@@ -101,18 +101,18 @@ void GitLauncher::doPush(){
 
 	gitproc->start(git, commitArgs);
 	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" << gitproc->error() << ")";
+		out << "Error: git did not start (" << gitproc->error() << ")\n";
 		return;
 	}
 	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
+		out << "Error: git did not finish (" << gitproc->error() << ")\n";
 		return;
 	}
 	gitOut = gitproc->readAll();
 
 
 	//qDebug() << "Git commit output:" << gitOut;
-	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Synchronized with local";
+	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Synchronized with local\n";
 	else return;
 
 
@@ -129,11 +129,11 @@ void GitLauncher::doPush(){
 	//qDebug() << "Git push output:" << gitOut;
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
-			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:"));
+			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6);
 		else if(gitOut.contains("master -> master"))
-			out << "Synchronized to server";
+			out << "Synchronized to server\n";
 		else
-			out << "Unknown Error";
+			out << "Unknown Error\n";
 		
 	}
 	
