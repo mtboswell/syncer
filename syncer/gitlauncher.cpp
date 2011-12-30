@@ -26,6 +26,8 @@ void GitLauncher::directoryChanged(QString path){
 
 void GitLauncher::checkForUpdate(){
 
+	QTextStream out(stdout);
+
 	// cd to watched directory
 
 
@@ -48,7 +50,6 @@ void GitLauncher::checkForUpdate(){
 
 	//qDebug() << "Git pull output:" << gitOut;
 
-	QTextStream out(stdout);
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
 			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:"));
@@ -128,7 +129,7 @@ void GitLauncher::doPush(){
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
 			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:"));
-		else if(gitOut.contains("Updating"))
+		else if(gitOut.contains("master -> master"))
 			out << "Synchronized to server";
 		else
 			out << "Unknown Error";
