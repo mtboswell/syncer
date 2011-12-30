@@ -37,6 +37,7 @@ Undelete::Undelete(QString path, QWidget* parent):QWidget(parent){
 
 void Undelete::on_pushButton_clicked(){
 	QTreeWidgetItem* selectedCommit = treeWidget->currentItem();
+	if(!selectedCommit) return;
 	QString commit = selectedCommit->text(2);
 
 	//qDebug() << "Restoring" << selectedFilePath << "from commit" << commit;
