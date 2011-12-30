@@ -79,6 +79,7 @@ void Restore::fileSelected(QModelIndex index){
 	QString gitOut = gitproc->readAll();
 
 	//qDebug() << "Git log output:" << gitOut;
+	QMessageBox::information (this, "Git Log", gitOut);
 
 	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\.\\s]+)\\nDate:\\s+([\\w:-\\s]+) -[\\d]{4}\\n\\n([^\\n]+)\\n\\n?");
 
