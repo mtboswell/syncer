@@ -1,6 +1,6 @@
-#include "undelete.h"
+#include "shred.h"
 
-Undelete::Undelete(QString path, QWidget* parent):QWidget(parent){
+Shred::Shred(QString path, QWidget* parent):QWidget(parent){
 	setupUi(this);
 	
 	gitproc = new QProcess(this);
@@ -35,7 +35,7 @@ Undelete::Undelete(QString path, QWidget* parent):QWidget(parent){
 
 }
 
-void Undelete::on_pushButton_clicked(){
+void Shred::on_shredButton_clicked(){
 	QTreeWidgetItem* selectedCommit = treeWidget->currentItem();
 	if(!selectedCommit) return;
 	QString commit = selectedCommit->text(2);
@@ -56,7 +56,7 @@ void Undelete::on_pushButton_clicked(){
 	
 }
 
-void Undelete::fileSelected(QListWidgetItem* item){
+void Shred::fileSelected(QListWidgetItem* item){
 	QString path = item->text();
 	selectedFilePath = path;
 
