@@ -66,8 +66,14 @@ void Restore::fileSelected(QModelIndex index){
 	logArgs << "log" << path;
 
 	gitproc->start(git, logArgs);
-	if(!gitproc->waitForStarted()) return;
-	if(!gitproc->waitForFinished()) return;
+	if(!gitproc->waitForStarted()) {
+		qDebug() << "Error: Could not start git";
+		return;
+	}
+	if(!gitproc->waitForFinished()) {
+		qDebug() << "Error: Git did not finish";
+		return;
+	}
 	QString gitOut = gitproc->readAll();
 
 	//qDebug() << "Git log output:" << gitOut;
