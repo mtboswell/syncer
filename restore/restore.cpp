@@ -34,6 +34,7 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 void Restore::on_restoreButton_clicked(){
 
 	QTreeWidgetItem* selectedCommit = treeWidget->currentItem();
+	if(!selectedCommit) return;
 	QString commit = selectedCommit->text(2);
 
 	QModelIndex selectedFileIndex = treeView->currentIndex();
