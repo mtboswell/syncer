@@ -73,6 +73,7 @@ void Restore::fileSelected(QModelIndex index){
 	}
 	if(!gitproc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
+		QMessageBox::information (this, "Error", "Git did not finish properly!");
 		return;
 	}
 	QString gitOut = gitproc->readAll();
