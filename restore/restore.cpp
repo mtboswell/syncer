@@ -20,7 +20,7 @@ Restore::Restore(QString path, QWidget* parent):QWidget(parent){
 	treeView->setRootIndex(files->index(path));
 
 	connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(fileSelected(QModelIndex)));
-	connect(treeView, SIGNAL(expanded(QModelIndex)), this, SLOT(selectExpanded(QModelIndex)));
+//	connect(treeView, SIGNAL(expanded(QModelIndex)), this, SLOT(selectExpanded(QModelIndex)));
 
 
 	treeWidget->setColumnCount(3);
