@@ -99,7 +99,10 @@ void SyncerLauncher::start(QString path){
 	QStringList args;
 	args << path;
 	syncers[path]->start(syncerPath, args);
-	if(!syncers[path]->waitForStarted()) qFatal("Error: syncer did not start");
+	if(!syncers[path]->waitForStarted()){
+		trayIcon->showMessage("Error", "Syncer did not start!");
+		//qFatal("Error: syncer did not start");
+	}
 
 	dirMenus[path]->removeAction(findMenuItem(dirMenus[path], "Start Syncing"));
 
