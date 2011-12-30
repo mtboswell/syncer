@@ -62,9 +62,10 @@ void Restore::fileSelected(QModelIndex index){
 	QString path = files->filePath(index);
 
 
+
 	QProcess *gitproc = new QProcess();
 
-	gitproc->setWorkingDirectory(QDir::
+	gitproc->setWorkingDirectory(QDir::cleanPath(path));
 
 	QStringList logArgs;
 	logArgs << "log" << path;
