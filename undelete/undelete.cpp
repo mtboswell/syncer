@@ -76,7 +76,6 @@ void Undelete::fileSelected(QListWidgetItem* item){
 	int pos = 0;
 
 	int row = 0;
-	int column = 0;
 
 	treeWidget->clear();
 
