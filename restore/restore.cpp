@@ -73,18 +73,18 @@ void Restore::fileSelected(QModelIndex index){
 	gitproc->start(git, logArgs);
 	if(!gitproc->waitForStarted()) {
 		qDebug() << "Error: Could not start git";
-		QMessageBox::information (this, "Error", "Could not start Git!");
+		QMessageBox::error (this, "Error", "Could not start Git!");
 		return;
 	}
 	if(!gitproc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
-		QMessageBox::information (this, "Error", "Git did not finish properly!");
+		QMessageBox::error (this, "Error", "Git did not finish properly!");
 		return;
 	}
 	QString gitOut = gitproc->readAll();
 
 	//qDebug() << "Git log output:" << gitOut;
-	QMessageBox::information (this, "Git Log for " + path, gitOut);
+	//QMessageBox::information (this, "Git Log for " + path, gitOut);
 
 	QRegExp logReg("commit\\s+(\\w+)\\nAuthor:\\s+([\\w<@>\\.\\s]+)\\nDate:\\s+([\\w:-\\s]+) -[\\d]{4}\\n\\n([^\\n]+)\\n\\n?");
 
@@ -126,7 +126,7 @@ void Restore::fileSelected(QModelIndex index){
 	treeWidget->insertTopLevelItems(0, items);
 	treeWidget->sortItems(0, Qt::DescendingOrder);
 
-		QMessageBox::information (this, "Done", "Finished adding revisions.");
+		//QMessageBox::information (this, "Done", "Finished adding revisions.");
 
 }
 
