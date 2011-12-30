@@ -120,6 +120,8 @@ void Restore::fileSelected(QModelIndex index){
 	treeWidget->insertTopLevelItems(0, items);
 	treeWidget->sortItems(0, Qt::DescendingOrder);
 
+		QMessageBox::information (this, "Done", "Finished adding revisions.");
+
 }
 
 
