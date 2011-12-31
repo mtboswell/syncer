@@ -12,6 +12,7 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	connect(procOutMapper, SIGNAL(mapped(const QString &)), this, SLOT(readProcOut(const QString &)));
 
 	//syncerPath = "../../../syncer/build/release/syncer.exe";
+	// todo: use app->appPath(), etc.
 	if(settings->contains("syncerPath")){
 		syncerPath = settings->value("syncerPath").toString();
 	}else{

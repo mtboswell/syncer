@@ -1,5 +1,5 @@
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QStringList>
 #include <QFileSystemWatcher>
 #include <QDir>
@@ -12,7 +12,7 @@
 QStringList recursePaths(QString baseDir);
 
 int main(int argc, char** argv){
-	QApplication app(argc, argv);
+	QCoreApplication app(argc, argv);
 	QTextStream out(stdout);
 
 	QStringList inputPaths, pathsToMonitor;
@@ -56,9 +56,7 @@ int main(int argc, char** argv){
 		gitlauncher->directoryChanged(path);
 	}
 
-	app.exec();
-
-	return 0;
+	return app.exec();
 }
 
 
