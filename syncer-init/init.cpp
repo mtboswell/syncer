@@ -52,12 +52,13 @@ void Init::accept(){
 
 	setUserInfo();
 
-	if(setupShare())
+	if(setupShare()) {
 		QMessageBox::information (this, "Settings updated", "Share settings have been updated sucessfully.");
-	else
-		QMessageBox::information (this, "Settings failed", "Something went wrong!");
+		QDialog::accept();
+	}else{
+		QMessageBox::information (this, "Settings failed", "Something went wrong, please try again.");
+	}
 
-	QDialog::accept();
 }
 
 void Init::setUserInfo(){
@@ -102,6 +103,9 @@ void Init::setUserInfo(){
 }
 
 bool Init::setupShare(){
+	QTextStream out(stdout);
+
+
 	QString host = hostField->text().simplified();
 	int port = portField->text().toInt();
 	QString username = usernameField->text().simplified();
@@ -109,8 +113,29 @@ bool Init::setupShare(){
 	QString shareName = sharenameField->text().simplified();
 	QString localFolder = folderField->text();
 
+	if(!port) port = 22;
 
-	QTextStream out(stdout);
+	if(host.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a host!");
+		return false;
+	}
+	if(username.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a username!");
+		return false;
+	}
+	if(password.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a password!");
+		return false;
+	}
+	if(shareName.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a share name!");
+		return false;
+	}
+	if(localFolder.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a folder to put the shared folder in!");
+		return false;
+	}
+
 
 	//if not exists '~/.ssh/id_rsa.pub' then ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
 	QFile pubKeyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
@@ -177,8 +202,10 @@ bool Init::setupShare(){
 	//ssh user@host -p port 'echo "key" >> ~/.ssh/authorized_keys', enter password
 	QString key;
 	QFile keyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
-	if (!keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
+	if (!keyFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+		QMessageBox::critical (this, "Error", "Could not open public key.");
 		return false;
+	}
 
 	while (!keyFile.atEnd()) {
 		key += keyFile.readLine();
@@ -191,6 +218,7 @@ bool Init::setupShare(){
 	session = ssh_new();
 	if (session == NULL){
 		qDebug("Unable to open ssh session");
+		QMessageBox::critical (this, "Error", "Could not open ssh session");
 		return false;
 	}
 		
@@ -209,6 +237,7 @@ bool Init::setupShare(){
 	if (rc != SSH_OK)
 	{
 		qDebug() << "Error connecting to " << hostchar << ssh_get_error(session);
+		QMessageBox::critical (this, "Error", QString("Could not connect to server: ") + hostchar + "\n" + ssh_get_error(session));
 		ssh_free(session);
 		return false;
 	}
@@ -217,6 +246,7 @@ bool Init::setupShare(){
 	// For the source code of verify_knowhost(), check previous example
 	if (verify_knownhost(session) < 0)
 	{
+		QMessageBox::critical (this, "Error", "Could not verify server ID");
 		ssh_disconnect(session);
 		ssh_free(session);
 		return false;
@@ -233,6 +263,7 @@ bool Init::setupShare(){
 	if (rc != SSH_AUTH_SUCCESS)
 	{
 		qDebug() << "Error authenticating with password:" << ssh_get_error(session);
+		QMessageBox::critical (this, "Error", "Bad username or password.");
 		ssh_disconnect(session);
 		ssh_free(session);
 		return false;
@@ -243,13 +274,16 @@ bool Init::setupShare(){
 	unsigned int nbytes;
 
 	channel = ssh_channel_new(session);
-	if (channel == NULL)
+	if (channel == NULL){
+		QMessageBox::critical (this, "Error", "Could not open channel.");
 		return false;//SSH_ERROR;
+	}
 
 	rc = ssh_channel_open_session(channel);
 	if (rc != SSH_OK)
 	{
 		ssh_channel_free(channel);
+		QMessageBox::critical (this, "Error", "Could not open channel.");
 		return false;//rc;
 	}
 
@@ -257,6 +291,7 @@ bool Init::setupShare(){
 	if (rc != SSH_OK)
 	{
 		qDebug() << "Error running command mkdir:" << ssh_get_error(session);
+		QMessageBox::critical (this, "Error", "Could not create remote directory.");
 		ssh_channel_close(channel);
 		ssh_channel_free(channel);
 		return false;//rc;
@@ -267,6 +302,7 @@ bool Init::setupShare(){
 		if (write(1, buffer, nbytes) != nbytes){
 			ssh_channel_close(channel);
 			ssh_channel_free(channel);
+			QMessageBox::critical (this, "Error", "Command read error");
 			return false;//SSH_ERROR;
 		}
 		nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
@@ -276,6 +312,7 @@ bool Init::setupShare(){
 	{
 		ssh_channel_close(channel);
 		ssh_channel_free(channel);
+		QMessageBox::critical (this, "Error", "Command read error");
 		return false;//SSH_ERROR;
 	}
 
@@ -285,13 +322,16 @@ bool Init::setupShare(){
 
 
 	channel = ssh_channel_new(session);
-	if (channel == NULL)
+	if (channel == NULL){
+		QMessageBox::critical (this, "Error", "Could not open channel");
 		return false;//SSH_ERROR;
+	}
 
 	rc = ssh_channel_open_session(channel);
 	if (rc != SSH_OK)
 	{
 		ssh_channel_free(channel);
+		QMessageBox::critical (this, "Error", "Could not open channel.");
 		return false;//rc;
 	}
 
@@ -302,6 +342,7 @@ bool Init::setupShare(){
 		qDebug() << "Error running command:" << echoCmd << " : " << ssh_get_error(session);
 		ssh_channel_close(channel);
 		ssh_channel_free(channel);
+		QMessageBox::critical (this, "Error", "Could not update key on server.");
 		return false;//rc;
 	}
 
@@ -310,6 +351,7 @@ bool Init::setupShare(){
 		if (write(1, buffer, nbytes) != nbytes){
 			ssh_channel_close(channel);
 			ssh_channel_free(channel);
+			QMessageBox::critical (this, "Error", "Command read error");
 			return false;//SSH_ERROR;
 		}
 		nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
@@ -319,6 +361,7 @@ bool Init::setupShare(){
 	{
 		ssh_channel_close(channel);
 		ssh_channel_free(channel);
+		QMessageBox::critical (this, "Error", "Command read error");
 		return false;//SSH_ERROR;
 	}
 
@@ -349,14 +392,17 @@ bool Init::setupShare(){
 	gitproc->start(git, cloneArgs);
 	if(!gitproc->waitForStarted()){
 		out << "Error: git did not start (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not finish");
 		return false;
 	}
 	QString gitOut = gitproc->readAll();
 
+	// todo: handle clone errors
 
 
 	//cd /path/to/share
@@ -370,10 +416,12 @@ bool Init::setupShare(){
 	gitproc->start(git, addArgs);
 	if(!gitproc->waitForStarted()){
 		out << "Error: git did not start (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not finish");
 		return false;
 	}
 	gitOut = gitproc->readAll();
@@ -386,10 +434,12 @@ bool Init::setupShare(){
 	gitproc->start(git, commitArgs);
 	if(!gitproc->waitForStarted()){
 		out << "Error: git did not start (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not finish");
 		return false;
 	}
 	gitOut = gitproc->readAll();
@@ -403,16 +453,19 @@ bool Init::setupShare(){
 	gitproc->start(git, pushArgs);
 	if(!gitproc->waitForStarted()){
 		out << "Error: git did not start (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not finish");
 		return false;
 	}
 	gitOut = gitproc->readAll();
 
 	if(!gitOut.contains("Everything up-to-date") && !gitOut.contains("master -> master")){
 		qDebug() << "Error: git push did not succeed:" << gitOut;
+		QMessageBox::critical (this, "Error", "Git push did not succeed");
 		return false;
 	}
 
