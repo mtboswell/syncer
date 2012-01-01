@@ -119,7 +119,7 @@ void GitLauncher::doPush(){
 	// git push
 	
 	QStringList pushArgs;
-	pushArgs << "push";
+	pushArgs << "push" << "origin" << "master";
 
 	gitproc->start(git, pushArgs);
 	if(!gitproc->waitForStarted()) return;

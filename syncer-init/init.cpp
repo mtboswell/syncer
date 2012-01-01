@@ -411,7 +411,7 @@ bool Init::setupShare(){
 	}
 	gitOut = gitproc->readAll();
 
-	if(!gitOut.contains("master -> master")){
+	if(!gitOut.contains("Everything up-to-date") && !gitOut.contains("master -> master")){
 		qDebug() << "Error: git push did not succeed:" << gitOut;
 		return false;
 	}
