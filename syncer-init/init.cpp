@@ -409,6 +409,11 @@ bool Init::setupShare(){
 	}
 	gitOut = gitproc->readAll();
 
+	if(!gitOut.contains("master -> master")){
+		qDebug() << "Error: git push did not succeed:" << gitOut;
+		return false;
+	}
+
 	// add to settings
 
 	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
