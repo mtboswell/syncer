@@ -57,7 +57,7 @@ void GitLauncher::checkForUpdate(){
 		else if(gitOut.contains("Updating"))
 			out << "Synchronized from server\n";
 		else
-			out << "Unknown Error\n";
+			out << "Unknown Error\n" << gitOut;
 		
 	}
 }
