@@ -25,10 +25,12 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 
 	syncMenu = new QMenu;
 
-	QAction* addAction = syncMenu->addAction("Add Directory");
+	QAction* initAction = syncMenu->addAction("Add Directory From Server");
+	QAction* addAction = syncMenu->addAction("Re-Add Forgotten Directory");
 	QAction* quitAction = syncMenu->addAction("Quit");
 	syncMenu->addSeparator();
 
+	connect(initAction, SIGNAL(triggered()), this, SLOT(initPath()));
 	connect(addAction, SIGNAL(triggered()), this, SLOT(addPath()));
 	connect(quitAction, SIGNAL(triggered()), this, SLOT(quitAll()));
 
@@ -39,14 +41,30 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 
 	trayIcon->setContextMenu(syncMenu);
 
+	refreshMenu();
+
+	trayIcon->show();
+
+}
+
+void SyncerLauncher::refreshMenu(){
+	foreach(QString path, syncDirs){
+		stop(path);
+		syncMenu->removeAction(findMenuItem(syncMenu, path));
+	}
+
 	QStringList dirs = settings->value("syncDirs").toStringList();
 
 	foreach(QString dir, dirs){
 		addPath(dir);
 	}
+}
 
-	trayIcon->show();
-
+void SyncerLauncher::initPath(){
+	Init* init = new Init;
+	connect(init, SIGNAL(finished()), this, SLOT(refreshMenu()));
+	connect(init, SIGNAL(finished()), init, SLOT(deleteLater()));
+	init->show();
 }
 
 void SyncerLauncher::addPath(){

@@ -18,13 +18,17 @@ unix:target.path = /usr/bin
 #target.path = $$[QT_INSTALL_BINS]
 unix:INSTALLS += target
 
+LIBS += -lssh
+
 SOURCES += main.cpp\
-    syncerlauncher.cpp
+    syncerlauncher.cpp \
+    init.cpp
 
 HEADERS  += \
-    syncerlauncher.h
+    syncerlauncher.h \
+    init.h
 
-FORMS    +=
+FORMS    += init.ui
 
 OTHER_FILES +=
 

@@ -13,6 +13,8 @@
 #include <QDir>
 #include <QSettings>
 
+#include "init.h"
+
 class SyncerLauncher : public QObject
 {
 		Q_OBJECT
@@ -25,6 +27,8 @@ class SyncerLauncher : public QObject
 	public slots:
 		void addPath();
 		void addPath(QString dir);
+		void refreshMenu();
+		void initPath();
 
 	private slots:
 		void doAction(QString action);
