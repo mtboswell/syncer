@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "undelete.h"
+#include "shred.h"
 
 int main(int argc, char** argv){
 	QApplication app(argc,argv);
@@ -8,8 +8,8 @@ int main(int argc, char** argv){
 	
 	if(args.size() == 0) return 1;
 
-	Undelete undelete(args[0]);
-	undelete.show();
+	Shred shred(args[0]);
+	shred.show();
 
 	return app.exec();
 }
