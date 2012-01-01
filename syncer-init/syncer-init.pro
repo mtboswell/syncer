@@ -13,6 +13,8 @@ CONFIG(debug, debug|release){
 	MOC_DIR = release
 }
 
+LIBS += -lssh
+
 unix:target.path = /usr/bin
 #target.path = $$[QT_INSTALL_BINS]
 unix:INSTALLS += target
