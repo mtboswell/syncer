@@ -54,6 +54,8 @@ void Init::accept(){
 
 	if(setupShare())
 		QMessageBox::information (this, "Settings updated", "Share settings have been updated sucessfully.");
+	else
+		QMessageBox::information (this, "Settings failed", "Something went wrong!");
 
 	QDialog::accept();
 }
