@@ -43,9 +43,7 @@ void Shred::on_shredButton_clicked(){
 
 	// rm -Rf .git/logs/
 
-	// git gc
-
-	// git prune --expire
+	// git gc --prune=now
 
 	// git push -f
 

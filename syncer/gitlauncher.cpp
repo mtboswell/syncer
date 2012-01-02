@@ -36,7 +36,7 @@ void GitLauncher::checkForUpdate(){
 	// git pull
 	
 	QStringList pullArgs;
-	pullArgs << "pull";
+	pullArgs << "pull" << "--rebase";
 
 	gitproc->start(git, pullArgs);
 	if(!gitproc->waitForStarted()){
