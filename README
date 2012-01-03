@@ -1,9 +1,17 @@
-Auto-synchronization for Git repositories.
+Auto-synchronization with Git repositories.
 
-Set up git such that "git push" works with no other args, and "git commit -m ..." works as well.
+Install:
+1. `qmake`
+2. `make`
+3. `sudo make install`
 
-Run bin/syncer with your Git base dir as the first argument.
-Technically works if you give it any dir in your repo, but only watches for (and commits) changes in subdirs of the dir you provide.
+Running:
+	With Gui/Desktop:
+		`syncer-gui`
+	Without gui:
+		Set up git such that "git push" works with no other args, and "git commit -m ..." works as well.
+		Run bin/syncer with your Git base dir as the first argument.
+		Technically works if you give it any dir in your repo, but only watches for (and commits) changes in subdirs of the dir you provide.
 
 Pulls every minute, commits and pushes if there are no changes for 5 seconds.
 
