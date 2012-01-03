@@ -15,8 +15,7 @@ CONFIG(debug, debug|release){
 
 LIBS += -lssh
 
-unix:target.path = /usr/bin
-#target.path = $$[QT_INSTALL_BINS]
+unix:target.path = /usr/local/bin
 unix:INSTALLS += target
 
 SOURCES += main.cpp\

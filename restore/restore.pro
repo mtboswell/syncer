@@ -13,7 +13,7 @@ CONFIG(debug, debug|release){
         MOC_DIR = release
 }
 
-unix:target.path = /usr/bin
+unix:target.path = /usr/local/bin
 unix:INSTALLS += target
 
 DEPENDPATH += . 

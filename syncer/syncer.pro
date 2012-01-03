@@ -1,24 +1,22 @@
 TEMPLATE = app
+TARGET = syncer
 
 CONFIG(debug, debug|release){
 	message("Debug")
-	TARGET = syncer
 	DESTDIR = debug
 	OBJECTS_DIR = debug
 	MOC_DIR = debug
 }else{
 	message("Release")
-	TARGET = syncer
 	DESTDIR = ../bin
 	OBJECTS_DIR = release
 	MOC_DIR = release
 }
 
-# documentation.path = /usr/local/program/doc
-# documentation.files = docs/*
+# documentation.path = /usr/local/syncer/doc
+# documentation.files = doc/*
 # INSTALLS += documentation
-unix:target.path = /usr/bin
-#target.path = $$[QT_INSTALL_BINS]
+unix:target.path = /usr/local/bin
 unix:INSTALLS += target
 
 DEPENDPATH += .
