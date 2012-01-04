@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QDir>
 #include <QFileDialog>
+#include <QProgressDialog>
 #include <QSettings>
 #include <QDebug>
 #include "ui_init.h"

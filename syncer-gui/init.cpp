@@ -136,6 +136,9 @@ bool Init::setupShare(){
 		return false;
 	}
 
+	QProgressDialog progress("Connecting to server...", "Cancel", 0, 11, this);
+	progress.setWindowModality(Qt::WindowModal);
+
 
 	//if not exists '~/.ssh/id_rsa.pub' then ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
 	QFile pubKeyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
@@ -160,6 +163,8 @@ bool Init::setupShare(){
 	}else{
 		qDebug() << "Skipping keygen";
 	}
+
+	progress.setValue(1);
 
 
 	//scp -o StrictHostKeyChecking=no -P port ~/.ssh/id_rsa.pub user@host:user_id.pub, enter password
@@ -211,6 +216,8 @@ bool Init::setupShare(){
 		key += keyFile.readLine();
 	}
 
+	progress.setValue(2);
+
 	ssh_session session;
 	int rc;
 
@@ -242,6 +249,8 @@ bool Init::setupShare(){
 		return false;
 	}
 
+	progress.setValue(3);
+
 	// Verify the server's identity
 	// For the source code of verify_knowhost(), check previous example
 	if (verify_knownhost(session) < 0)
@@ -268,6 +277,8 @@ bool Init::setupShare(){
 		ssh_free(session);
 		return false;
 	}
+
+	progress.setValue(4);
 
 	ssh_channel channel;
 	char buffer[256];
@@ -320,6 +331,7 @@ bool Init::setupShare(){
 	ssh_channel_close(channel);
 	ssh_channel_free(channel);
 
+	progress.setValue(5);
 
 	channel = ssh_channel_new(session);
 	if (channel == NULL){
@@ -376,6 +388,7 @@ bool Init::setupShare(){
 	ssh_disconnect(session);
 	ssh_free(session);
 
+	progress.setValue(6);
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
 
@@ -419,6 +432,8 @@ bool Init::setupShare(){
 		
 	}
 
+	progress.setValue(7);
+
 	QDir localRepo(localDir);
 	if(!localRepo.exists()){
 		QMessageBox::critical (this, "Error", "Initial synchronization error");
@@ -446,6 +461,7 @@ bool Init::setupShare(){
 	}
 	gitOut = gitproc->readAll();
 
+	progress.setValue(8);
 
 	//git commit -m "Initial Commit"
 	QStringList commitArgs;
@@ -465,6 +481,7 @@ bool Init::setupShare(){
 	gitOut = gitproc->readAll();
 
 
+	progress.setValue(9);
 
 	//git push origin master
 	QStringList pushArgs;
@@ -489,6 +506,8 @@ bool Init::setupShare(){
 		return false;
 	}
 
+	progress.setValue(10);
+
 	// add to settings
 
 	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
@@ -500,6 +519,7 @@ bool Init::setupShare(){
 
 	// tell syncer-gui to refresh
 
+	progress.setValue(11);
 
 	return true;
 }
