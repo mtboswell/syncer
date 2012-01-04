@@ -414,16 +414,22 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
+	gitproc->waitForReadyRead();
+	QString gitOut = gitproc->readAll();
+	qDebug() << "First:" << gitOut;
+
+	gitproc->waitForReadyRead();
+	gitOut = gitproc->readAll();
+	qDebug() << "Second:" << gitOut;
+
+	gitproc->write("yes\n");
 
 	if(!gitproc->waitForFinished()){
-		gitproc->write("yes\n");
-		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" << gitproc->error() << ")";
-			QMessageBox::critical (this, "Error", "Git did not finish");
-			return false;
-		}
+		out << "Error: git did not finish (" << gitproc->error() << ")";
+		QMessageBox::critical (this, "Error", "Git did not finish");
+		return false;
 	}
-	QString gitOut = gitproc->readAll();
+	gitOut = gitproc->readAll();
 
 	// todo: handle clone errors
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
