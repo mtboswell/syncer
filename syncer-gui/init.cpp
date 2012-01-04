@@ -403,13 +403,14 @@ bool Init::setupShare(){
 	if(progress.wasCanceled()) return false;
 	progress.setLabelText("Downloading shared folder...");
 
-	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
+	QString localDir = localFolder + "/" + shareName;
 
+	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
+/*
         QProcess *gitproc = new QProcess();
 	gitproc->setProcessChannelMode(QProcess::MergedChannels);
 	QString git("git");
 
-	QString localDir = localFolder + "/" + shareName;
 
 	QStringList cloneArgs;
 	cloneArgs << "clone" << "ssh://" + username + "@" + host + ":" + QString::number(port)
@@ -421,6 +422,7 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
+	*/
 	/*
 	gitproc->waitForReadyRead();
 	QString gitOut = gitproc->readAll();
@@ -432,13 +434,47 @@ bool Init::setupShare(){
 
 	gitproc->write("yes\n");
 	*/
-
+/*
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
 		QMessageBox::critical (this, "Error", "Git did not finish");
 		return false;
 	}
-	QString gitOut = gitproc->readAll();
+	*/
+
+
+	QProcess* shProc = new QProcess();
+	shProc->setProcessChannelMode(QProcess::MergedChannels);
+	shProc->setWorkingDirectory(localFolder);
+
+	shProc->start("sh", QStringList() << "--login" << "-i");
+	if(!shProc->waitForStarted()){
+		out << "Error: sh did not start (" << shProc->error() << ")";
+		QMessageBox::critical (this, "Error", "sh did not start: " + shProc->error());
+		return false;
+	}
+
+	shProc->waitForReadyRead();
+	QString shOut = shProc->readAll();
+	QMessageBox::information(this, "Sh:", shOut);
+
+	shProc->write(QString("clone ssh://" + username + "@" + host + ":" + QString::number(port)
+				+ "/~/" + shareName).toLatin1());
+	shProc->write("\n");
+
+	shProc->waitForReadyRead();
+	QString gitOut = shProc->readAll();
+	QMessageBox::information(this, "Git:", gitOut);
+
+	shProc->write("exit\n");
+
+	shProc->closeWriteChannel();
+
+	if(!shProc->waitForFinished()){
+		out << "Error: sh did not finish (" << shProc->error() << ")";
+		QMessageBox::critical (this, "Error", "sh did not finish");
+		return false;
+	}
 
 	// todo: handle clone errors
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
@@ -466,6 +502,10 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "Initial synchronization error");
 		return false;
 	}
+
+	QProcess *gitproc = new QProcess();
+	gitproc->setProcessChannelMode(QProcess::MergedChannels);
+	QString git("git");
 
 	//cd /path/to/share
 	gitproc->setWorkingDirectory(localDir);
