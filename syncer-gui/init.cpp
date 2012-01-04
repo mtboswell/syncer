@@ -512,99 +512,105 @@ bool Init::setupShare(){
 	//cd /path/to/share
 	gitproc->setWorkingDirectory(localDir);
 
-	//git add .
+	// check to see if dir is empty
+	if(QDir(localDir).entryList().isEmpty()){
+		QMessageBox::information (this, "Empty Share", "The share is currently empty.");
+	}else{
 
-	QStringList addArgs;
-	addArgs << "add" << ".";
+		//git add .
 
-	gitproc->start(git, addArgs);
-	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git add did not start");
-		return false;
-	}
-	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git add did not finish");
-		return false;
-	}
-	gitOut = gitproc->readAll();
+		QStringList addArgs;
+		addArgs << "add" << ".";
 
-	progress.setValue(8);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Syncing local files");
+		gitproc->start(git, addArgs);
+		if(!gitproc->waitForStarted()){
+			out << "Error: git did not start (" << gitproc->error() << ")";
+			QMessageBox::critical (this, "Error", "Git add did not start");
+			return false;
+		}
+		if(!gitproc->waitForFinished()){
+			out << "Error: git did not finish (" << gitproc->error() << ")";
+			QMessageBox::critical (this, "Error", "Git add did not finish");
+			return false;
+		}
+		gitOut = gitproc->readAll();
 
-	//git commit -m "Initial Commit"
-	QStringList commitArgs;
-	commitArgs << "commit" << "-m" << "Initial Commit for device X";
+		progress.setValue(8);
+		if(progress.wasCanceled()) return false;
+		progress.setLabelText("Syncing local files");
 
-	gitproc->start(git, commitArgs);
-	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git commit did not start");
-		return false;
-	}
-	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git commit did not finish");
-		return false;
-	}
-	gitOut = gitproc->readAll();
+		//git commit -m "Initial Commit"
+		QStringList commitArgs;
+		commitArgs << "commit" << "-m" << "Initial Commit for device X";
 
-
-	progress.setValue(9);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Syncing local files");
-
-	//git push origin master
+		gitproc->start(git, commitArgs);
+		if(!gitproc->waitForStarted()){
+			out << "Error: git did not start (" << gitproc->error() << ")";
+			QMessageBox::critical (this, "Error", "Git commit did not start");
+			return false;
+		}
+		if(!gitproc->waitForFinished()){
+			out << "Error: git did not finish (" << gitproc->error() << ")";
+			QMessageBox::critical (this, "Error", "Git commit did not finish");
+			return false;
+		}
+		gitOut = gitproc->readAll();
 
 
-	shProc->setWorkingDirectory(localDir);
+		progress.setValue(9);
+		if(progress.wasCanceled()) return false;
+		progress.setLabelText("Syncing local files");
 
-	shProc->start("sh", QStringList() << "--login" << "-i");
-	if(!shProc->waitForStarted()){
-		out << "Error: sh did not start (" << shProc->error() << ")";
-		QMessageBox::critical (this, "Error", "sh did not start: " + shProc->error());
-		return false;
-	}
-	shProc->write("git push origin master");
-	shProc->write("\n");
+		//git push origin master
 
-	shProc->write("exit\n");
 
-	shProc->closeWriteChannel();
+		shProc->setWorkingDirectory(localDir);
 
-	if(!shProc->waitForFinished()){
-		out << "Error: sh did not finish (" << shProc->error() << ")";
-		QMessageBox::critical (this, "Error", "sh did not finish");
-		return false;
-	}
-	gitOut = shProc->readAll();
-	QMessageBox::information(this, "Git:", gitOut);
+		shProc->start("sh", QStringList() << "--login" << "-i");
+		if(!shProc->waitForStarted()){
+			out << "Error: sh did not start (" << shProc->error() << ")";
+			QMessageBox::critical (this, "Error", "sh did not start: " + shProc->error());
+			return false;
+		}
+		shProc->write("git push origin master");
+		shProc->write("\n");
 
-/*
-	QStringList pushArgs;
-	pushArgs << "push" << "origin" << "master";
+		shProc->write("exit\n");
 
-	gitproc->start(git, pushArgs);
-	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git push did not start");
-		return false;
-	}
-	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git push did not finish");
-		return false;
-	}
-*/
-	//gitOut = shProc->readAll();
+		shProc->closeWriteChannel();
 
-	if(!gitOut.contains("Everything up-to-date") && !gitOut.contains("master -> master")){
-		qDebug() << "Error: git push did not succeed:" << gitOut;
-		QMessageBox::critical (this, "Error", "Git push did not succeed");
-		return false;
-	}
+		if(!shProc->waitForFinished()){
+			out << "Error: sh did not finish (" << shProc->error() << ")";
+			QMessageBox::critical (this, "Error", "sh did not finish");
+			return false;
+		}
+		gitOut = shProc->readAll();
+		QMessageBox::information(this, "Git:", gitOut);
+
+	/*
+		QStringList pushArgs;
+		pushArgs << "push" << "origin" << "master";
+
+		gitproc->start(git, pushArgs);
+		if(!gitproc->waitForStarted()){
+			out << "Error: git did not start (" << gitproc->error() << ")";
+			QMessageBox::critical (this, "Error", "Git push did not start");
+			return false;
+		}
+		if(!gitproc->waitForFinished()){
+			out << "Error: git did not finish (" << gitproc->error() << ")";
+			QMessageBox::critical (this, "Error", "Git push did not finish");
+			return false;
+		}
+	*/
+		//gitOut = shProc->readAll();
+
+		if(!gitOut.contains("Everything up-to-date") && !gitOut.contains("master -> master")){
+			qDebug() << "Error: git push did not succeed:" << gitOut;
+			QMessageBox::critical (this, "Error", "Git push did not succeed");
+			return false;
+		}
+	} // end empty dir check
 
 	progress.setValue(10);
 	if(progress.wasCanceled()) return false;
