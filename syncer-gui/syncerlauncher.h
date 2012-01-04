@@ -13,11 +13,8 @@
 #include <QDir>
 #include <QSettings>
 
-<<<<<<< HEAD
-=======
 #include "init.h"
 
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 class SyncerLauncher : public QObject
 {
 		Q_OBJECT
@@ -30,11 +27,8 @@ class SyncerLauncher : public QObject
 	public slots:
 		void addPath();
 		void addPath(QString dir);
-<<<<<<< HEAD
-=======
 		void refreshMenu();
 		void initPath();
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 
 	private slots:
 		void doAction(QString action);
@@ -43,10 +37,7 @@ class SyncerLauncher : public QObject
 		void remove(QString path);
 		void restore(QString path);
 		void undelete(QString path);
-<<<<<<< HEAD
-=======
 		void shred(QString path);
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 		void quitAll();
 		void readProcOut(const QString & path);
 
