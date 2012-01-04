@@ -146,7 +146,7 @@ bool Init::setupShare(){
 	if(!pubKeyFile.exists()){
 		QProcess* sshKeyGen = new QProcess();
 		QStringList sshKeyGenArgs;
-		sshKeyGenArgs << "-t" << "rsa" << "-N" << "" << "-f" << "~/.ssh/id_rsa";
+		sshKeyGenArgs << "-t" << "rsa" << "-N" << "" << "-f" << QDir::homePath() + "/.ssh/id_rsa";
 
 		sshKeyGen->start("ssh-keygen", sshKeyGenArgs);
 		if(!sshKeyGen->waitForStarted()) {
@@ -520,12 +520,12 @@ bool Init::setupShare(){
 	gitproc->start(git, addArgs);
 	if(!gitproc->waitForStarted()){
 		out << "Error: git did not start (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not start");
+		QMessageBox::critical (this, "Error", "Git add did not start");
 		return false;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not finish");
+		QMessageBox::critical (this, "Error", "Git add did not finish");
 		return false;
 	}
 	gitOut = gitproc->readAll();
@@ -541,12 +541,12 @@ bool Init::setupShare(){
 	gitproc->start(git, commitArgs);
 	if(!gitproc->waitForStarted()){
 		out << "Error: git did not start (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not start");
+		QMessageBox::critical (this, "Error", "Git commit did not start");
 		return false;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not finish");
+		QMessageBox::critical (this, "Error", "Git commit did not finish");
 		return false;
 	}
 	gitOut = gitproc->readAll();
@@ -563,12 +563,12 @@ bool Init::setupShare(){
 	gitproc->start(git, pushArgs);
 	if(!gitproc->waitForStarted()){
 		out << "Error: git did not start (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not start");
+		QMessageBox::critical (this, "Error", "Git push did not start");
 		return false;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not finish");
+		QMessageBox::critical (this, "Error", "Git push did not finish");
 		return false;
 	}
 	gitOut = gitproc->readAll();
