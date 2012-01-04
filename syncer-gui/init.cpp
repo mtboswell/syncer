@@ -416,11 +416,11 @@ bool Init::setupShare(){
 	}
 	gitproc->waitForReadyRead();
 	QString gitOut = gitproc->readAll();
-	qDebug() << "First:" << gitOut;
+	QMessageBox::information(this, "First:", gitOut);
 
 	gitproc->waitForReadyRead();
 	gitOut = gitproc->readAll();
-	qDebug() << "Second:" << gitOut;
+	QMessageBox::information(this, "Second:", gitOut);
 
 	gitproc->write("yes\n");
 
