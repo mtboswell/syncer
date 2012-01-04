@@ -139,7 +139,7 @@ void GitLauncher::doPush(){
 		else if(gitOut.contains("master -> master"))
 			out << "Synchronized to server\n";
 		else
-			out << "Unknown Error\n" << gitOut;
+			out << "Unknown Error: " << gitOut;
 		
 	}
 	
