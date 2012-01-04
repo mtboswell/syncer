@@ -165,6 +165,7 @@ bool Init::setupShare(){
 	}
 
 	progress.setValue(1);
+	if(progress.wasCanceled()) return false;
 
 
 	//scp -o StrictHostKeyChecking=no -P port ~/.ssh/id_rsa.pub user@host:user_id.pub, enter password
@@ -217,6 +218,7 @@ bool Init::setupShare(){
 	}
 
 	progress.setValue(2);
+	if(progress.wasCanceled()) return false;
 
 	ssh_session session;
 	int rc;
@@ -250,6 +252,7 @@ bool Init::setupShare(){
 	}
 
 	progress.setValue(3);
+	if(progress.wasCanceled()) return false;
 
 	// Verify the server's identity
 	// For the source code of verify_knowhost(), check previous example
@@ -279,6 +282,7 @@ bool Init::setupShare(){
 	}
 
 	progress.setValue(4);
+	if(progress.wasCanceled()) return false;
 
 	ssh_channel channel;
 	char buffer[256];
@@ -332,6 +336,7 @@ bool Init::setupShare(){
 	ssh_channel_free(channel);
 
 	progress.setValue(5);
+	if(progress.wasCanceled()) return false;
 
 	channel = ssh_channel_new(session);
 	if (channel == NULL){
@@ -389,6 +394,7 @@ bool Init::setupShare(){
 	ssh_free(session);
 
 	progress.setValue(6);
+	if(progress.wasCanceled()) return false;
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
 
@@ -437,6 +443,7 @@ bool Init::setupShare(){
 	}
 
 	progress.setValue(7);
+	if(progress.wasCanceled()) return false;
 
 	QDir localRepo(localDir);
 	if(!localRepo.exists()){
@@ -466,6 +473,7 @@ bool Init::setupShare(){
 	gitOut = gitproc->readAll();
 
 	progress.setValue(8);
+	if(progress.wasCanceled()) return false;
 
 	//git commit -m "Initial Commit"
 	QStringList commitArgs;
@@ -486,6 +494,7 @@ bool Init::setupShare(){
 
 
 	progress.setValue(9);
+	if(progress.wasCanceled()) return false;
 
 	//git push origin master
 	QStringList pushArgs;
@@ -511,6 +520,7 @@ bool Init::setupShare(){
 	}
 
 	progress.setValue(10);
+	if(progress.wasCanceled()) return false;
 
 	// add to settings
 
@@ -524,6 +534,7 @@ bool Init::setupShare(){
 	// tell syncer-gui to refresh
 
 	progress.setValue(11);
+	if(progress.wasCanceled()) return false;
 
 	return true;
 }
