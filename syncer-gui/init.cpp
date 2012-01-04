@@ -138,6 +138,7 @@ bool Init::setupShare(){
 
 	QProgressDialog progress("Connecting to server...", "Cancel", 0, 11, this);
 	progress.setWindowModality(Qt::WindowModal);
+	progress.setLabelText("Generating SSH keys");
 
 
 	//if not exists '~/.ssh/id_rsa.pub' then ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
@@ -166,6 +167,7 @@ bool Init::setupShare(){
 
 	progress.setValue(1);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Opening public key.");
 
 
 	//scp -o StrictHostKeyChecking=no -P port ~/.ssh/id_rsa.pub user@host:user_id.pub, enter password
@@ -219,6 +221,7 @@ bool Init::setupShare(){
 
 	progress.setValue(2);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Connecting to server...");
 
 	ssh_session session;
 	int rc;
@@ -253,6 +256,7 @@ bool Init::setupShare(){
 
 	progress.setValue(3);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Authenticating to server...");
 
 	// Verify the server's identity
 	// For the source code of verify_knowhost(), check previous example
@@ -283,6 +287,7 @@ bool Init::setupShare(){
 
 	progress.setValue(4);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Sending key to server...");
 
 	ssh_channel channel;
 	char buffer[256];
@@ -337,6 +342,7 @@ bool Init::setupShare(){
 
 	progress.setValue(5);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Sending key to server...");
 
 	channel = ssh_channel_new(session);
 	if (channel == NULL){
@@ -395,6 +401,7 @@ bool Init::setupShare(){
 
 	progress.setValue(6);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Downloading shared folder...");
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
 
@@ -414,6 +421,7 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
+	/*
 	gitproc->waitForReadyRead();
 	QString gitOut = gitproc->readAll();
 	QMessageBox::information(this, "First:", gitOut);
@@ -423,13 +431,14 @@ bool Init::setupShare(){
 	QMessageBox::information(this, "Second:", gitOut);
 
 	gitproc->write("yes\n");
+	*/
 
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
 		QMessageBox::critical (this, "Error", "Git did not finish");
 		return false;
 	}
-	gitOut = gitproc->readAll();
+	QString gitOut = gitproc->readAll();
 
 	// todo: handle clone errors
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
@@ -450,6 +459,7 @@ bool Init::setupShare(){
 
 	progress.setValue(7);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Adding local files");
 
 	QDir localRepo(localDir);
 	if(!localRepo.exists()){
@@ -480,6 +490,7 @@ bool Init::setupShare(){
 
 	progress.setValue(8);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Syncing local files");
 
 	//git commit -m "Initial Commit"
 	QStringList commitArgs;
@@ -501,6 +512,7 @@ bool Init::setupShare(){
 
 	progress.setValue(9);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Syncing local files");
 
 	//git push origin master
 	QStringList pushArgs;
@@ -527,6 +539,7 @@ bool Init::setupShare(){
 
 	progress.setValue(10);
 	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Adding to sync list");
 
 	// add to settings
 
