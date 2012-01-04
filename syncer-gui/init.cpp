@@ -534,7 +534,6 @@ bool Init::setupShare(){
 	// tell syncer-gui to refresh
 
 	progress.setValue(11);
-	if(progress.wasCanceled()) return false;
 
 	return true;
 }
