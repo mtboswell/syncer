@@ -118,7 +118,7 @@ void GitLauncher::doPush(){
 
 
 	//qDebug() << "Git commit output:" << gitOut;
-	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Synchronized with local\n";
+	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Synchronized with local, ";
 	else return;
 
 
