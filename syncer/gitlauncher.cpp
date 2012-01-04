@@ -63,7 +63,7 @@ void GitLauncher::checkForUpdate(){
 		else if(gitOut.contains("Updating"))
 			out << "Synchronized from server\n";
 		else
-			out << "Unknown Error: " << gitOut;
+			out << "Unknown Error: " << gitOut << "\n";
 		
 	}
 }
@@ -128,8 +128,14 @@ void GitLauncher::doPush(){
 	pushArgs << "push" << "origin" << "master";
 
 	gitproc->start(git, pushArgs);
-	if(!gitproc->waitForStarted()) return;
-	if(!gitproc->waitForFinished()) return;
+	if(!gitproc->waitForStarted()){
+		out << "Error: git did not start: " << gitproc->error() << "\n";
+		return;
+	}
+	if(!gitproc->waitForFinished()){
+		out << "Error: git did not finish: " << gitproc->error() << "\n";
+		return;
+	}
 	gitOut = gitproc->readAll();
 
 	//qDebug() << "Git push output:" << gitOut;
@@ -139,7 +145,7 @@ void GitLauncher::doPush(){
 		else if(gitOut.contains("master -> master"))
 			out << "Synchronized to server\n";
 		else
-			out << "Unknown Error: " << gitOut;
+			out << "Unknown Error: " << gitOut << "\n";
 		
 	}
 	
