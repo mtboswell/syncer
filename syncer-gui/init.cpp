@@ -458,7 +458,7 @@ bool Init::setupShare(){
 //	QString shOut = shProc->readAll();
 //	QMessageBox::information(this, "Sh:", shOut);
 
-	shProc->write(QString("clone ssh://" + username + "@" + host + ":" + QString::number(port)
+	shProc->write(QString("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
 				+ "/~/" + shareName).toLatin1());
 	shProc->write("\n");
 
