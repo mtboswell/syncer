@@ -16,7 +16,11 @@ unix:target.path = /usr/local/bin
 macx:target.path = /Applications/syncer
 unix|macx:INSTALLS += target
 
-LIBS += -lssh
+win32:INCLUDEPATH += libssh
+
+win32:LIBS += -Llibssh/lib
+unix|macx:LIBS += -lssh
+win32:LIBS += -llibssh
 
 SOURCES += main.cpp\
     syncerlauncher.cpp \

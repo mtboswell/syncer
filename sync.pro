@@ -2,4 +2,4 @@ TEMPLATE = subdirs
 CONFIG += release
 CONFIG += ordered
 
-SUBDIRS = syncer syncer-gui restore undelete shred
+SUBDIRS = syncer-gui syncer restore undelete shred
