@@ -7,6 +7,12 @@ GitLauncher::GitLauncher(){
 #else
         git = "git";
 #endif
+
+
+	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
+
+	pushDelay = settings->value("pushDelay", 5000).toInt();
+
         gitproc = new QProcess();
 	gitproc->setProcessChannelMode(QProcess::MergedChannels);
 	pushTimer = new QTimer();
@@ -21,7 +27,7 @@ void GitLauncher::directoryChanged(QString path){
 	//qDebug() << "Directory Changed:" << path;
 	if(!dirsChanged.contains(path))
 		dirsChanged << path;
-	pushTimer->start(5000);
+	pushTimer->start(pushDelay);
 
 }
 

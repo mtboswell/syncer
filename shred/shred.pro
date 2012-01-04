@@ -14,8 +14,8 @@ CONFIG(debug, debug|release){
 }
 
 unix:target.path = /usr/local/bin
-mac:target.path = /Applications/syncer
-unix:INSTALLS += target
+macx:target.path = /Applications/syncer
+unix|macx:INSTALLS += target
 
 DEPENDPATH += . 
 INCLUDEPATH += . 

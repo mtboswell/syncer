@@ -6,6 +6,7 @@
 #include <QFileInfoList>
 #include <QObject>
 #include <QTimer>
+#include <QSettings>
 #include <QDebug>
 #include "gitlauncher.h"
 
@@ -50,7 +51,10 @@ int main(int argc, char** argv){
 
 	QObject::connect(&pullTimer, SIGNAL(timeout()), gitlauncher, SLOT(checkForUpdate()));
 
-	pullTimer.start(60000);
+
+	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
+
+	pullTimer.start(settings->value("pullDelay", 60000).toInt());
 
 	foreach(QString path, pathsToMonitor){
 		gitlauncher->directoryChanged(path);

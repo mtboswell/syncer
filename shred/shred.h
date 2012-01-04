@@ -16,4 +16,6 @@ class Shred : public QWidget, private Ui::ShredWidget {
 		QString selectedFilePath;
 		QProcess* gitproc;
 		QString git;
+		QString runProc(QString app, QStringList args);
+		QString runGit(QStringList args);
 };

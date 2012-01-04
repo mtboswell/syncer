@@ -17,8 +17,8 @@ CONFIG(debug, debug|release){
 # documentation.files = doc/*
 # INSTALLS += documentation
 unix:target.path = /usr/local/bin
-mac:target.path = /Applications/syncer
-unix:INSTALLS += target
+macx:target.path = /Applications/syncer
+unix|macx:INSTALLS += target
 
 DEPENDPATH += .
 INCLUDEPATH += . 

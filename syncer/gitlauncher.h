@@ -2,6 +2,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QStringList>
+#include <QSettings>
 #include <QTextStream>
 
 class GitLauncher : public QObject {
@@ -22,5 +23,6 @@ class GitLauncher : public QObject {
 		QByteArray gitOut;
 		QTimer* pushTimer;
 		QStringList dirsChanged;
+		int pushDelay;
 
 };
