@@ -90,13 +90,17 @@ void SyncerLauncher::addPath(QString dir){
 	connect(removeAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
 	menuMapper->setMapping(removeAction, "Remove:" + dir);
 
-	QAction* restoreAction = dirMenus[dir]->addAction("Restore Files");
+	QAction* restoreAction = dirMenus[dir]->addAction("Restore Files from earlier versions");
 	connect(restoreAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
 	menuMapper->setMapping(restoreAction, "Restore:" + dir);
 
 	QAction* undeleteAction = dirMenus[dir]->addAction("Undelete Files");
 	connect(undeleteAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
 	menuMapper->setMapping(undeleteAction, "Undelete:" + dir);
+
+	QAction* shredAction = dirMenus[dir]->addAction("Permenantly Delete Files");
+	connect(shredAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
+	menuMapper->setMapping(shredAction, "Shred:" + dir);
 
 	start(dir);
 }
@@ -107,6 +111,7 @@ void SyncerLauncher::doAction(QString action){
 	else if(action.startsWith("Remove:")) remove(action.right(action.length()-7));
 	else if(action.startsWith("Restore:")) restore(action.right(action.length()-8));
 	else if(action.startsWith("Undelete:")) undelete(action.right(action.length()-9));
+	else if(action.startsWith("Shred:")) shred(action.right(action.length()-6));
 }
 
 void SyncerLauncher::start(QString path){
@@ -169,6 +174,13 @@ void SyncerLauncher::undelete(QString path){
 	if(!undeleteProc->waitForStarted()) qWarning("Error: undelete did not start");
 }
 
+void SyncerLauncher::shred(QString path){
+	QProcess* shredProc = new QProcess();
+	QStringList args;
+	args << path;
+	shredProc->start("syncer-shred", args);
+	if(!shredProc->waitForStarted()) qWarning("Error: shred did not start");
+}
 
 
 
