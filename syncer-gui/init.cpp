@@ -454,17 +454,15 @@ bool Init::setupShare(){
 		return false;
 	}
 
-	shProc->waitForReadyRead();
-	QString shOut = shProc->readAll();
-	QMessageBox::information(this, "Sh:", shOut);
+//	shProc->waitForReadyRead();
+//	QString shOut = shProc->readAll();
+//	QMessageBox::information(this, "Sh:", shOut);
 
 	shProc->write(QString("clone ssh://" + username + "@" + host + ":" + QString::number(port)
 				+ "/~/" + shareName).toLatin1());
 	shProc->write("\n");
 
-	shProc->waitForReadyRead();
-	QString gitOut = shProc->readAll();
-	QMessageBox::information(this, "Git:", gitOut);
+//	shProc->waitForReadyRead();
 
 	shProc->write("exit\n");
 
@@ -475,8 +473,11 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "sh did not finish");
 		return false;
 	}
+	QString gitOut = shProc->readAll();
+	QMessageBox::information(this, "Git:", gitOut);
 
 	// todo: handle clone errors
+	/*
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal")){
 			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
@@ -492,6 +493,7 @@ bool Init::setupShare(){
 		}
 		
 	}
+	*/
 
 	progress.setValue(7);
 	if(progress.wasCanceled()) return false;
