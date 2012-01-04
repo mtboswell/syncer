@@ -557,6 +557,32 @@ bool Init::setupShare(){
 	progress.setLabelText("Syncing local files");
 
 	//git push origin master
+
+
+	shProc->setWorkingDirectory(localDir);
+
+	shProc->start("sh", QStringList() << "--login" << "-i");
+	if(!shProc->waitForStarted()){
+		out << "Error: sh did not start (" << shProc->error() << ")";
+		QMessageBox::critical (this, "Error", "sh did not start: " + shProc->error());
+		return false;
+	}
+	shProc->write("git push origin master");
+	shProc->write("\n");
+
+	shProc->write("exit\n");
+
+	shProc->closeWriteChannel();
+
+	if(!shProc->waitForFinished()){
+		out << "Error: sh did not finish (" << shProc->error() << ")";
+		QMessageBox::critical (this, "Error", "sh did not finish");
+		return false;
+	}
+	gitOut = shProc->readAll();
+	QMessageBox::information(this, "Git:", gitOut);
+
+/*
 	QStringList pushArgs;
 	pushArgs << "push" << "origin" << "master";
 
@@ -571,7 +597,8 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "Git push did not finish");
 		return false;
 	}
-	gitOut = gitproc->readAll();
+*/
+	//gitOut = shProc->readAll();
 
 	if(!gitOut.contains("Everything up-to-date") && !gitOut.contains("master -> master")){
 		qDebug() << "Error: git push did not succeed:" << gitOut;
