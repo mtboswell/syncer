@@ -57,13 +57,13 @@ void GitLauncher::checkForUpdate(){
 
 	//qDebug() << "Git pull output:" << gitOut;
 
-	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
+	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.") && !gitOut.contains("up to date")){
 		if(gitOut.contains("fatal"))
 			out << "Error: " << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
 		else if(gitOut.contains("Updating"))
 			out << "Synchronized from server\n";
 		else
-			out << "Unknown Error\n" << gitOut;
+			out << "Unknown Error: " << gitOut;
 		
 	}
 }
