@@ -1,18 +1,30 @@
 
+<<<<<<< HEAD
 #include <QApplication>
+=======
+#include <QCoreApplication>
+>>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 #include <QStringList>
 #include <QFileSystemWatcher>
 #include <QDir>
 #include <QFileInfoList>
 #include <QObject>
 #include <QTimer>
+<<<<<<< HEAD
+=======
+#include <QSettings>
+>>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 #include <QDebug>
 #include "gitlauncher.h"
 
 QStringList recursePaths(QString baseDir);
 
 int main(int argc, char** argv){
+<<<<<<< HEAD
 	QApplication app(argc, argv);
+=======
+	QCoreApplication app(argc, argv);
+>>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 	QTextStream out(stdout);
 
 	QStringList inputPaths, pathsToMonitor;
@@ -50,15 +62,26 @@ int main(int argc, char** argv){
 
 	QObject::connect(&pullTimer, SIGNAL(timeout()), gitlauncher, SLOT(checkForUpdate()));
 
+<<<<<<< HEAD
 	pullTimer.start(60000);
+=======
+
+	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
+
+	pullTimer.start(settings->value("pullDelay", 60000).toInt());
+>>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 
 	foreach(QString path, pathsToMonitor){
 		gitlauncher->directoryChanged(path);
 	}
 
+<<<<<<< HEAD
 	app.exec();
 
 	return 0;
+=======
+	return app.exec();
+>>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 }
 
 
