@@ -50,7 +50,7 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 void SyncerLauncher::refreshMenu(){
 	foreach(QString path, syncDirs){
 		stop(path);
-		syncMenu->removeAction(findMenuItem(syncMenu, path));
+		syncMenu->removeAction(findMenuItem(syncMenu, QDir::toNativeSeparators(path)));
 	}
 
 	QStringList dirs = settings->value("syncDirs").toStringList();
@@ -84,7 +84,7 @@ void SyncerLauncher::addPath(QString dir){
 
 	syncDirs << dir;
 
-	dirMenus[dir] = syncMenu->addMenu(dir);
+	dirMenus[dir] = syncMenu->addMenu(QDir::toNativeSeparators(dir));
 
 	QAction* removeAction = dirMenus[dir]->addAction("Forget Directory");
 	connect(removeAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
