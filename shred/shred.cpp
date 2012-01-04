@@ -43,6 +43,8 @@ void Shred::on_shredButton_clicked(){
 	if(QMessageBox::warning(this, "About to Shred!", "You are trying to shred the file " + selectedFilePath + ". This file cannot be recovered. Is this ok?", QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
 		return;
 
+	QMessageBox::information(this, "Time-Consuming Operation", "This will take a few minutes.");
+
 	QString ret;
 
 	// git pull
