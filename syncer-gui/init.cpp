@@ -408,14 +408,14 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
-	sleep(5);
-
-	gitproc->write("yes\n");
 
 	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not finish");
-		return false;
+		gitproc->write("yes\n");
+		if(!gitproc->waitForFinished()){
+			out << "Error: git did not finish (" << gitproc->error() << ")";
+			QMessageBox::critical (this, "Error", "Git did not finish");
+			return false;
+		}
 	}
 	QString gitOut = gitproc->readAll();
 
