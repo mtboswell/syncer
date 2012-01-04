@@ -7,9 +7,6 @@ GitLauncher::GitLauncher(){
 #else
         git = "git";
 #endif
-<<<<<<< HEAD
-        gitproc = new QProcess();
-=======
 
 
 	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
@@ -18,7 +15,6 @@ GitLauncher::GitLauncher(){
 
         gitproc = new QProcess();
 	gitproc->setProcessChannelMode(QProcess::MergedChannels);
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 	pushTimer = new QTimer();
 	connect(pushTimer, SIGNAL(timeout()), this, SLOT(doPush()));
 }
@@ -31,21 +27,14 @@ void GitLauncher::directoryChanged(QString path){
 	//qDebug() << "Directory Changed:" << path;
 	if(!dirsChanged.contains(path))
 		dirsChanged << path;
-<<<<<<< HEAD
-	pushTimer->start(5000);
-=======
 	pushTimer->start(pushDelay);
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 
 }
 
 void GitLauncher::checkForUpdate(){
 
-<<<<<<< HEAD
-=======
 	QTextStream out(stdout);
 
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 	// cd to watched directory
 
 
@@ -53,13 +42,6 @@ void GitLauncher::checkForUpdate(){
 	// git pull
 	
 	QStringList pullArgs;
-<<<<<<< HEAD
-	pullArgs << "pull";
-
-	gitproc->start(git, pullArgs);
-	if(!gitproc->waitForStarted()) return;
-	if(!gitproc->waitForFinished()) return;
-=======
 	pullArgs << "pull" << "--rebase";
 
 	gitproc->start(git, pullArgs);
@@ -71,15 +53,10 @@ void GitLauncher::checkForUpdate(){
 		out << "Error: git did not finish (" << gitproc->error() << ")";
 		return;
 	}
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 	gitOut = gitproc->readAll();
 
 	//qDebug() << "Git pull output:" << gitOut;
 
-<<<<<<< HEAD
-	QTextStream out(stdout);
-	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")) out << "Pulled";
-=======
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
 			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
@@ -89,7 +66,6 @@ void GitLauncher::checkForUpdate(){
 			out << "Unknown Error\n" << gitOut;
 		
 	}
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 }
 
 void GitLauncher::doPush(){
@@ -107,19 +83,11 @@ void GitLauncher::doPush(){
 
 		gitproc->start(git, addArgs);
 		if(!gitproc->waitForStarted()){
-<<<<<<< HEAD
-			out << "Error: git did not start (" << gitproc->error() << ")";
-			return;
-		}
-		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" << gitproc->error() << ")";
-=======
 			out << "Error: git did not start (" << gitproc->error() << ")\n";
 			return;
 		}
 		if(!gitproc->waitForFinished()){
 			out << "Error: git did not finish (" << gitproc->error() << ")\n";
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 			return;
 		}
 		gitOut = gitproc->readAll();
@@ -139,41 +107,25 @@ void GitLauncher::doPush(){
 
 	gitproc->start(git, commitArgs);
 	if(!gitproc->waitForStarted()){
-<<<<<<< HEAD
-		out << "Error: git did not start (" << gitproc->error() << ")";
-		return;
-	}
-	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
-=======
 		out << "Error: git did not start (" << gitproc->error() << ")\n";
 		return;
 	}
 	if(!gitproc->waitForFinished()){
 		out << "Error: git did not finish (" << gitproc->error() << ")\n";
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 		return;
 	}
 	gitOut = gitproc->readAll();
 
 
 	//qDebug() << "Git commit output:" << gitOut;
-<<<<<<< HEAD
-	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Syncing";
-=======
 	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Synchronized with local\n";
 	else return;
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 
 
 	// git push
 	
 	QStringList pushArgs;
-<<<<<<< HEAD
-	pushArgs << "push";
-=======
 	pushArgs << "push" << "origin" << "master";
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 
 	gitproc->start(git, pushArgs);
 	if(!gitproc->waitForStarted()) return;
@@ -181,8 +133,6 @@ void GitLauncher::doPush(){
 	gitOut = gitproc->readAll();
 
 	//qDebug() << "Git push output:" << gitOut;
-<<<<<<< HEAD
-=======
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
 			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
@@ -192,7 +142,6 @@ void GitLauncher::doPush(){
 			out << "Unknown Error\n";
 		
 	}
->>>>>>> 56d4365c719c90d1f0874862f6f9c3ff69af3581
 	
 }
 
