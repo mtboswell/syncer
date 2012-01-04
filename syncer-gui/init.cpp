@@ -403,7 +403,7 @@ bool Init::setupShare(){
 	if(progress.wasCanceled()) return false;
 	progress.setLabelText("Downloading shared folder...");
 
-	QString localDir = localFolder + "/" + shareName;
+	QString localDir = localFolder + QDir::separator() + shareName;
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
 /*
