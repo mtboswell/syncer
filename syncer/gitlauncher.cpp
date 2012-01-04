@@ -59,7 +59,7 @@ void GitLauncher::checkForUpdate(){
 
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
-			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
+			out << "Error: " << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
 		else if(gitOut.contains("Updating"))
 			out << "Synchronized from server\n";
 		else
@@ -135,11 +135,11 @@ void GitLauncher::doPush(){
 	//qDebug() << "Git push output:" << gitOut;
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal"))
-			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
+			out << "Error: " << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
 		else if(gitOut.contains("master -> master"))
 			out << "Synchronized to server\n";
 		else
-			out << "Unknown Error\n";
+			out << "Unknown Error\n" << gitOut;
 		
 	}
 	
