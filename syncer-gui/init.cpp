@@ -480,10 +480,9 @@ bool Init::setupShare(){
 		return false;
 	}
 	QString gitOut = shProc->readAll();
-	QMessageBox::information(this, "Git:", gitOut);
+	//QMessageBox::information(this, "Git:", gitOut);
 
 	// todo: handle clone errors
-	/*
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal")){
 			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
@@ -499,7 +498,6 @@ bool Init::setupShare(){
 		}
 		
 	}
-	*/
 
 	progress.setValue(7);
 	if(progress.wasCanceled()) return false;
@@ -594,7 +592,7 @@ bool Init::setupShare(){
 			return false;
 		}
 		gitOut = shProc->readAll();
-		QMessageBox::information(this, "Git:", gitOut);
+		//QMessageBox::information(this, "Git:", gitOut);
 
 	/*
 		QStringList pushArgs;
