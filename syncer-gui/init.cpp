@@ -517,7 +517,8 @@ bool Init::setupShare(){
 	gitproc->setWorkingDirectory(localDir);
 
 	// check to see if dir is empty
-	if(QDir(localDir).entryList(QDir::NoDotAndDotDot).isEmpty()){
+
+	if(localRepo.entryList(QDir::NoDotAndDotDot).isEmpty()){
 		QMessageBox::information (this, "Empty Share", "The share is currently empty.");
 	}else{
 
