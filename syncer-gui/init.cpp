@@ -519,7 +519,7 @@ bool Init::setupShare(){
 	// check to see if dir is empty
 
 	if(localRepo.entryList(QDir::NoDotAndDotDot).isEmpty()){
-		QMessageBox::information (this, "Empty Share", "The share is currently empty.");
+		//QMessageBox::information (this, "Empty Share", "The share is currently empty.");
 	}else{
 
 		//git add .
