@@ -22,6 +22,7 @@ void Init::getUserInfo(){
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
+		gitProc->kill();
 		return;
 	}
 	QString gitOut = gitProc->readAll();
@@ -41,6 +42,7 @@ void Init::getUserInfo(){
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
+		gitProc->kill();
 		return;
 	}
 	gitOut = gitProc->readAll();
@@ -80,6 +82,7 @@ void Init::setUserInfo(){
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
+		gitProc->kill();
 		return;
 	}
 	QString gitOut = gitProc->readAll();
@@ -96,6 +99,7 @@ void Init::setUserInfo(){
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
+		gitProc->kill();
 		return;
 	}
 	gitOut = gitProc->readAll();
@@ -157,6 +161,7 @@ bool Init::setupShare(){
 		if(!sshKeyGen->waitForFinished()) {
 			qDebug() << "Error: ssh-keygen did not finish";
 			QMessageBox::critical (this, "Error", "ssh-keygen did not finish properly!");
+			sshKeyGen->kill();
 			return false;
 		}
 		QString sshKeyGenOut = sshKeyGen->readAll();
@@ -471,6 +476,7 @@ bool Init::setupShare(){
 	if(!shProc->waitForFinished()){
 		out << "Error: sh did not finish (" << shProc->error() << ")";
 		QMessageBox::critical (this, "Error", "sh did not finish");
+		shProc->kill();
 		return false;
 	}
 	QString gitOut = shProc->readAll();
@@ -513,7 +519,7 @@ bool Init::setupShare(){
 	gitproc->setWorkingDirectory(localDir);
 
 	// check to see if dir is empty
-	if(QDir(localDir).entryList().isEmpty()){
+	if(QDir(localDir).entryList(QDir::NoDotAndDotDot).isEmpty()){
 		QMessageBox::information (this, "Empty Share", "The share is currently empty.");
 	}else{
 
@@ -531,6 +537,7 @@ bool Init::setupShare(){
 		if(!gitproc->waitForFinished()){
 			out << "Error: git did not finish (" << gitproc->error() << ")";
 			QMessageBox::critical (this, "Error", "Git add did not finish");
+			gitproc->kill();
 			return false;
 		}
 		gitOut = gitproc->readAll();
@@ -552,6 +559,7 @@ bool Init::setupShare(){
 		if(!gitproc->waitForFinished()){
 			out << "Error: git did not finish (" << gitproc->error() << ")";
 			QMessageBox::critical (this, "Error", "Git commit did not finish");
+			gitproc->kill();
 			return false;
 		}
 		gitOut = gitproc->readAll();
@@ -582,6 +590,7 @@ bool Init::setupShare(){
 		if(!shProc->waitForFinished()){
 			out << "Error: sh did not finish (" << shProc->error() << ")";
 			QMessageBox::critical (this, "Error", "sh did not finish");
+			shProc->kill();
 			return false;
 		}
 		gitOut = shProc->readAll();
