@@ -142,6 +142,7 @@ bool Init::setupShare(){
 
 	QProgressDialog progress("Connecting to server...", "Cancel", 0, 11, this);
 	progress.setWindowModality(Qt::WindowModal);
+	progress.setValue(0);
 	progress.setLabelText("Generating SSH keys");
 
 
@@ -491,7 +492,7 @@ bool Init::setupShare(){
 	
 		}
 		else if(gitOut.contains("Cloning"))
-			out << "Synchronized from server\n";
+			qDebug() << "Synchronized from server\n";
 		else{
 			out << "Unknown Error\n" << gitOut;
 			QMessageBox::critical (this, "Unknown git output", gitOut);
@@ -644,7 +645,7 @@ int Init::verify_knownhost(ssh_session session){
 	int state, hlen;
 	unsigned char *hash = NULL;
 	char *hexa;
-	char buf[10];
+	//char buf[10];
 
 	state = ssh_is_server_known(session);
 
