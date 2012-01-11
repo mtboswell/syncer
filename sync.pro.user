@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.4.0, 2012-01-11T16:22:02. -->
+<!-- Written by Qt Creator 2.4.0, 2012-01-11T17:04:37. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -97,7 +97,7 @@
     <value type="int" key="ProjectExplorer.BuildConfiguration.BuildStepListCount">2</value>
     <value type="bool" key="ProjectExplorer.BuildConfiguration.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="ProjectExplorer.BuildConfiguration.UserEnvironmentChanges">
-     <value type="QString">PATH=C:\QtSDK\mingw\bin;C:\Qt\4.8.0\lib;C:\Qt\4.8.0\bin;C:\Program Files\MiKTeX 2.9\miktex\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\QuickTime\QTSystem\;C:\Program Files\TortoiseHg\;C:\Program Files\TortoiseGit\bin;C:\Program Files\Git\cmd;C:\QtSDK\mingw\bin;c:\altera\10.1\modelsim_ase\win32aloem</value>
+     <value type="QString">PATH=C:\QtSDK\mingw\bin;C:\Qt\4.8.0\lib;C:\Qt\4.8.0\bin;C:\Program Files\MiKTeX 2.9\miktex\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\QuickTime\QTSystem\;C:\Program Files\TortoiseHg\;C:\Program Files\TortoiseGit\bin;C:\QtSDK\mingw\bin;c:\altera\10.1\modelsim_ase\win32aloem</value>
     </valuelist>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Qt 4.8.0 (4.8.0) Release</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>

@@ -19,8 +19,8 @@ class Init : public QDialog , private Ui::initDialog {
 		void accept();
 		void on_folderSelectButton_clicked();
 	private:
-		void getUserInfo();
-		void setUserInfo();
+		bool getUserInfo();
+		bool setUserInfo();
 
 		bool sshKeyGen();
 		bool sshKeySend(QString host, int port, QString username, QString password);

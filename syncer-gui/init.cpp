@@ -3,11 +3,11 @@
 Init::Init(QDialog* parent):QDialog(parent){
 	setupUi(this);
 
-	getUserInfo();
+	if(!getUserInfo()) this->reject();
 
 }
 
-void Init::getUserInfo(){
+bool Init::getUserInfo(){
 	QProcess* gitProc = new QProcess();
 	QStringList gitArgs;
 	gitArgs << "config" << "--global" << "--get" << "user.name";
@@ -17,13 +17,13 @@ void Init::getUserInfo(){
 	if(!gitProc->waitForStarted()) {
 		qDebug() << "Error: Could not start git";
 		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return;
+		return false;
 	}
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
 		gitProc->kill();
-		return;
+		return false;
 	}
 	QString gitOut = gitProc->readAll();
 
@@ -37,22 +37,26 @@ void Init::getUserInfo(){
 	if(!gitProc->waitForStarted()) {
 		qDebug() << "Error: Could not start git";
 		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return;
+		return false;
 	}
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
 		gitProc->kill();
-		return;
+		return false;
 	}
 	gitOut = gitProc->readAll();
 
 	emailField->setText(gitOut);
+	return true;
 }
 
 void Init::accept(){
 
-	setUserInfo();
+	if(!setUserInfo()){
+		QMessageBox::information (this, "Settings failed", "Could not set user info, please try again.");
+		return;
+	}
 
 	if(setupShare()) {
 		QMessageBox::information (this, "Settings updated", "Share settings have been updated sucessfully.");
@@ -63,7 +67,7 @@ void Init::accept(){
 
 }
 
-void Init::setUserInfo(){
+bool Init::setUserInfo(){
 	QString name = nameField->text().simplified();
 	QString email = emailField->text().simplified();
 
@@ -77,13 +81,13 @@ void Init::setUserInfo(){
 	if(!gitProc->waitForStarted()) {
 		qDebug() << "Error: Could not start git";
 		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return;
+		return false;
 	}
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
 		gitProc->kill();
-		return;
+		return false;
 	}
 	QString gitOut = gitProc->readAll();
 
@@ -94,16 +98,17 @@ void Init::setUserInfo(){
 	if(!gitProc->waitForStarted()) {
 		qDebug() << "Error: Could not start git";
 		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return;
+		return false;
 	}
 	if(!gitProc->waitForFinished()) {
 		qDebug() << "Error: Git did not finish";
 		QMessageBox::critical (this, "Error", "Git did not finish properly!");
 		gitProc->kill();
-		return;
+		return false;
 	}
 	gitOut = gitProc->readAll();
 
+	return true;
 }
 
 bool Init::sshKeyGen(){

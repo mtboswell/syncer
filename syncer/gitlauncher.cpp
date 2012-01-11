@@ -3,7 +3,7 @@
 
 GitLauncher::GitLauncher(){
 #ifdef Q_WS_WIN
-        git = "git.cmd";
+		git = "git";
 #else
         git = "git";
 #endif
