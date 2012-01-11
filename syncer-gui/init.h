@@ -21,6 +21,11 @@ class Init : public QDialog , private Ui::initDialog {
 	private:
 		void getUserInfo();
 		void setUserInfo();
+
+		bool sshKeyGen();
+		bool sshKeySend(QString host, int port, QString username, QString password);
+		bool gitClone(QString localFolder, QString username, QString host, int port, QString shareName);
+
 		bool setupShare();
 		int verify_knownhost(ssh_session session);
 

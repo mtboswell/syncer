@@ -106,45 +106,7 @@ void Init::setUserInfo(){
 
 }
 
-bool Init::setupShare(){
-	QTextStream out(stdout);
-
-
-	QString host = hostField->text().simplified();
-	int port = portField->text().toInt();
-	QString username = usernameField->text().simplified();
-	QString password = passwordField->text().trimmed();
-	QString shareName = sharenameField->text().simplified();
-	QString localFolder = folderField->text();
-
-	if(!port) port = 22;
-
-	if(host.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a host!");
-		return false;
-	}
-	if(username.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a username!");
-		return false;
-	}
-	if(password.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a password!");
-		return false;
-	}
-	if(shareName.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a share name!");
-		return false;
-	}
-	if(localFolder.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a folder to put the shared folder in!");
-		return false;
-	}
-
-	QProgressDialog progress("Connecting to server...", "Cancel", 0, 11, this);
-	progress.setWindowModality(Qt::WindowModal);
-	progress.setValue(0);
-	progress.setLabelText("Generating SSH keys");
-
+bool Init::sshKeyGen(){
 
 	//if not exists '~/.ssh/id_rsa.pub' then ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
 	QFile pubKeyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
@@ -171,48 +133,11 @@ bool Init::setupShare(){
 		qDebug() << "Skipping keygen";
 	}
 
-	progress.setValue(1);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Opening public key.");
+	return true;
 
+}
 
-	//scp -o StrictHostKeyChecking=no -P port ~/.ssh/id_rsa.pub user@host:user_id.pub, enter password
-
-	/*
-
-	QProcess* scp = new QProcess();
-	scp->setProcessChannelMode(QProcess::MergedChannels);
-	QStringList scpArgs;
-	scpArgs << "-o" << "StrictHostKeyChecking=no" << "-P" << QString::number(port)
-		<< "~/.ssh/id_rsa.pub" << username + "@" + host + ":" + username + "_id.pub";
-
-	QString scpOut;
-
-	scp->start("scp", scpArgs);
-	if(!scp->waitForStarted()) {
-		qDebug() << "Error: Could not start scp";
-		QMessageBox::critical (this, "Error", "Could not start scp!");
-		return false;
-	}
-	if(!scp->waitForReadyRead()) {
-		qDebug() << "Error: Could not get scp output";
-		QMessageBox::critical (this, "Error", "Could not get scp output!");
-		return false;
-	}
-
-	scp->write(QByteArray((char *) password.data()));
-	scp->write("\n");
-
-	if(!scp->waitForFinished()) {
-		qDebug() << "Error: scp did not finish";
-		QMessageBox::critical (this, "Error", "scp did not finish properly!");
-		return false;
-	}
-	scpOut = scp->readAll();
-	qDebug() << "scp out:\n" << scpOut;
-	*/
-
-
+bool Init::sshKeySend(QString host, int port, QString username, QString password){
 	//ssh user@host -p port 'echo "key" >> ~/.ssh/authorized_keys', enter password
 	QString key;
 	QFile keyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
@@ -225,10 +150,6 @@ bool Init::setupShare(){
 		key += keyFile.readLine();
 	}
 
-	progress.setValue(2);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Connecting to server...");
-
 	ssh_session session;
 	int rc;
 
@@ -239,7 +160,7 @@ bool Init::setupShare(){
 		QMessageBox::critical (this, "Error", "Could not open ssh session");
 		return false;
 	}
-		
+
 	//ssh_options_set(session, SSH_OPTIONS_HOST, "localhost");
 	//QByteArray hostchar((const char *) host.data(), host.length());
 
@@ -259,10 +180,6 @@ bool Init::setupShare(){
 		ssh_free(session);
 		return false;
 	}
-
-	progress.setValue(3);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Authenticating to server...");
 
 	// Verify the server's identity
 	// For the source code of verify_knowhost(), check previous example
@@ -291,13 +208,9 @@ bool Init::setupShare(){
 		return false;
 	}
 
-	progress.setValue(4);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Sending key to server...");
-
 	ssh_channel channel;
 	char buffer[256];
-	unsigned int nbytes;
+	int nbytes;
 
 	channel = ssh_channel_new(session);
 	if (channel == NULL){
@@ -345,10 +258,6 @@ bool Init::setupShare(){
 	ssh_channel_send_eof(channel);
 	ssh_channel_close(channel);
 	ssh_channel_free(channel);
-
-	progress.setValue(5);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Sending key to server...");
 
 	channel = ssh_channel_new(session);
 	if (channel == NULL){
@@ -405,15 +314,14 @@ bool Init::setupShare(){
 	ssh_disconnect(session);
 	ssh_free(session);
 
-	progress.setValue(6);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Downloading shared folder...");
+	return true;
+}
 
-	QString localDir = localFolder + QDir::separator() + shareName;
+bool Init::gitClone(QString localFolder, QString username, QString host, int port, QString shareName){
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
 /*
-        QProcess *gitproc = new QProcess();
+		QProcess *gitproc = new QProcess();
 	gitproc->setProcessChannelMode(QProcess::MergedChannels);
 	QString git("git");
 
@@ -424,7 +332,7 @@ bool Init::setupShare(){
 
 	gitproc->start(git, cloneArgs);
 	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" << gitproc->error() << ")";
+		qDebug() << "Error: git did not start (" << gitproc->error() << ")";
 		QMessageBox::critical (this, "Error", "Git did not start");
 		return false;
 	}
@@ -442,7 +350,7 @@ bool Init::setupShare(){
 	*/
 /*
 	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
+		qDebug() << "Error: git did not finish (" << gitproc->error() << ")";
 		QMessageBox::critical (this, "Error", "Git did not finish");
 		return false;
 	}
@@ -455,7 +363,7 @@ bool Init::setupShare(){
 
 	shProc->start("sh", QStringList() << "--login" << "-i");
 	if(!shProc->waitForStarted()){
-		out << "Error: sh did not start (" << shProc->error() << ")";
+		qDebug() << "Error: sh did not start (" << shProc->error() << ")";
 		QMessageBox::critical (this, "Error", "sh did not start: " + shProc->error());
 		return false;
 	}
@@ -475,7 +383,7 @@ bool Init::setupShare(){
 	shProc->closeWriteChannel();
 
 	if(!shProc->waitForFinished()){
-		out << "Error: sh did not finish (" << shProc->error() << ")";
+		qDebug() << "Error: sh did not finish (" << shProc->error() << ")";
 		QMessageBox::critical (this, "Error", "sh did not finish");
 		shProc->kill();
 		return false;
@@ -486,142 +394,94 @@ bool Init::setupShare(){
 	// todo: handle clone errors
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal")){
-			out << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
+			qDebug() << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
 			QMessageBox::critical (this, "Error", gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6));
 			return false;
-	
+
 		}
 		else if(gitOut.contains("Cloning"))
 			qDebug() << "Synchronized from server\n";
 		else{
-			out << "Unknown Error\n" << gitOut;
+			qDebug() << "Unknown Error\n" << gitOut;
 			QMessageBox::critical (this, "Unknown git output", gitOut);
+			return false;
 		}
-		
+
 	}
 
-	progress.setValue(7);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Adding local files");
+	return true;
+}
 
+bool Init::setupShare(){
+	QTextStream out(stdout);
+
+
+	QString host = hostField->text().simplified();
+	int port = portField->text().toInt();
+	QString username = usernameField->text().simplified();
+	QString password = passwordField->text().trimmed();
+	QString shareName = sharenameField->text().simplified();
+	QString localFolder = folderField->text();
+
+	if(!port) port = 22;
+
+	if(host.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a host!");
+		return false;
+	}
+	if(username.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a username!");
+		return false;
+	}
+	if(password.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a password!");
+		return false;
+	}
+	if(shareName.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a share name!");
+		return false;
+	}
+	if(localFolder.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a folder to put the shared folder in!");
+		return false;
+	}
+
+	QProgressDialog progress("Connecting to server...", "Cancel", 0, 5, this);
+	progress.setWindowModality(Qt::WindowModal);
+	progress.setValue(0);
+	progress.setLabelText("Generating SSH keys");
+
+	// Generate key pair
+	if(!sshKeyGen()) return false;
+
+	progress.setValue(1);
+	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Sending public key.");
+
+	// Send public key to server
+	if(!sshKeySend(host, port, username, password)) return false;
+
+	progress.setValue(2);
+	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Downloading shared folder...");
+
+	QString localDir = localFolder + QDir::separator() + shareName;
+
+	// Initial synchronization
+	if(!gitClone(localFolder, username, host, port, shareName)) return false;
+
+	progress.setValue(3);
+	if(progress.wasCanceled()) return false;
+	progress.setLabelText("Checking local files");
+
+	// Check to see if localDir exists (created by clone)
 	QDir localRepo(localDir);
 	if(!localRepo.exists()){
 		QMessageBox::critical (this, "Error", "Initial synchronization error");
 		return false;
 	}
 
-	QProcess *gitproc = new QProcess();
-	gitproc->setProcessChannelMode(QProcess::MergedChannels);
-	QString git("git");
-
-	//cd /path/to/share
-	gitproc->setWorkingDirectory(localDir);
-
-	// check to see if dir is empty
-
-	if(localRepo.entryList(QDir::NoDotAndDotDot).isEmpty()){
-		//QMessageBox::information (this, "Empty Share", "The share is currently empty.");
-	}else{
-
-		//git add .
-
-		QStringList addArgs;
-		addArgs << "add" << ".";
-
-		gitproc->start(git, addArgs);
-		if(!gitproc->waitForStarted()){
-			out << "Error: git did not start (" << gitproc->error() << ")";
-			QMessageBox::critical (this, "Error", "Git add did not start");
-			return false;
-		}
-		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" << gitproc->error() << ")";
-			QMessageBox::critical (this, "Error", "Git add did not finish");
-			gitproc->kill();
-			return false;
-		}
-		gitOut = gitproc->readAll();
-
-		progress.setValue(8);
-		if(progress.wasCanceled()) return false;
-		progress.setLabelText("Syncing local files");
-
-		//git commit -m "Initial Commit"
-		QStringList commitArgs;
-		commitArgs << "commit" << "-m" << "Initial Commit for device X";
-
-		gitproc->start(git, commitArgs);
-		if(!gitproc->waitForStarted()){
-			out << "Error: git did not start (" << gitproc->error() << ")";
-			QMessageBox::critical (this, "Error", "Git commit did not start");
-			return false;
-		}
-		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" << gitproc->error() << ")";
-			QMessageBox::critical (this, "Error", "Git commit did not finish");
-			gitproc->kill();
-			return false;
-		}
-		gitOut = gitproc->readAll();
-
-
-		progress.setValue(9);
-		if(progress.wasCanceled()) return false;
-		progress.setLabelText("Syncing local files");
-
-		//git push origin master
-
-
-		shProc->setWorkingDirectory(localDir);
-
-		shProc->start("sh", QStringList() << "--login" << "-i");
-		if(!shProc->waitForStarted()){
-			out << "Error: sh did not start (" << shProc->error() << ")";
-			QMessageBox::critical (this, "Error", "sh did not start: " + shProc->error());
-			return false;
-		}
-		shProc->write("git push origin master");
-		shProc->write("\n");
-
-		shProc->write("exit\n");
-
-		shProc->closeWriteChannel();
-
-		if(!shProc->waitForFinished()){
-			out << "Error: sh did not finish (" << shProc->error() << ")";
-			QMessageBox::critical (this, "Error", "sh did not finish");
-			shProc->kill();
-			return false;
-		}
-		gitOut = shProc->readAll();
-		//QMessageBox::information(this, "Git:", gitOut);
-
-	/*
-		QStringList pushArgs;
-		pushArgs << "push" << "origin" << "master";
-
-		gitproc->start(git, pushArgs);
-		if(!gitproc->waitForStarted()){
-			out << "Error: git did not start (" << gitproc->error() << ")";
-			QMessageBox::critical (this, "Error", "Git push did not start");
-			return false;
-		}
-		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" << gitproc->error() << ")";
-			QMessageBox::critical (this, "Error", "Git push did not finish");
-			return false;
-		}
-	*/
-		//gitOut = shProc->readAll();
-
-		if(!gitOut.contains("Everything up-to-date") && !gitOut.contains("master -> master")){
-			qDebug() << "Error: git push did not succeed:" << gitOut;
-			QMessageBox::critical (this, "Error", "Git push did not succeed");
-			return false;
-		}
-	} // end empty dir check
-
-	progress.setValue(10);
+	progress.setValue(4);
 	if(progress.wasCanceled()) return false;
 	progress.setLabelText("Adding to sync list");
 
@@ -634,9 +494,8 @@ bool Init::setupShare(){
 
 	settings->setValue("syncDirs", dirs);
 
-	// tell syncer-gui to refresh
-
-	progress.setValue(11);
+	// done
+	progress.setValue(5);
 
 	return true;
 }
