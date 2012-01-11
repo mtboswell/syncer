@@ -32,8 +32,8 @@ HEADERS  += \
 
 FORMS    += init.ui
 
-#RC_FILE = \
-#    syncer-gui.rc
+RC_FILE = \
+    syncer-gui.rc
 
 RESOURCES += \
     icons.qrc
