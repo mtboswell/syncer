@@ -364,7 +364,6 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 
 	QProcess* shProc = new QProcess();
 	shProc->setProcessChannelMode(QProcess::MergedChannels);
-	shProc->setWorkingDirectory(localFolder);
 
 	shProc->start("sh", QStringList() << "--login" << "-i");
 	if(!shProc->waitForStarted()){
@@ -377,7 +376,10 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 //	QString shOut = shProc->readAll();
 //	QMessageBox::information(this, "Sh:", shOut);
 
-	shProc->write(QString("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
+    shProc->write("export PATH=$PATH:$PWD\n");
+
+    shProc->setWorkingDirectory(localFolder);
+    shProc->write(QString("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
 				+ "/~/" + shareName).toLatin1());
 	shProc->write("\n");
 
