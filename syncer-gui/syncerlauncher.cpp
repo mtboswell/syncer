@@ -200,5 +200,5 @@ void SyncerLauncher::quitAll(){
 
 void SyncerLauncher::readProcOut(const QString & path){
 	QByteArray procOut = syncers[path]->readAllStandardOutput();
-	trayIcon->showMessage(procOut, path);
+	trayIcon->showMessage(path, procOut);
 }
