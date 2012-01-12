@@ -138,6 +138,7 @@ void SyncerLauncher::start(QString path){
 void SyncerLauncher::stop(QString path){
 	if(!syncers.contains(path)) syncers[path] = new QProcess();
 	syncers[path]->kill();
+	syncers[path]->waitForFinished();
 
 	dirMenus[path]->removeAction(findMenuItem(dirMenus[path], "Stop Syncing"));
 
