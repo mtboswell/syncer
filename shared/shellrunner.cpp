@@ -118,11 +118,11 @@ bool ShellRunner::run(QString cmd, QString exp){
 }
 
 void ShellRunner::onReadyReadStdOut(){
-	//qDebug() << "Reading StdOut";
+	qDebug() << "Reading StdOut";
 	buf += shProc->readAllStandardOutput();
 }
 void ShellRunner::onReadyReadStdErr(){
-	//qDebug() << "Reading StdErr";
+	qDebug() << "Reading StdErr";
 	buf += shProc->readAllStandardError();
 }
 
