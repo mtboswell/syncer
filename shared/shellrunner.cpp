@@ -36,7 +36,7 @@ ShellRunner::~ShellRunner(){
 }
 
 QString ShellRunner::result(){
-	return buf.replace(QRegExp("\\n[^\\n]+\\$\\+\\$$"), "");
+    return buf.replace(QRegExp("\\n[^\\n]*\\$\\+\\$$"), "");
 }
 
 bool ShellRunner::expect(QString lookFor, int timeout){
@@ -168,6 +168,8 @@ bool ShellRunner::expectEnd(int timeout){
 }
 
 bool ShellRunner::cd(QString path){
+    path.replace("\\","/");
+    path.replace(QRegExp("([A-Z]):"), "/\\1");
 	run("cd " + path);
 	expectEnd();
 	return run("pwd", path);
