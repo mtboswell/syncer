@@ -105,7 +105,7 @@ bool ShellRunner::have(QString lookFor){
 void ShellRunner::run(QString cmd){
 	stop();
 
-	//qDebug() << "Running: " << cmd;
+	qDebug() << "Running: " << cmd;
 
 	currentCmd = cmd;
 
