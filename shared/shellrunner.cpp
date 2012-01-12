@@ -25,7 +25,7 @@ ShellRunner::ShellRunner(QString workingdir, QString shell){
 		}
 
 		runToEnd("PATH=$PATH:$PWD");
-		qDebug() << "Starting buffer:" << buf;
+		//qDebug() << "Starting buffer:" << buf;
 		//shProc->waitForReadyRead();
 		//qDebug() << "Started:" << shProc->readAllStandardError() << shProc->readAllStandardOutput();
 		//buf.clear();
@@ -41,7 +41,7 @@ QString ShellRunner::result(){
 }
 
 bool ShellRunner::expect(QString lookFor, int timeout){
-	qDebug() << "Expecting:" << lookFor;
+	//qDebug() << "Expecting:" << lookFor;
 	//qDebug() << "Have so far:" << buf;
 
 	QTime timer;
@@ -65,12 +65,12 @@ bool ShellRunner::expect(QString lookFor, int timeout){
 		return false;
 	}
 
-	qDebug() << "Expect found: " << lookFor;
+	//qDebug() << "Expect found: " << lookFor;
 
 	return true;
 }
 bool ShellRunner::expectRegExp(QString lookFor, int timeout){
-	qDebug() << "Expecting:" << lookFor;
+	//qDebug() << "Expecting:" << lookFor;
 	//qDebug() << "Have so far:" << buf;
 
 	QTime timer;
@@ -94,7 +94,7 @@ bool ShellRunner::expectRegExp(QString lookFor, int timeout){
 		return false;
 	}
 
-	qDebug() << "Expect found: " << lookFor;
+	//qDebug() << "Expect found: " << lookFor;
 
 	return true;
 }
@@ -106,7 +106,7 @@ bool ShellRunner::have(QString lookFor){
 void ShellRunner::run(QString cmd){
 	stop();
 
-	qDebug() << "Running: " << cmd;
+	//qDebug() << "Running: " << cmd;
 
 	currentCmd = cmd;
 
@@ -130,17 +130,17 @@ bool ShellRunner::run(QString cmd, QString exp){
 
 void ShellRunner::onReadyReadStdOut(){
 	buf += shProc->readAllStandardOutput();
-	qDebug() << "Reading StdOut" << buf;
+	//qDebug() << "Reading StdOut" << buf;
 }
 void ShellRunner::onReadyReadStdErr(){
 	buf += shProc->readAllStandardError();
-	qDebug() << "Reading StdErr" << buf;
+	//qDebug() << "Reading StdErr" << buf;
 }
 
 
 void ShellRunner::stop(){
 	if(state == Stopped) return;
-	qDebug() << "Stopping";
+	//qDebug() << "Stopping";
 	currentCmd = "STOP";
 
 	char etx = QChar(3).toAscii();
