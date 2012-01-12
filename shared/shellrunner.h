@@ -6,6 +6,7 @@ class ShellRunner : public QObject {
 		ShellRunner(QString workingDirectory = ".", QString shell = "bash -i");
 		~ShellRunner();
 		bool expect(QString lookFor, int timeout = 5000);
+		bool expectRegExp(QString lookFor, int timeout = 5000);
 		bool run(QString cmd, QString lookFor);
 		bool have(QString lookFor);
 		QString result();
