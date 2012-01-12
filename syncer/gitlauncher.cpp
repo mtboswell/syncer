@@ -103,7 +103,7 @@ void GitLauncher::doPush(){
 	// git push
 
 	qDebug() << "Pushing";
-	sh->runToEnd("git push origin master", 15000);
+	sh->runToEnd("git push origin master", 35000);
 	
 	if(!sh->have("Already up-to-date.")){
 		if(sh->have("fatal"))
