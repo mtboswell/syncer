@@ -41,7 +41,7 @@ bool ShellRunner::expect(QString lookFor, int timeout){
 	QTime timer;
 	timer.start();
 
-	while((!buf.contains(QRegExp(lookFor))) && (timer.elapsed() < timeout)){
+	while((!buf.contains(lookFor)) && (timer.elapsed() < timeout)){
 		//qDebug() << "Waiting for read";
 		if(!shProc->waitForReadyRead(timeout)){
 			emit error("Command not responding", "Command " + currentCmd + " is not responding");
@@ -50,9 +50,6 @@ bool ShellRunner::expect(QString lookFor, int timeout){
 		}
 
 		buf += shProc->readAll();
-
-		if(buf.startsWith("$")) buf = buf.right(buf.size() - 1);
-		if(buf.startsWith(currentCmd)) buf = buf.right(buf.size() - currentCmd.size());
 
 		//qDebug() << "Expect Read:" << buf;
 	}
