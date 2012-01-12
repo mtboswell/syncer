@@ -293,7 +293,7 @@ bool Init::setupShare(){
 
 
 	QString host = hostField->text().simplified();
-	int port = portField->text().toInt();
+	int port = portField->value();
 	QString username = usernameField->text().simplified();
 	QString password = passwordField->text().trimmed();
 	QString shareName = sharenameField->text().simplified();
