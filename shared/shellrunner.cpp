@@ -15,11 +15,9 @@ ShellRunner::ShellRunner(QString workingdir, QString shell){
 	if(!shProc->waitForStarted()){
 		qFatal("Shell did not start!");
 	}else{
-		shProc->write("PS1=$\n");
-		expect("PS1=\\$");
-		expectEnd();
-		run("PATH=$PATH:$PWD");
-		expectEnd();
+		runToEnd("PS1=$");
+		runToEnd("PATH=$PATH:$PWD");
+		qDebug() << "Starting buffer:" << buf;
 		//shProc->waitForReadyRead();
 		//qDebug() << "Started:" << shProc->readAllStandardError() << shProc->readAllStandardOutput();
 		//buf.clear();
