@@ -17,10 +17,9 @@ ShellRunner::ShellRunner(QString workingdir, QString shell){
 	}else{
 		expect("$");
 		
-		runToEnd("PS1=$");
-		shProc->write("PS1=$\n");
-		if(expect("PS1=$\n")){
-			buf = buf.right(buf.size() - (buf.indexOf("PS1=$\n") + 6));
+		shProc->write("PS1=$$\n");
+		if(expect("PS1=$$\n")){
+			buf = buf.right(buf.size() - (buf.indexOf("PS1=$$\n") + 7));
 			state = Stopped;
 		}
 
@@ -37,7 +36,7 @@ ShellRunner::~ShellRunner(){
 }
 
 QString ShellRunner::result(){
-	return buf.replace(QRegExp("\\n[^\\n]+\\$$"), "");
+	return buf.replace(QRegExp("\\n[^\\n]+\\$\\$$"), "");
 }
 
 bool ShellRunner::expect(QString lookFor, int timeout){
@@ -145,7 +144,7 @@ void ShellRunner::stop(){
 
 	char etx = QChar(3).toAscii();
 	//qDebug() << etx;
-	while(!buf.contains("$")){
+	while(!buf.contains("$$")){
 		shProc->write(&etx, 1);
 		expectEnd();
 	}
@@ -160,7 +159,7 @@ void ShellRunner::exit(){
 }
 
 bool ShellRunner::expectEnd(int timeout){
-	if(expectRegExp("\\$$", timeout)){
+	if(expectRegExp("\\$\\$$", timeout)){
 		state = Stopped;
 		return true;
 	}else{
