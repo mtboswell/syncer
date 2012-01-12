@@ -104,8 +104,10 @@ void ShellRunner::run(QString cmd){
 
 	shProc->write(QString(cmd + "\n").toLatin1());
 
-	if(expect(cmd)){
+	if(expect(cmd + "\n")){
+		qDebug() << "Found cmd, cutting from:" << buf;
 		buf = buf.right(buf.size() - (buf.indexOf(cmd) + cmd.size()));
+		qDebug() << "After cut:" << buf;
 	}else	
 		qDebug() << "Command did not start:" << buf;
 }
