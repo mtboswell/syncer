@@ -24,11 +24,13 @@ win32:LIBS += -llibssh
 
 SOURCES += main.cpp\
     syncerlauncher.cpp \
-    init.cpp
+    init.cpp \
+    ../shared/shellrunner.cpp
 
 HEADERS  += \
     syncerlauncher.h \
-    init.h
+    init.h \
+    ../shared/shellrunner.h
 
 FORMS    += init.ui
 

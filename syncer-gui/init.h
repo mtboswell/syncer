@@ -9,12 +9,15 @@
 #include <QDebug>
 #include "ui_init.h"
 
+#include "../shared/shellrunner.h"
+
 #include <libssh/libssh.h>
 
 class Init : public QDialog , private Ui::initDialog {
 	Q_OBJECT
 	public:
 		Init(QDialog* parent = 0);
+		~Init();
 	private slots:
 		void accept();
 		void on_folderSelectButton_clicked();
@@ -28,5 +31,7 @@ class Init : public QDialog , private Ui::initDialog {
 
 		bool setupShare();
 		int verify_knownhost(ssh_session session);
+
+		ShellRunner* sh;
 
 };

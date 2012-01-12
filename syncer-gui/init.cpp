@@ -3,51 +3,26 @@
 Init::Init(QDialog* parent):QDialog(parent){
 	setupUi(this);
 
+	sh = new ShellRunner();
+
 	if(!getUserInfo()) this->reject();
 
 }
 
+Init::~Init(){
+	sh->exit();
+	delete sh;
+}
+
 bool Init::getUserInfo(){
-	QProcess* gitProc = new QProcess();
-	QStringList gitArgs;
-	gitArgs << "config" << "--global" << "--get" << "user.name";
 
-	gitProc->start("git", gitArgs);
+	sh->runToEnd("git config --global --get user.name");
 
-	if(!gitProc->waitForStarted()) {
-		qDebug() << "Error: Could not start git";
-		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return false;
-	}
-	if(!gitProc->waitForFinished()) {
-		qDebug() << "Error: Git did not finish";
-		QMessageBox::critical (this, "Error", "Git did not finish properly!");
-		gitProc->kill();
-		return false;
-	}
-	QString gitOut = gitProc->readAll();
+	nameField->setText(sh->result());
 
-	nameField->setText(gitOut);
+	sh->runToEnd("git config --global --get user.email");
 
-	gitArgs.clear();
-	gitArgs << "config" << "--global" << "--get" << "user.email";
-
-	gitProc->start("git", gitArgs);
-
-	if(!gitProc->waitForStarted()) {
-		qDebug() << "Error: Could not start git";
-		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return false;
-	}
-	if(!gitProc->waitForFinished()) {
-		qDebug() << "Error: Git did not finish";
-		QMessageBox::critical (this, "Error", "Git did not finish properly!");
-		gitProc->kill();
-		return false;
-	}
-	gitOut = gitProc->readAll();
-
-	emailField->setText(gitOut);
+	emailField->setText(sh->result());
 	return true;
 }
 
