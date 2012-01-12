@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>326</height>
+    <width>380</width>
+    <height>297</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,29 +20,52 @@
       <string>User Info</string>
      </property>
      <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="nameField"/>
-      </item>
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Name</string>
+         <string>This Computer Name</string>
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="nameField"/>
+      </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="label_8">
+        <property name="toolTip">
+         <string>Folder to put the shared folder into.</string>
+        </property>
         <property name="text">
-         <string>Email</string>
+         <string>Put Share in Folder:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="emailField">
-        <property name="inputMethodHints">
-         <set>Qt::ImhEmailCharactersOnly</set>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLineEdit" name="folderField">
+          <property name="toolTip">
+           <string>Folder to put the shared folder into.</string>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhUrlCharactersOnly</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="folderSelectButton">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -50,9 +73,12 @@
    <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
-      <string>Shared Folder</string>
+      <string>Server Info</string>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
@@ -61,31 +87,45 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="hostField">
-        <property name="inputMethodHints">
-         <set>Qt::ImhPreferLowercase</set>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLineEdit" name="hostField">
+          <property name="inputMethodHints">
+           <set>Qt::ImhPreferLowercase</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Port</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="portField">
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="maximum">
+           <number>99999</number>
+          </property>
+          <property name="value">
+           <number>22</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Port Number</string>
+         <string>Share Name</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="portField">
-        <property name="inputMethodHints">
-         <set>Qt::ImhDigitsOnly</set>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="placeholderText">
-         <string>22</string>
-        </property>
-       </widget>
+       <widget class="QLineEdit" name="sharenameField"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_5">
@@ -114,44 +154,6 @@
          <enum>QLineEdit::Password</enum>
         </property>
        </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Share name</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="sharenameField"/>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Local Folder</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLineEdit" name="folderField">
-          <property name="inputMethodHints">
-           <set>Qt::ImhUrlCharactersOnly</set>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="folderSelectButton">
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </widget>
