@@ -29,7 +29,7 @@ ShellRunner::~ShellRunner(){
 }
 
 QString ShellRunner::result(){
-	return buf;
+	return buf.replace(QRegExp("\\n[^\\n]+\\$$"), "");
 }
 
 bool ShellRunner::expect(QString lookFor, int timeout){
@@ -57,13 +57,13 @@ bool ShellRunner::expect(QString lookFor, int timeout){
 		return false;
 	}
 
-	//qDebug() << "Expect found: " << lookFor;
+	qDebug() << "Expect found: " << lookFor;
 
 	return true;
 }
 bool ShellRunner::expectRegExp(QString lookFor, int timeout){
-	//qDebug() << "Expecting:" << lookFor;
-	//qDebug() << "Have so far:" << buf;
+	qDebug() << "Expecting:" << lookFor;
+	qDebug() << "Have so far:" << buf;
 
 	QTime timer;
 	timer.start();
@@ -98,7 +98,7 @@ bool ShellRunner::have(QString lookFor){
 void ShellRunner::run(QString cmd){
 	stop();
 
-	//qDebug() << "Running: " << cmd;
+	qDebug() << "Running: " << cmd;
 
 	currentCmd = cmd;
 
@@ -128,7 +128,7 @@ void ShellRunner::onReadyReadStdErr(){
 
 
 void ShellRunner::stop(){
-	//qDebug() << "Stopping";
+	qDebug() << "Stopping";
 	char etx = QChar(3).toLatin1();
 	//qDebug() << etx;
 	while(!buf.contains("$")){
@@ -146,9 +146,6 @@ void ShellRunner::exit(){
 
 bool ShellRunner::expectEnd(int timeout){
 	if(expectRegExp("\\$$", timeout)){
-		qDebug() << "Found end in:" << buf;
-		buf.replace(QRegExp("\\n[^\\n]+\\$$"), "");
-		qDebug() << "Reduced to:" << buf;
 		return true;
 	}else{
 		return false;
