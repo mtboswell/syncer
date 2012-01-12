@@ -77,9 +77,9 @@ void ShellRunner::run(QString cmd){
 
 	shProc->write(QString(cmd + "\n").toLatin1());
 
-	if(expect(cmd))
-		buf.clear();
-	else	
+	if(expect(cmd)){
+		buf = buf.right(buf.size() - (buf.indexOf(cmd) + cmd.size()));
+	}else	
 		qDebug() << "Command did not start:" << buf;
 }
 
