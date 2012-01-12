@@ -266,7 +266,7 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 	}
 
 	QString gitOut = sh->result();
-	QMessageBox::information(this, "Git:", gitOut);
+	//QMessageBox::information(this, "Git:", gitOut);
 
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal")){
