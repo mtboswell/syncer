@@ -143,7 +143,12 @@ void ShellRunner::exit(){
 }
 
 bool ShellRunner::expectEnd(int timeout){
-	return expectRegExp("\\$$", timeout);
+	if(expectRegExp("\\$$", timeout)){
+		buf.replace(QRegExp(" \\]0;.+\\$$"), "");
+		return true;
+	}else{
+		return false;
+	}
 }
 
 bool ShellRunner::cd(QString path){
