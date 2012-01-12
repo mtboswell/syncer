@@ -131,8 +131,8 @@ void ShellRunner::stop(){
 	qDebug() << "Stopping";
 	currentCmd = "STOP";
 
-	char etx = QChar(3).toLatin1();
-	//qDebug() << etx;
+	char etx = QChar(3).toAscii();
+	qDebug() << etx;
 	while(!buf.contains("$")){
 		shProc->write(&etx, 1);
 		expectEnd();
