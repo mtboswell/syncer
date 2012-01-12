@@ -104,12 +104,15 @@ void ShellRunner::run(QString cmd){
 
 	shProc->write(QString(cmd + "\n").toLatin1());
 
+	state = Running;
+
 	if(expect(cmd + "\n")){
-		qDebug() << "Found cmd, cutting from:" << buf;
+		//qDebug() << "Found cmd, cutting from:" << buf;
 		buf = buf.right(buf.size() - (buf.indexOf(cmd) + cmd.size() + 1));
-		qDebug() << "After cut:" << buf;
-	}else	
+		//qDebug() << "After cut:" << buf;
+	}else{	
 		qDebug() << "Command did not start:" << buf;
+	}
 }
 
 bool ShellRunner::run(QString cmd, QString exp){
@@ -128,6 +131,7 @@ void ShellRunner::onReadyReadStdErr(){
 
 
 void ShellRunner::stop(){
+	if(state == Stopped) return;
 	qDebug() << "Stopping";
 	currentCmd = "STOP";
 
@@ -138,6 +142,7 @@ void ShellRunner::stop(){
 		expectEnd();
 	}
 	buf.clear();
+	state = Stopped;
 }
 
 void ShellRunner::exit(){
@@ -148,6 +153,7 @@ void ShellRunner::exit(){
 
 bool ShellRunner::expectEnd(int timeout){
 	if(expectRegExp("\\$$", timeout)){
+		state = Stopped;
 		return true;
 	}else{
 		return false;
