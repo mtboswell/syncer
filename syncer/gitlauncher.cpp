@@ -61,7 +61,7 @@ void GitLauncher::checkForUpdate(){
 	if(!sh->have("Already up-to-date.") && !sh->have("up to date")){
 		if(sh->have("fatal"))
 			out << "Error: " << sh->result().right(sh->result().size() - sh->result().indexOf("fatal:") - 6) << endl;
-		else if(sh->have("Updating"))
+		else if(sh->have("Updating") || sh->have("Fast-forwarded"))
 			out << "Synchronized from server" << endl;
 		else
 			out << "Unknown Error: " << sh->result() << endl;
