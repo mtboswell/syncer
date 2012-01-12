@@ -20,9 +20,9 @@ bool Init::getUserInfo(){
 
 	nameField->setText(sh->result());
 
-	sh->runToEnd("git config --global --get user.email");
+	//sh->runToEnd("git config --global --get user.email");
 
-	emailField->setText(sh->result());
+	//emailField->setText(sh->result());
 	return true;
 }
 
@@ -44,11 +44,11 @@ void Init::accept(){
 
 bool Init::setUserInfo(){
 	QString name = nameField->text().simplified();
-	QString email = emailField->text().simplified();
+	//QString email = emailField->text().simplified();
 
 	if(!sh->runToEnd("git config --global user.name \"" + name + "\"")) return false;
 
-	if(!sh->runToEnd("git config --global user.email \"" + email + "\"")) return false;
+	//if(!sh->runToEnd("git config --global user.email \"" + email + "\"")) return false;
 
 	return true;
 }
