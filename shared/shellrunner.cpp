@@ -41,7 +41,7 @@ bool ShellRunner::expect(QString lookFor, int timeout){
 	QTime timer;
 	timer.start();
 
-	while((!buf.simplified().contains(QRegExp(lookFor))) && (timer.elapsed() < timeout)){
+	while((!buf.contains(QRegExp(lookFor))) && (timer.elapsed() < timeout)){
 		//qDebug() << "Waiting for read";
 		if(!shProc->waitForReadyRead(timeout)){
 			emit error("Command not responding", "Command " + currentCmd + " is not responding");
@@ -79,6 +79,11 @@ void ShellRunner::run(QString cmd){
 	currentCmd = cmd;
 
 	shProc->write(QString(cmd + "\n").toLatin1());
+
+	if(expect(cmd))
+		buf.clear();
+	else	
+		qDebug() << "Command did not start:" << buf;
 }
 
 bool ShellRunner::run(QString cmd, QString exp){
