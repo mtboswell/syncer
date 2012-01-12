@@ -33,7 +33,7 @@ QString ShellRunner::result(){
 }
 
 bool ShellRunner::expect(QString lookFor, int timeout){
-	//qDebug() << "Expecting:" << lookFor;
+	qDebug() << "Expecting:" << lookFor;
 	//qDebug() << "Have so far:" << buf;
 
 	QTime timer;
@@ -63,7 +63,7 @@ bool ShellRunner::expect(QString lookFor, int timeout){
 }
 bool ShellRunner::expectRegExp(QString lookFor, int timeout){
 	qDebug() << "Expecting:" << lookFor;
-	qDebug() << "Have so far:" << buf;
+	//qDebug() << "Have so far:" << buf;
 
 	QTime timer;
 	timer.start();
@@ -86,7 +86,7 @@ bool ShellRunner::expectRegExp(QString lookFor, int timeout){
 		return false;
 	}
 
-	//qDebug() << "Expect found: " << lookFor;
+	qDebug() << "Expect found: " << lookFor;
 
 	return true;
 }
@@ -106,7 +106,7 @@ void ShellRunner::run(QString cmd){
 
 	if(expect(cmd + "\n")){
 		qDebug() << "Found cmd, cutting from:" << buf;
-		buf = buf.right(buf.size() - (buf.indexOf(cmd) + cmd.size()));
+		buf = buf.right(buf.size() - (buf.indexOf(cmd) + cmd.size() + 1));
 		qDebug() << "After cut:" << buf;
 	}else	
 		qDebug() << "Command did not start:" << buf;
@@ -129,6 +129,8 @@ void ShellRunner::onReadyReadStdErr(){
 
 void ShellRunner::stop(){
 	qDebug() << "Stopping";
+	currentCmd = "STOP";
+
 	char etx = QChar(3).toLatin1();
 	//qDebug() << etx;
 	while(!buf.contains("$")){
