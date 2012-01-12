@@ -145,7 +145,7 @@ void ShellRunner::exit(){
 bool ShellRunner::expectEnd(int timeout){
 	if(expectRegExp("\\$$", timeout)){
 		qDebug() << "Found end in:" << buf;
-		buf.replace(QRegExp("\n.+\\$$"), "");
+		buf.replace(QRegExp("\\n[^\\n]+\\$$"), "");
 		qDebug() << "Reduced to:" << buf;
 		return true;
 	}else{
