@@ -58,24 +58,10 @@ bool Init::sshKeyGen(){
 	//if not exists '~/.ssh/id_rsa.pub' then ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
 	QFile pubKeyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
 	if(!pubKeyFile.exists()){
-		QProcess* sshKeyGen = new QProcess();
-		QStringList sshKeyGenArgs;
-		sshKeyGenArgs << "-t" << "rsa" << "-N" << "" << "-f" << QDir::homePath() + "/.ssh/id_rsa";
-
-		sshKeyGen->start("ssh-keygen", sshKeyGenArgs);
-		if(!sshKeyGen->waitForStarted()) {
-			qDebug() << "Error: Could not start ssh-keygen";
-			QMessageBox::critical (this, "Error", "Could not start ssh-keygen!");
-			return false;
-		}
-		if(!sshKeyGen->waitForFinished()) {
-			qDebug() << "Error: ssh-keygen did not finish";
+		if(!sh->runToEnd("ssh-keygen -t rsa -N \"\" -f " + QDir::homePath() + "/.ssh/id_rsa"))
 			QMessageBox::critical (this, "Error", "ssh-keygen did not finish properly!");
-			sshKeyGen->kill();
-			return false;
-		}
-		QString sshKeyGenOut = sshKeyGen->readAll();
-		qDebug() << "ssh-keygen out:\n" << sshKeyGenOut;
+
+		qDebug() << "ssh-keygen out:\n" << sh->result();
 	}else{
 		qDebug() << "Skipping keygen";
 	}
@@ -267,80 +253,21 @@ bool Init::sshKeySend(QString host, int port, QString username, QString password
 bool Init::gitClone(QString localFolder, QString username, QString host, int port, QString shareName){
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
-/*
-		QProcess *gitproc = new QProcess();
-	gitproc->setProcessChannelMode(QProcess::MergedChannels);
-	QString git("git");
 
-
-	QStringList cloneArgs;
-	cloneArgs << "clone" << "ssh://" + username + "@" + host + ":" + QString::number(port)
-				+ "/~/" + shareName << localDir;
-
-	gitproc->start(git, cloneArgs);
-	if(!gitproc->waitForStarted()){
-		qDebug() << "Error: git did not start (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not start");
-		return false;
-	}
-	*/
-	/*
-	gitproc->waitForReadyRead();
-	QString gitOut = gitproc->readAll();
-	QMessageBox::information(this, "First:", gitOut);
-
-	gitproc->waitForReadyRead();
-	gitOut = gitproc->readAll();
-	QMessageBox::information(this, "Second:", gitOut);
-
-	gitproc->write("yes\n");
-	*/
-/*
-	if(!gitproc->waitForFinished()){
-		qDebug() << "Error: git did not finish (" << gitproc->error() << ")";
-		QMessageBox::critical (this, "Error", "Git did not finish");
-		return false;
-	}
-	*/
-
-
-	QProcess* shProc = new QProcess();
-	shProc->setProcessChannelMode(QProcess::MergedChannels);
-
-	shProc->start("sh", QStringList() << "--login" << "-i");
-	if(!shProc->waitForStarted()){
-		qDebug() << "Error: sh did not start (" << shProc->error() << ")";
-		QMessageBox::critical (this, "Error", "sh did not start: " + shProc->error());
+	if(!sh->cd(localFolder)){
+		QMessageBox::critical (this, "Error", "cd " + localFolder + " did not finish");
 		return false;
 	}
 
-//	shProc->waitForReadyRead();
-//	QString shOut = shProc->readAll();
-//	QMessageBox::information(this, "Sh:", shOut);
-
-	shProc->write("export PATH=$PATH:$PWD\n");
-
-	shProc->setWorkingDirectory(localFolder);
-	shProc->write(QString("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
-				+ "/~/" + shareName).toLatin1());
-	shProc->write("\n");
-
-//	shProc->waitForReadyRead();
-
-	shProc->write("exit\n");
-
-	shProc->closeWriteChannel();
-
-	if(!shProc->waitForFinished()){
-		qDebug() << "Error: sh did not finish (" << shProc->error() << ")";
-		QMessageBox::critical (this, "Error", "sh did not finish");
-		shProc->kill();
+	if(!sh->runToEnd("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
+				+ "/~/" + shareName)){
+		QMessageBox::critical (this, "Error", "git clone did not finish");
 		return false;
 	}
-	QString gitOut = shProc->readAll();
-	//QMessageBox::information(this, "Git:", gitOut);
 
-	// todo: handle clone errors
+	QString gitOut = sh->result();
+	QMessageBox::information(this, "Git:", gitOut);
+
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
 		if(gitOut.contains("fatal")){
 			qDebug() << "Error:" << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
