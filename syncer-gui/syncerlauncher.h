@@ -12,6 +12,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QSettings>
+#include <QMessageBox>
 
 #include "init.h"
 
