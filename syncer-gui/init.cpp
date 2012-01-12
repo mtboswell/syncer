@@ -46,42 +46,9 @@ bool Init::setUserInfo(){
 	QString name = nameField->text().simplified();
 	QString email = emailField->text().simplified();
 
+	if(!sh->runToEnd("git config --global user.name \"" + name + "\"")) return false;
 
-	QProcess* gitProc = new QProcess();
-	QStringList gitArgs;
-
-	gitArgs << "config" << "--global" << "user.name" << name;
-	gitProc->start("git", gitArgs);
-
-	if(!gitProc->waitForStarted()) {
-		qDebug() << "Error: Could not start git";
-		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return false;
-	}
-	if(!gitProc->waitForFinished()) {
-		qDebug() << "Error: Git did not finish";
-		QMessageBox::critical (this, "Error", "Git did not finish properly!");
-		gitProc->kill();
-		return false;
-	}
-	QString gitOut = gitProc->readAll();
-
-	gitArgs.clear();
-	gitArgs << "config" << "--global" << "user.email" << email;
-	gitProc->start("git", gitArgs);
-
-	if(!gitProc->waitForStarted()) {
-		qDebug() << "Error: Could not start git";
-		QMessageBox::critical (this, "Error", "Could not start Git!");
-		return false;
-	}
-	if(!gitProc->waitForFinished()) {
-		qDebug() << "Error: Git did not finish";
-		QMessageBox::critical (this, "Error", "Git did not finish properly!");
-		gitProc->kill();
-		return false;
-	}
-	gitOut = gitProc->readAll();
+	if(!sh->runToEnd("git config --global user.email \"" + email + "\"")) return false;
 
 	return true;
 }
