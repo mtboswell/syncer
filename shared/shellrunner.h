@@ -14,6 +14,8 @@ class ShellRunner : public QObject {
 		bool cd(QString path);
 		bool runToEnd(QString cmd, int timeout = 5000);
 
+		enum CmdState {Stopped, Running} state;
+
 	public slots:
 		void run(QString cmd);
 		void stop();
