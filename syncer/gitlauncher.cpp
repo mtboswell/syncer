@@ -2,19 +2,12 @@
 #include <QDebug>
 
 GitLauncher::GitLauncher(){
-#ifdef Q_WS_WIN
-		git = "git";
-#else
-        git = "git";
-#endif
-
-
 	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
 
 	pushDelay = settings->value("pushDelay", 5000).toInt();
 
-        gitproc = new QProcess();
-	gitproc->setProcessChannelMode(QProcess::MergedChannels);
+	sh = new ShellRunner;
+
 	pushTimer = new QTimer();
 	connect(pushTimer, SIGNAL(timeout()), this, SLOT(doPush()));
 }
@@ -40,30 +33,17 @@ void GitLauncher::checkForUpdate(){
 
 
 	// git pull
-	
-	QStringList pullArgs;
-	pullArgs << "pull" << "--rebase";
 
-	gitproc->start(git, pullArgs);
-	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" << gitproc->error() << ")";
-		return;
-	}
-	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")";
-		return;
-	}
-	gitOut = gitproc->readAll();
+	qDebug() << "Pulling";
+	sh->runToEnd("git pull --rebase");
 
-	//qDebug() << "Git pull output:" << gitOut;
-
-	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.") && !gitOut.contains("up to date")){
-		if(gitOut.contains("fatal"))
-			out << "Error: " << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
-		else if(gitOut.contains("Updating"))
-			out << "Synchronized from server\n";
+	if(!sh->have("Already up-to-date.") && !sh->have("up to date")){
+		if(sh->have("fatal"))
+			out << "Error: " << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << endl;
+		else if(sh->have("Updating"))
+			out << "Synchronized from server" << endl;
 		else
-			out << "Unknown Error: " << gitOut << "\n";
+			out << "Unknown Error: " << sh->result() << endl;
 		
 	}
 }
@@ -71,81 +51,42 @@ void GitLauncher::checkForUpdate(){
 void GitLauncher::doPush(){
 	pushTimer->stop();
 	QTextStream out(stdout);
+
 	// git add each dir
 	foreach(QString path, dirsChanged){
 		//qDebug() << "Adding" << path;
-		gitproc->setWorkingDirectory(path);
+		if(!sh->cd(path)) qDebug() << "Could not cd to " << path << sh->result();
 
 		// git add dir
-
-		QStringList addArgs;
-		addArgs << "add" << "--all";
-
-		gitproc->start(git, addArgs);
-		if(!gitproc->waitForStarted()){
-			out << "Error: git did not start (" << gitproc->error() << ")\n";
-			return;
+		qDebug() << "Adding" << path;
+		sh->runToEnd("git add --all");
+		if(sh->have("fatal")){
+			qDebug() << "Failed to add dir" << path;
 		}
-		if(!gitproc->waitForFinished()){
-			out << "Error: git did not finish (" << gitproc->error() << ")\n";
-			return;
-		}
-		gitOut = gitproc->readAll();
 
-		//qDebug() << "Git add output:" << gitOut;
 	}
 	dirsChanged.clear();
-
-
 
 	// git commit
 	// note that the commit happens in the last dir that git add was run in. This means we don't support multiple repos per process.
 
-	QStringList commitArgs;
-	commitArgs << "commit" << "-m" << "Autosync commit";
-	//qDebug() << "Commit args:" << commitArgs;
-
-	gitproc->start(git, commitArgs);
-	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start (" << gitproc->error() << ")\n";
-		return;
-	}
-	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish (" << gitproc->error() << ")\n";
-		return;
-	}
-	gitOut = gitproc->readAll();
-
-
-	//qDebug() << "Git commit output:" << gitOut;
-	if(!gitOut.isEmpty() && !gitOut.contains("nothing to commit")) out << "Synchronized with local, ";
+	qDebug() << "Committing";
+	sh->runToEnd("git commit -m 'Autosync commit'");
+	if(!sh->have("nothing to commit")) out << "Synchronized with local" << endl;
 	else return;
 
-
 	// git push
+
+	qDebug() << "Pushing";
+	sh->runToEnd("git push origin master", 15000);
 	
-	QStringList pushArgs;
-	pushArgs << "push" << "origin" << "master";
-
-	gitproc->start(git, pushArgs);
-	if(!gitproc->waitForStarted()){
-		out << "Error: git did not start: " << gitproc->error() << "\n";
-		return;
-	}
-	if(!gitproc->waitForFinished()){
-		out << "Error: git did not finish: " << gitproc->error() << "\n";
-		return;
-	}
-	gitOut = gitproc->readAll();
-
-	//qDebug() << "Git push output:" << gitOut;
-	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){
-		if(gitOut.contains("fatal"))
-			out << "Error: " << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << "\n";
-		else if(gitOut.contains("master -> master"))
-			out << "Synchronized to server\n";
+	if(!sh->have("Already up-to-date.")){
+		if(sh->have("fatal"))
+			out << "Error: " << gitOut.right(gitOut.size() - gitOut.indexOf("fatal:") - 6) << endl;
+		else if(sh->have("master -> master"))
+			out << "Synchronized to server" << endl;
 		else
-			out << "Unknown Error: " << gitOut << "\n";
+			out << "Unknown Error: " << sh->result() << endl;
 		
 	}
 	

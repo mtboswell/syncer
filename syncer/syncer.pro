@@ -26,3 +26,7 @@ INCLUDEPATH += .
 # Input
 HEADERS += gitlauncher.h
 SOURCES += gitlauncher.cpp main.cpp
+
+# Shared
+HEADERS += ../shared/shellrunner.h
+SOURCES += ../shared/shellrunner.cpp

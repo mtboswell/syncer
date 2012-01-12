@@ -5,6 +5,8 @@
 #include <QSettings>
 #include <QTextStream>
 
+#include "../shared/shellrunner.h"
+
 class GitLauncher : public QObject {
 	Q_OBJECT
 	public:
@@ -18,8 +20,7 @@ class GitLauncher : public QObject {
 		void doPush();
 		
 	private:
-		QString git;
-		QProcess* gitproc;
+		ShellRunner* sh;
 		QByteArray gitOut;
 		QTimer* pushTimer;
 		QStringList dirsChanged;

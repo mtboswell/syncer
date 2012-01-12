@@ -5,9 +5,13 @@ class ShellRunner : public QObject {
 	public:
 		ShellRunner(QString workingDirectory = ".", QString shell = "bash -i");
 		~ShellRunner();
-		QString expect(QString lookFor);
-		QString run(QString cmd, QString lookFor);
+		bool expect(QString lookFor, int timeout = 5000);
+		bool run(QString cmd, QString lookFor);
 		bool have(QString lookFor);
+		QString result();
+		bool expectEnd(int timeout = 5000);
+		bool cd(QString path);
+		bool runToEnd(QString cmd, int timeout = 5000);
 
 	public slots:
 		void run(QString cmd);

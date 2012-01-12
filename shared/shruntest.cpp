@@ -6,9 +6,14 @@ int main(int argc, char** argv){
 	
 	ShellRunner shrun;
 
-	QString dir = shrun.run("ls", "shared");
+	shrun.cd("/home/micah/tmp");
 
-	qDebug() << dir;
+	if(!shrun.run("ls", "share")){
+		qDebug() << "Did not find share in output";
+		qDebug() << shrun.result();
+	}else{
+		qDebug() << "Found share!";
+	}
 
 	shrun.exit();
 
