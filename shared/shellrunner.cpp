@@ -114,7 +114,7 @@ void ShellRunner::exit(){
 }
 
 bool ShellRunner::expectEnd(int timeout){
-	return expect("\\$$", timeout);
+	return expectRegExp("\\$$", timeout);
 }
 
 bool ShellRunner::cd(QString path){
