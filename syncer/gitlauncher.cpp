@@ -96,7 +96,7 @@ void GitLauncher::doPush(){
 	// note that the commit happens in the last dir that git add was run in. This means we don't support multiple repos per process.
 
 	qDebug() << "Committing";
-	sh->runToEnd("git commit -m 'Autosync commit'");
+	sh->runToEnd("git commit -m 'Autosync commit'", 10000);
 	if(!sh->have("nothing to commit")) out << "Synchronized with local" << endl;
 	else return;
 
