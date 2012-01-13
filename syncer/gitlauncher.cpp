@@ -56,7 +56,7 @@ void GitLauncher::checkForUpdate(){
 	// git pull
 
 	qDebug() << "Pulling";
-	sh->runToEnd("git pull --rebase", 35000);
+	sh->runToEnd("git pull --rebase", 135000);
 
 	if(!sh->have("Already up-to-date.") && !sh->have("up to date")){
 		if(sh->have("fatal"))
