@@ -53,6 +53,7 @@ class SyncerLauncher : public QObject
 		QSignalMapper* menuMapper;
 		QSignalMapper* procOutMapper;
 		QSignalMapper* procFinishMapper;
+		QStringList procsKilled;
 		QMap<QString, QMenu*> dirMenus;
 		QSettings* settings;
 
