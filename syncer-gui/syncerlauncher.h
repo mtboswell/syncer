@@ -41,6 +41,7 @@ class SyncerLauncher : public QObject
 		void shred(QString path);
 		void quitAll();
 		void readProcOut(const QString & path);
+		void syncerCrashed(const QString & path);
 
 	private:
 		QAction* findMenuItem(QMenu* menu, QString item);
@@ -51,6 +52,7 @@ class SyncerLauncher : public QObject
 		QMenu* syncMenu;
 		QSignalMapper* menuMapper;
 		QSignalMapper* procOutMapper;
+		QSignalMapper* procFinishMapper;
 		QMap<QString, QMenu*> dirMenus;
 		QSettings* settings;
 
