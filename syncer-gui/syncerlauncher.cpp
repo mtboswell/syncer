@@ -141,6 +141,7 @@ void SyncerLauncher::start(QString path){
 }
 void SyncerLauncher::stop(QString path){
 	if(!syncers.contains(path)) syncers[path] = new QProcess();
+	procsKilled << path;
 	syncers[path]->kill();
 	syncers[path]->waitForFinished();
 
@@ -202,4 +203,19 @@ void SyncerLauncher::quitAll(){
 void SyncerLauncher::readProcOut(const QString & path){
 	QByteArray procOut = syncers[path]->readAllStandardOutput();
 	trayIcon->showMessage(path, procOut);
+}
+
+void SyncerLauncher::syncerCrashed(const QString & path){
+	if(procsKilled.contains(path)){
+		procsKilled.removeAll(path);
+		return;
+	}
+
+	QStringList args;
+	args << path;
+	syncers[path]->start(syncerPath, args);
+	if(!syncers[path]->waitForStarted()){
+		trayIcon->showMessage("Error", "Syncer did not restart!");
+		//qFatal("Error: syncer did not start");
+	}
 }
