@@ -120,7 +120,7 @@ void SyncerLauncher::start(QString path){
 	if(!syncers.contains(path)){
 		syncers[path] = new QProcess();
 		connect(syncers[path], SIGNAL(readyReadStandardOutput()), procOutMapper, SLOT(map()));
-		connect(syncers[path], SIGNAL(finished()), procFinishMapper, SLOT(map()));
+		connect(syncers[path], SIGNAL(finished(int, QProcess::ExitStatus)), procFinishMapper, SLOT(map()));
 		procOutMapper->setMapping(syncers[path], path);
 		procFinishMapper->setMapping(syncers[path], path);
 	}
