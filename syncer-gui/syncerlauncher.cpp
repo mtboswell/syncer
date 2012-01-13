@@ -8,8 +8,10 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	trayIcon = new QSystemTrayIcon(QIcon(":/s_icon.svg"));
 
 	procOutMapper = new QSignalMapper(this);
+	procFinishMapper = new QSignalMapper(this);
 
 	connect(procOutMapper, SIGNAL(mapped(const QString &)), this, SLOT(readProcOut(const QString &)));
+	connect(procFinishMapper, SIGNAL(mapped(const QString &)), this, SLOT(syncerCrashed(const QString &)));
 
 	//syncerPath = "../../../syncer/build/release/syncer.exe";
 	// todo: use app->appPath(), etc.
@@ -118,7 +120,9 @@ void SyncerLauncher::start(QString path){
 	if(!syncers.contains(path)){
 		syncers[path] = new QProcess();
 		connect(syncers[path], SIGNAL(readyReadStandardOutput()), procOutMapper, SLOT(map()));
+		connect(syncers[path], SIGNAL(finished()), procFinishMapper, SLOT(map()));
 		procOutMapper->setMapping(syncers[path], path);
+		procFinishMapper->setMapping(syncers[path], path);
 	}
 	QStringList args;
 	args << path;
