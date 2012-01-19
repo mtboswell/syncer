@@ -18,6 +18,8 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 
 	int rc;
 
+	qDebug() << "Connecting to" << host;
+
 	if(session == NULL){
 		// Open session and set options
 		session = ssh_new();
@@ -26,6 +28,8 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 			return false;
 		}
 	}
+
+	qDebug() << "Created session, connecting...";
 
 	QByteArray hostarray = host.toLatin1();
 	const char *hostchar = hostarray.data();
@@ -41,6 +45,8 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 		return false;
 	}
 
+	qDebug() << "Verifying knownhost";
+
 	// Verify the server's identity
 	// For the source code of verify_knowhost(), check previous example
 	if (verify_knownhost() < 0)
@@ -49,6 +55,8 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 		ssh_free(session);
 		return false;
 	}
+
+	qDebug() << "Authenticating";
 
 	// Authenticate ourselves
 	//password = getpass("Password: ");
