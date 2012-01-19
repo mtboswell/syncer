@@ -34,6 +34,8 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 	QByteArray hostarray = host.toLatin1();
 	const char *hostchar = hostarray.data();
 
+	qDebug() << "to host" << hostchar;
+
 	ssh_options_set(session, SSH_OPTIONS_HOST, hostchar);
 	ssh_options_set(session, SSH_OPTIONS_PORT, &port);
 
