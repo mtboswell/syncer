@@ -94,6 +94,8 @@ bool Init::validateServerPage(){
 	}
 
 
+	qDebug() << "Connecting to remote host";
+
 	if(!rsh->connect(host, username, password, port)){
 		QMessageBox::critical (this, "Error", "Unable to connect to server!");
 		return false;
@@ -106,24 +108,22 @@ bool Init::validateServerPage(){
 	QString thisUser = sh->result();
 */
 
+	qDebug() << "Generating ssh keys";
+
 	if(!sshKeyGen()){
 		QMessageBox::critical (this, "Error", "Unable to generate private key!");
 		return false;
 	}
 
+	qDebug() << "Checking if authorized on server";
+
 	if(!pubKeyAuthorized()){
+		qDebug() << "Sending key to server";
 		if(!sendPubKey()){
 			QMessageBox::critical (this, "Error", "Unable to send public key to server!");
 			return false;
 		}
 	}
-
-
-
-
-
-
-
 
 	return true;
 }
@@ -157,6 +157,9 @@ void Init::initializeServerPage(){
 
 }
 void Init::initializeSharesPage(){
+
+	qDebug() << "Initializing shares page";
+
 	// get shares list
 	// find . | grep "/\\.git/" | sed "s/\(.*\)\.git.*/\1/" | sort -u
 
@@ -165,6 +168,8 @@ void Init::initializeSharesPage(){
 		return;
 	}
 	QStringList shares = rsh->result().split('\n');
+
+	qDebug() << "Found shares" << shares;
 
 	sharesTreeWidget->clear();
 
