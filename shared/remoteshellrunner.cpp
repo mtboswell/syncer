@@ -6,13 +6,8 @@ RemoteShellRunner::RemoteShellRunner(){
 
 	buf.open(QBuffer::ReadWrite);
 
+	state = Stopped;
 
-	// Open session and set options
-	session = ssh_new();
-	if (session == NULL){
-		qDebug("Unable to open ssh session");
-		return;
-	}
 }
 
 RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString password, int port){
@@ -24,6 +19,15 @@ RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString pas
 bool RemoteShellRunner::connect(QString host, QString username, QString password, int port){
 
 	int rc;
+
+	if(session == NULL){
+		// Open session and set options
+		session = ssh_new();
+		if (session == NULL){
+			qDebug("Unable to open ssh session");
+			return false;
+		}
+	}
 
 	QByteArray hostarray = host.toLatin1();
 	const char *hostchar = hostarray.data();
@@ -93,12 +97,14 @@ bool RemoteShellRunner::run(QString cmd){
 
 	channel = ssh_channel_new(session);
 	if (channel == NULL){
+		qDebug() << "Failed to open channel";
 		return false;//SSH_ERROR;
 	}
 
 	rc = ssh_channel_open_session(channel);
 	if (rc != SSH_OK)
 	{
+		qDebug() << "Failed to open channel session";
 		ssh_channel_free(channel);
 		return false;//rc;
 	}
