@@ -7,13 +7,11 @@ RemoteShellRunner::RemoteShellRunner(){
 	buf.open(QBuffer::ReadWrite);
 
 	state = Stopped;
-
 }
 
 RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString password, int port){
 	RemoteShellRunner();
-	if(session != NULL)
-		connect(host, username, password, port);
+	connect(host, username, password, port);
 }
 
 bool RemoteShellRunner::connect(QString host, QString username, QString password, int port){
@@ -86,7 +84,8 @@ bool RemoteShellRunner::isConnected(){
 bool RemoteShellRunner::run(QString cmd){
 
 	if(!connected) return false;
-	if(session != NULL) return false;
+	if(session == NULL) return false;
+	if(channel != NULL) return false;
 
 	qDebug() << "Running:" << cmd << "on remote host";
 
