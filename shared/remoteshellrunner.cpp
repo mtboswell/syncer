@@ -88,6 +88,8 @@ bool RemoteShellRunner::run(QString cmd){
 	if(!connected) return false;
 	if(session != NULL) return false;
 
+	qDebug() << "Running:" << cmd;
+
 	int rc;
 
 	// reset buf
