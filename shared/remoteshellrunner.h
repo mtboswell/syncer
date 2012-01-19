@@ -9,10 +9,12 @@
 class RemoteShellRunner : public QObject {
 	Q_OBJECT
 	public:
+		RemoteShellRunner();
 		RemoteShellRunner(QString host, QString username, QString password, int port = 22);
 		~RemoteShellRunner();
 
 		bool isConnected();
+		bool connect(QString host, QString username, QString password, int port = 22);
 
 		bool run(QString cmd);
 		bool runToEnd(QString cmd, int timeout = 5000);
@@ -41,12 +43,17 @@ class RemoteShellRunner : public QObject {
 	private slots:
 	
 	private:
+		bool read();
+
 		int verify_knownhost();
+
 		ssh_session session;
 		ssh_channel channel;
-		QString currentCmd;
 		bool connected;
-		QBuffer buf;
+
+		QString currentCmd;
 		QTime cmdTimer;
+
+		QBuffer buf;
 
 };

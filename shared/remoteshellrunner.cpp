@@ -1,6 +1,6 @@
 #include "remoteshellrunner.h"
 
-RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString password, int port){
+RemoteShellRunner::RemoteShellRunner(){
 
 	connected = false; 
 
@@ -14,6 +14,15 @@ RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString pas
 		qDebug("Unable to open ssh session");
 		return;
 	}
+}
+
+RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString password, int port){
+	RemoteShellRunner();
+	if(session != NULL)
+		connect(host, username, password, port);
+}
+
+bool RemoteShellRunner::connect(QString host, QString username, QString password, int port){
 
 	QByteArray hostarray = host.toLatin1();
 	const char *hostchar = hostarray.data();
@@ -69,10 +78,12 @@ bool RemoteShellRunner::isConnected(){
 
 bool RemoteShellRunner::run(QString cmd){
 
-	char buffer[256];
-	int nbytes;
+	if(!connected) return false;
+	if(session != NULL) return false;
+
 	int rc;
 
+	// reset buf
 	buf.close();
 	buf.setData("");
 	buf.open(QBuffer::ReadWrite);
@@ -89,6 +100,8 @@ bool RemoteShellRunner::run(QString cmd){
 		return false;//rc;
 	}
 
+	cmdTimer.start();
+
 	rc = ssh_channel_request_exec(channel, (char *) cmd.toLatin1().data());
 	if (rc != SSH_OK)
 	{
@@ -97,6 +110,26 @@ bool RemoteShellRunner::run(QString cmd){
 		ssh_channel_free(channel);
 		return false;//rc;
 	}
+
+	if(read()){
+		ssh_channel_send_eof(channel);
+		ssh_channel_close(channel);
+		ssh_channel_free(channel);
+		state = Stopped;
+	}else state = Running;
+
+	return true;
+}
+
+
+bool RemoteShellRunner::read(){
+
+	if(channel == NULL) return false;
+
+	char buffer[256];
+	int nbytes;
+	bool eofOnStdOut = false;
+	bool eofOnStdErr = false;
 
 	nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
 	while (nbytes > 0){
@@ -113,11 +146,12 @@ bool RemoteShellRunner::run(QString cmd){
 		nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
 	}
 
-	if (nbytes < 0)
+	if (nbytes == 0) eofOnStdOut = true;
+	else if (nbytes < 0)
 	{
 		//ssh_channel_close(channel);
 		//ssh_channel_free(channel);
-		qDebug() << "Could not read stdout";
+		qDebug() << "stdout did not contain EOF";
 		//return false;//SSH_ERROR;
 	}
 
@@ -136,19 +170,18 @@ bool RemoteShellRunner::run(QString cmd){
 		nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 1);
 	}
 
-	if (nbytes < 0)
+	if (nbytes == 0) eofOnStdErr = true;
+	else if (nbytes < 0)
 	{
-		ssh_channel_close(channel);
-		ssh_channel_free(channel);
-		qDebug() << "Could not read stderr";
-		return false;//SSH_ERROR;
+		//ssh_channel_close(channel);
+		//ssh_channel_free(channel);
+		qDebug() << "stderr did not contain EOF";
+		//return false;//SSH_ERROR;
 	}
 
-	ssh_channel_send_eof(channel);
-	ssh_channel_close(channel);
-	ssh_channel_free(channel);
+	if(eofOnStdOut || eofOnStdErr) return true;
+	return false;
 
-	return true;
 }
 
 
@@ -212,7 +245,7 @@ int RemoteShellRunner::verify_knownhost(){
 }
 
 bool RemoteShellRunner::cd(QString path){
-	return run("cd " + path);
+	return runToEnd("cd " + path);
 }
 
 bool RemoteShellRunner::run(QString cmd, QString lookFor){
@@ -221,12 +254,32 @@ bool RemoteShellRunner::run(QString cmd, QString lookFor){
 	return false;
 }
 
+bool RemoteShellRunner::runToEnd(QString cmd, int timeout){
+	if(!run(cmd)) return false;
+	if(state == Running) return expectEnd(timeout);
+	return true;
+}
+
 bool RemoteShellRunner::expect(QString lookFor, int timeout){
 	return QString(buf.buffer()).contains(lookFor);
 }
 
+bool RemoteShellRunner::have(QString lookFor){
+	return QString(buf.buffer()).contains(lookFor);
+}
+
 bool RemoteShellRunner::expectEnd(int timeout){
-	return true;
+	if(state == Stopped) return true;
+	if(channel == NULL) return true;
+
+	while(!read() && cmdTimer.elapsed() < timeout);
+
+	ssh_channel_send_eof(channel);
+	ssh_channel_close(channel);
+	ssh_channel_free(channel);
+	state = Stopped;
+	
+	return cmdTimer.elapsed() < timeout;
 }
 
 bool RemoteShellRunner::expectRegExp(QString lookFor, int timeout){

@@ -1,4 +1,4 @@
-#include <QDialog>
+#include <QWizard>
 #include <QProcess>
 #include <QMessageBox>
 #include <QFile>
@@ -7,31 +7,43 @@
 #include <QProgressDialog>
 #include <QSettings>
 #include <QDebug>
-#include "ui_init.h"
+#include "ui_initwizard.h"
 
 #include "../shared/shellrunner.h"
+#include "../shared/remoteshellrunner.h"
 
-#include <libssh/libssh.h>
-
-class Init : public QDialog , private Ui::initDialog {
+class Init : public QWizard , private Ui::initWizard {
 	Q_OBJECT
 	public:
-		Init(QDialog* parent = 0);
+		Init(QWidget* parent = 0);
 		~Init();
+
+		bool validateCurrentPage();
 	private slots:
-		void accept();
 		void on_folderSelectButton_clicked();
+		void onCurrentIdChanged(int id);
 	private:
+		void initializePage(int id);
+		void accept();
+
+		void initializeComputerPage();
+		void initializeServerPage();
+		void initializeSharesPage();
+
+		bool validateComputerPage();
+		bool validateServerPage();
+		bool validateSharesPage();
+
 		bool getUserInfo();
-		bool setUserInfo();
 
 		bool sshKeyGen();
-		bool sshKeySend(QString host, int port, QString username, QString password);
+		bool pubKeyAuthorized();
+		bool sendPubKey();
 		bool gitClone(QString localFolder, QString username, QString host, int port, QString shareName);
 
 		bool setupShare();
-		int verify_knownhost(ssh_session session);
 
 		ShellRunner* sh;
+		RemoteShellRunner* rsh;
 
 };

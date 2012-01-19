@@ -16,23 +16,26 @@ unix:target.path = /usr/local/bin
 macx:target.path = /Applications/syncer
 unix|macx:INSTALLS += target
 
-win32:INCLUDEPATH += libssh
+win32 {
+	INCLUDEPATH += libssh
+	LIBS += -Llibssh/lib -llibssh
+}
 
-win32:LIBS += -Llibssh/lib
 unix|macx:LIBS += -lssh
-win32:LIBS += -llibssh
 
 SOURCES += main.cpp\
     syncerlauncher.cpp \
     init.cpp \
-    ../shared/shellrunner.cpp
+    ../shared/shellrunner.cpp \
+    ../shared/remoteshellrunner.cpp
 
 HEADERS  += \
     syncerlauncher.h \
     init.h \
-    ../shared/shellrunner.h
+    ../shared/shellrunner.h \
+    ../shared/remoteshellrunner.h
 
-FORMS    += init.ui
+FORMS    += initwizard.ui
 
 RC_FILE = \
     syncer-gui.rc

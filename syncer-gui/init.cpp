@@ -1,9 +1,10 @@
 #include "init.h"
 
-Init::Init(QDialog* parent):QDialog(parent){
+Init::Init(QWidget* parent):QWizard(parent){
 	setupUi(this);
 
 	sh = new ShellRunner();
+	rsh = new RemoteShellRunner();
 
 	if(!getUserInfo()) this->reject();
 
@@ -12,46 +13,187 @@ Init::Init(QDialog* parent):QDialog(parent){
 Init::~Init(){
 	sh->exit();
 	delete sh;
+	delete rsh;
 }
 
 bool Init::getUserInfo(){
 
 	sh->runToEnd("git config --global --get user.name");
 
-	nameField->setText(sh->result());
+	QString name = sh->result();
 
-	//sh->runToEnd("git config --global --get user.email");
+	if(name.isEmpty()){
+		sh->runToEnd("hostname");
+		name = sh->result();
+	}
 
-	//emailField->setText(sh->result());
+	nameField->setText(name);
+
 	return true;
 }
+
+bool Init::validateCurrentPage(){
+	switch(currentId()){
+		case 0:
+			return validateComputerPage();
+			break;
+		case 1:
+			return validateServerPage();
+			break;
+		case 2:
+			return validateSharesPage();
+			break;
+		case default:
+			qDebug() << "Error: Invalid page ID";
+			return false;
+			break;
+	}
+	return false;
+}
+
+
+bool Init::validateComputerPage(){
+	QString name = nameField->text().simplified();
+	QString localFolder = folderField->text();
+
+	if(name.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a computer name!");
+		return false;
+	}
+	if(localFolder.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a folder to put the shared folder in!");
+		return false;
+	}
+
+
+	if(!sh->runToEnd("git config --global user.name \"" + name + "\"")) {
+		QMessageBox::information (this, "Settings failed", "Could not set user info, please try again.");
+		return false;
+	}
+}
+
+bool Init::validateServerPage(){
+	QString host = hostField->text().simplified();
+	int port = portField->value();
+	QString username = usernameField->text().simplified();
+	QString password = passwordField->text().trimmed();
+	
+	if(!port) port = 22;
+
+	if(host.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a host!");
+		return false;
+	}
+	if(username.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a username!");
+		return false;
+	}
+	if(password.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a password!");
+		return false;
+	}
+
+
+	if(!rsh->connect(host, username, password, port)){
+		QMessageBox::critical (this, "Error", "Unable to connect to server!");
+		return false;
+	}
+
+/*
+	QString thisHostname = QHostInfo::localHostName();
+
+	sh->runToEnd("echo $USER");
+	QString thisUser = sh->result();
+*/
+
+	if(!sshKeyGen()){
+		QMessageBox::critical (this, "Error", "Unable to generate private key!");
+		return false;
+	}
+
+	if(!pubKeyAuthorized()){
+		if(!sendPubKey()){
+			QMessageBox::critical (this, "Error", "Unable to send public key to server!");
+			return false;
+		}
+	}
+
+
+
+
+
+
+
+
+	return true;
+}
+
+bool Init::validateSharesPage(){
+	return true;
+}
+
+void Init::initializePage(int id){
+	switch(id){
+		case 0:
+			initializeComputerPage();
+			break;
+		case 1:
+			initializeServerPage();
+			break;
+		case 2:
+			initializeSharesPage();
+			break;
+		case default:
+			qDebug() << "Error: Invalid page ID";
+			break;
+	}
+
+}
+
+
+
+
 
 void Init::accept(){
 
-	if(!setUserInfo()){
-		QMessageBox::information (this, "Settings failed", "Could not set user info, please try again.");
-		return;
+	QProgressDialog progress("Connecting to server...", "Cancel", 0, 5, this);
+	progress.setWindowModality(Qt::WindowModal);
+	progress.setValue(0);
+	progress.setLabelText("Generating SSH keys");
+
+	// get shares from sharesTreeWidget
+
+	// for each share, check to see if we already have it in settings and on filesystem
+
+		// if not on filesystem, then clone the share
+
+		// if not in settings, then add to settings list
+
+/*
+	QString localDir = localFolder + QDir::separator() + shareName;
+
+	// Initial synchronization
+	if(!gitClone(localFolder, username, host, port, shareName)) return false;
+
+
+	// Check to see if localDir exists (created by clone)
+	QDir localRepo(localDir);
+	if(!localRepo.exists()){
+		QMessageBox::critical (this, "Error", "Initial synchronization error");
+		return false;
 	}
 
-	if(setupShare()) {
-		QMessageBox::information (this, "Settings updated", "Share settings have been updated sucessfully.");
-		QDialog::accept();
-	}else{
-		QMessageBox::information (this, "Settings failed", "Something went wrong, please try again.");
-	}
+	// add to settings
 
+	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
+	QStringList dirs = settings->value("syncDirs").toStringList();
+
+	dirs << localDir;
+
+	settings->setValue("syncDirs", dirs);
+	*/
 }
 
-bool Init::setUserInfo(){
-	QString name = nameField->text().simplified();
-	//QString email = emailField->text().simplified();
-
-	if(!sh->runToEnd("git config --global user.name \"" + name + "\"")) return false;
-
-	//if(!sh->runToEnd("git config --global user.email \"" + email + "\"")) return false;
-
-	return true;
-}
 
 bool Init::sshKeyGen(){
 
@@ -70,7 +212,28 @@ bool Init::sshKeyGen(){
 
 }
 
-bool Init::sshKeySend(QString host, int port, QString username, QString password){
+bool pubKeyAuthorized(){
+	QString key;
+	QFile keyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
+	if (!keyFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+		QMessageBox::critical (this, "Error", "Could not open public key.");
+		return false;
+	}
+
+	while (!keyFile.atEnd()) {
+		key += keyFile.readLine();
+	}
+
+	if(!rsh->runToEnd("cat ~/.ssh/authorized_keys")){
+		QMessageBox::critical (this, "Error", "Could not open server key file.");
+		return false;
+	}
+	QString authorized_keys = rsh->result();
+
+	return authorized_keys.contains(key);
+}
+
+bool Init::sendPubKey(){
 	//ssh user@host -p port 'echo "key" >> ~/.ssh/authorized_keys', enter password
 	QString key;
 	QFile keyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
@@ -83,169 +246,17 @@ bool Init::sshKeySend(QString host, int port, QString username, QString password
 		key += keyFile.readLine();
 	}
 
-	ssh_session session;
-	int rc;
 
-	// Open session and set options
-	session = ssh_new();
-	if (session == NULL){
-		qDebug("Unable to open ssh session");
-		QMessageBox::critical (this, "Error", "Could not open ssh session");
+	if(!rsh->runToEnd("mkdir ~/.ssh")){
+		QMessageBox::critical (this, "Error", "Could not create key dir on server.");
 		return false;
-	}
-
-	//ssh_options_set(session, SSH_OPTIONS_HOST, "localhost");
-	//QByteArray hostchar((const char *) host.data(), host.length());
-
-	QByteArray hostarray = host.toLatin1();
-	const char *hostchar = hostarray.data();
-	//qDebug() << hostchar[0] << hostchar [1];
-	//qDebug() << "Size: " << hostchar.size();
-	ssh_options_set(session, SSH_OPTIONS_HOST, hostchar);
-	ssh_options_set(session, SSH_OPTIONS_PORT, &port);
-
-	// Connect to server
-	rc = ssh_connect(session);
-	if (rc != SSH_OK)
-	{
-		qDebug() << "Error connecting to " << hostchar << ssh_get_error(session);
-		QMessageBox::critical (this, "Error", QString("Could not connect to server: ") + hostchar + "\n" + ssh_get_error(session));
-		ssh_free(session);
-		return false;
-	}
-
-	// Verify the server's identity
-	// For the source code of verify_knowhost(), check previous example
-	if (verify_knownhost(session) < 0)
-	{
-		QMessageBox::critical (this, "Error", "Could not verify server ID");
-		ssh_disconnect(session);
-		ssh_free(session);
-		return false;
-	}
-
-	// Authenticate ourselves
-	//password = getpass("Password: ");
-	QByteArray userArray = username.toLatin1();
-	const char *userchar = userArray.data();
-	QByteArray passArray = password.toLatin1();
-	const char *passchar = passArray.data();
-
-	rc = ssh_userauth_password(session, userchar, passchar);
-	if (rc != SSH_AUTH_SUCCESS)
-	{
-		qDebug() << "Error authenticating with password:" << ssh_get_error(session);
-		QMessageBox::critical (this, "Error", "Bad username or password.");
-		ssh_disconnect(session);
-		ssh_free(session);
-		return false;
-	}
-
-	ssh_channel channel;
-	char buffer[256];
-	int nbytes;
-
-	channel = ssh_channel_new(session);
-	if (channel == NULL){
-		QMessageBox::critical (this, "Error", "Could not open channel.");
-		return false;//SSH_ERROR;
-	}
-
-	rc = ssh_channel_open_session(channel);
-	if (rc != SSH_OK)
-	{
-		ssh_channel_free(channel);
-		QMessageBox::critical (this, "Error", "Could not open channel.");
-		return false;//rc;
-	}
-
-	rc = ssh_channel_request_exec(channel, (char *) QString("mkdir ~/.ssh").toLatin1().data());
-	if (rc != SSH_OK)
-	{
-		qDebug() << "Error running command mkdir:" << ssh_get_error(session);
-		QMessageBox::critical (this, "Error", "Could not create remote directory.");
-		ssh_channel_close(channel);
-		ssh_channel_free(channel);
-		return false;//rc;
-	}
-
-	nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-	while (nbytes > 0){
-		if (write(1, buffer, nbytes) != nbytes){
-			ssh_channel_close(channel);
-			ssh_channel_free(channel);
-			QMessageBox::critical (this, "Error", "Command read error");
-			return false;//SSH_ERROR;
-		}
-		nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-	}
-
-	if (nbytes < 0)
-	{
-		ssh_channel_close(channel);
-		ssh_channel_free(channel);
-		QMessageBox::critical (this, "Error", "Command read error");
-		return false;//SSH_ERROR;
-	}
-
-	ssh_channel_send_eof(channel);
-	ssh_channel_close(channel);
-	ssh_channel_free(channel);
-
-	channel = ssh_channel_new(session);
-	if (channel == NULL){
-		QMessageBox::critical (this, "Error", "Could not open channel");
-		return false;//SSH_ERROR;
-	}
-
-	rc = ssh_channel_open_session(channel);
-	if (rc != SSH_OK)
-	{
-		ssh_channel_free(channel);
-		QMessageBox::critical (this, "Error", "Could not open channel.");
-		return false;//rc;
 	}
 
 	QString echoCmd("echo \"" + key.simplified() + "\" >> ~/.ssh/authorized_keys");
-	rc = ssh_channel_request_exec(channel, (char *) echoCmd.toLatin1().data());
-	if (rc != SSH_OK)
-	{
-		qDebug() << "Error running command:" << echoCmd << " : " << ssh_get_error(session);
-		ssh_channel_close(channel);
-		ssh_channel_free(channel);
-		QMessageBox::critical (this, "Error", "Could not update key on server.");
-		return false;//rc;
+	if(!rsh->runToEnd(echoCmd)){
+		QMessageBox::critical (this, "Error", "Could not add key to server key list.");
+		return false;
 	}
-
-	nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-	while (nbytes > 0){
-		if (write(1, buffer, nbytes) != nbytes){
-			ssh_channel_close(channel);
-			ssh_channel_free(channel);
-			QMessageBox::critical (this, "Error", "Command read error");
-			return false;//SSH_ERROR;
-		}
-		nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-	}
-
-	if (nbytes < 0)
-	{
-		ssh_channel_close(channel);
-		ssh_channel_free(channel);
-		QMessageBox::critical (this, "Error", "Command read error");
-		return false;//SSH_ERROR;
-	}
-
-
-
-	ssh_channel_send_eof(channel);
-	ssh_channel_close(channel);
-	ssh_channel_free(channel);
-
-
-
-	ssh_disconnect(session);
-	ssh_free(session);
 
 	return true;
 }
@@ -259,8 +270,11 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 		return false;
 	}
 
+	// remote leading slashes
+	while(shareName.startsWith("/")) shareName = shareName.right(shareName.size() - 1);
+
 	if(!sh->runToEnd("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
-				+ "/~/" + shareName)){
+				+ "/~/" + shareName + " " + shareName)){
 		QMessageBox::critical (this, "Error", "git clone did not finish");
 		return false;
 	}
@@ -286,152 +300,6 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 	}
 
 	return true;
-}
-
-bool Init::setupShare(){
-	QTextStream out(stdout);
-
-
-	QString host = hostField->text().simplified();
-	int port = portField->value();
-	QString username = usernameField->text().simplified();
-	QString password = passwordField->text().trimmed();
-	QString shareName = sharenameField->text().simplified();
-	QString localFolder = folderField->text();
-
-	if(!port) port = 22;
-
-	if(host.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a host!");
-		return false;
-	}
-	if(username.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a username!");
-		return false;
-	}
-	if(password.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a password!");
-		return false;
-	}
-	if(shareName.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a share name!");
-		return false;
-	}
-	if(localFolder.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a folder to put the shared folder in!");
-		return false;
-	}
-
-	QProgressDialog progress("Connecting to server...", "Cancel", 0, 5, this);
-	progress.setWindowModality(Qt::WindowModal);
-	progress.setValue(0);
-	progress.setLabelText("Generating SSH keys");
-
-	// Generate key pair
-	if(!sshKeyGen()) return false;
-
-	progress.setValue(1);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Sending public key.");
-
-	// Send public key to server
-	if(!sshKeySend(host, port, username, password)) return false;
-
-	progress.setValue(2);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Downloading shared folder...");
-
-	QString localDir = localFolder + QDir::separator() + shareName;
-
-	// Initial synchronization
-	if(!gitClone(localFolder, username, host, port, shareName)) return false;
-
-	progress.setValue(3);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Checking local files");
-
-	// Check to see if localDir exists (created by clone)
-	QDir localRepo(localDir);
-	if(!localRepo.exists()){
-		QMessageBox::critical (this, "Error", "Initial synchronization error");
-		return false;
-	}
-
-	progress.setValue(4);
-	if(progress.wasCanceled()) return false;
-	progress.setLabelText("Adding to sync list");
-
-	// add to settings
-
-	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
-	QStringList dirs = settings->value("syncDirs").toStringList();
-
-	dirs << localDir;
-
-	settings->setValue("syncDirs", dirs);
-
-	// done
-	progress.setValue(5);
-
-	return true;
-}
-
-int Init::verify_knownhost(ssh_session session){
-	int state, hlen;
-	unsigned char *hash = NULL;
-	char *hexa;
-	//char buf[10];
-
-	state = ssh_is_server_known(session);
-
-	hlen = ssh_get_pubkey_hash(session, &hash);
-	if (hlen < 0)
-		return -1;
-
-	switch (state)
-	{
-		case SSH_SERVER_KNOWN_OK:
-			break; 
-
-		case SSH_SERVER_KNOWN_CHANGED:
-			qDebug( "Host key for server changed: it is now:\n");
-			ssh_print_hexa("Public key hash", hash, hlen);
-			qDebug("For security reasons, connection will be stopped\n");
-			free(hash);
-			return -1;
-
-		case SSH_SERVER_FOUND_OTHER:
-			qDebug("The host key for this server was not found but an other type of key exists.");
-			qDebug("An attacker might change the default server key to confuse your client into thinking the key does not exist");
-			qDebug() << hash;
-			free(hash);
-			return -1;
-
-		case SSH_SERVER_FILE_NOT_FOUND:
-			qDebug("Could not find known host file.");
-			qDebug("If you accept the host key here, the file will be automatically created.");
-
-		case SSH_SERVER_NOT_KNOWN:
-			hexa = ssh_get_hexa(hash, hlen);
-			qDebug("The server is unknown. Do you trust the host key?");
-			qDebug() << "Public key hash:" <<  hexa;
-			free(hexa);
-			if (ssh_write_knownhost(session) < 0)
-			{
-				qDebug() << "Error writing known host";
-				free(hash);
-				return -1;
-			}
-			break;
-
-		case SSH_SERVER_ERROR:
-			qDebug() << "Error" << ssh_get_error(session);
-			free(hash);
-			return -1;
-	}
-
-	free(hash);
-	return 0;
 }
 
 void Init::on_folderSelectButton_clicked(){
