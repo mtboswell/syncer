@@ -43,7 +43,7 @@ bool Init::validateCurrentPage(){
 		case 2:
 			return validateSharesPage();
 			break;
-		case default:
+		default:
 			qDebug() << "Error: Invalid page ID";
 			return false;
 			break;
@@ -143,13 +143,48 @@ void Init::initializePage(int id){
 		case 2:
 			initializeSharesPage();
 			break;
-		case default:
+		default:
 			qDebug() << "Error: Invalid page ID";
 			break;
 	}
 
 }
 
+void Init::initializeComputerPage(){
+
+}
+void Init::initializeServerPage(){
+
+}
+void Init::initializeSharesPage(){
+	// get shares list
+	// find . | grep "/\\.git/" | sed "s/\(.*\)\.git.*/\1/" | sort -u
+
+	if(!rsh->runToEnd("find . | grep \"/\\.git/\" | sed \"s/\\(.*\\)\\.git.*/\1/\" | sort -u")){
+		QMessageBox::critical (this, "Error", "Unable to find shares on server!");
+		return;
+	}
+	QStringList shares = rsh->result().split('\n');
+
+	sharesTreeWidget->clear();
+
+	QList<QTreeWidgetItem *> items;
+
+	foreach(QString share, shares){
+		QStringList item;
+		item << share;
+
+		QTreeWidgetItem* treeItem = new QTreeWidgetItem((QTreeWidget*) 0, item);
+
+		treeItem->setFlags(Qt::ItemIsUserCheckable);
+		treeItem->setCheckState(0, Qt::Unchecked);
+
+		items.append(treeItem);
+	}
+
+	sharesTreeWidget->insertTopLevelItems(0, items);
+
+}
 
 
 
@@ -212,7 +247,7 @@ bool Init::sshKeyGen(){
 
 }
 
-bool pubKeyAuthorized(){
+bool Init::pubKeyAuthorized(){
 	QString key;
 	QFile keyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
 	if (!keyFile.open(QIODevice::ReadOnly | QIODevice::Text)){

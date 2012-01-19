@@ -21,7 +21,7 @@ class Init : public QWizard , private Ui::initWizard {
 		bool validateCurrentPage();
 	private slots:
 		void on_folderSelectButton_clicked();
-		void onCurrentIdChanged(int id);
+		//void onCurrentIdChanged(int id);
 	private:
 		void initializePage(int id);
 		void accept();
