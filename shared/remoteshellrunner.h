@@ -1,26 +1,36 @@
 #include <libssh/libssh.h>
 #include <QObject>
 #include <QString>
+#include <QBuffer>
+#include <QRegExp>
+#include <QTime>
+#include <QDebug>
 
 class RemoteShellRunner : public QObject {
 	Q_OBJECT
 	public:
 		RemoteShellRunner(QString host, QString username, QString password, int port = 22);
 		~RemoteShellRunner();
+
 		bool isConnected();
+
+		bool run(QString cmd);
+		bool runToEnd(QString cmd, int timeout = 5000);
+		bool run(QString cmd, QString lookFor);
+
+
 		bool expect(QString lookFor, int timeout = 5000);
 		bool expectRegExp(QString lookFor, int timeout = 5000);
-		bool run(QString cmd, QString lookFor);
+		bool expectEnd(int timeout = 5000);
+
 		bool have(QString lookFor);
 		QString result();
-		bool expectEnd(int timeout = 5000);
+
 		bool cd(QString path);
-		bool runToEnd(QString cmd, int timeout = 5000);
 
 		enum CmdState {Stopped, Running} state;
 
 	public slots:
-		void run(QString cmd);
 		void stop();
 		void exit();
 
@@ -33,8 +43,10 @@ class RemoteShellRunner : public QObject {
 	private:
 		int verify_knownhost();
 		ssh_session session;
-		QString buf;
+		ssh_channel channel;
 		QString currentCmd;
 		bool connected;
+		QBuffer buf;
+		QTime cmdTimer;
 
 };

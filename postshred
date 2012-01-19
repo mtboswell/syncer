@@ -1,0 +1,10 @@
+#! /bin/bash
+
+mkdir $1-pulled
+cd $1-pulled
+git init
+git pull ../$1
+cd ..
+cp $1/.git/config $1-pulled/.git/config
+rm -r $1
+mv $1-pulled $1
