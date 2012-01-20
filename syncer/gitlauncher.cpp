@@ -98,7 +98,7 @@ void GitLauncher::doPush(){
 	// git push
 
 	qDebug() << "Pushing";
-	RunResult pushRes = Runner::run("git push origin master", 235000);
+	RunResult pushRes = Runner::run("git push origin master");
 	if(pushRes.status){
 		qDebug() << "Push failed with error:" << pushRes.error;
 		return;
