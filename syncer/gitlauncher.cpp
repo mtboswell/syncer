@@ -13,9 +13,7 @@ GitLauncher::GitLauncher(QString pathToRepository){
 		qFatal(QString(repoPath+" is not a git repository!").toLatin1());
 	}
 
-	// initalize shell
-	sh = new ShellRunner;
-	if(!sh->cd(repoPath)) qDebug() << "Error: could not cd to repo";
+	Runner::setWorkingDirectory(repoPath);
 
 	// setup timers
 	pushTimer = new QTimer();
@@ -56,16 +54,15 @@ void GitLauncher::checkForUpdate(){
 	// git pull
 
 	qDebug() << "Pulling";
-	sh->runToEnd("git pull --rebase", 135000);
+	RunResult pullRes = Runner::run("git pull --rebase", 135000);
 
-	if(!sh->have("Already up-to-date.") && !sh->have("up to date")){
-		if(sh->have("fatal"))
-			out << "Error: " << sh->result().right(sh->result().size() - sh->result().indexOf("fatal:") - 6) << endl;
-		else if(sh->have("Updating") || sh->have("Fast-forwarded"))
+	if(!pullRes.stdOut.contains("Already up-to-date.") && !pullRes.stdOut.contains("up to date")){
+		if(pullRes.stdErr.contains("fatal"))
+			out << "Error: " << pullRes.stdErr.right(pullRes.stdOut.size() - pullRes.stdErr.indexOf("fatal:") - 6) << endl;
+		else if(pullRes.stdOut.contains("Updating") || pullRes.stdOut.contains("Fast-forwarded"))
 			out << "Synchronized from server" << endl;
 		else
-			out << "Unknown Error: " << sh->result() << endl;
-		
+			out << "Unknown Error: " << pullRes.stdOut << pullRes.stdErr << endl;
 	}
 }
 
@@ -73,20 +70,8 @@ void GitLauncher::doPush(){
 	pushTimer->stop();
 	QTextStream out(stdout);
 
-	// git add each dir
-	/*
-	foreach(QString path, dirsChanged){
-		// git add dir
-		qDebug() << "Adding" << path;
-		sh->runToEnd("git add --all " + path);
-		if(sh->have("fatal")){
-			qDebug() << "Failed to add dir" << path;
-		}
-	}
-	*/
-
-	sh->runToEnd("git add --all");
-	if(sh->have("fatal")){
+	RunResult addRes = Runner::run("git add --all");
+	if(addRes.stdErr.contains("fatal")){
 		qDebug() << "Error: Failed to add";
 		return;
 	}
@@ -97,22 +82,31 @@ void GitLauncher::doPush(){
 	// note that the commit happens in the last dir that git add was run in. This means we don't support multiple repos per process.
 
 	qDebug() << "Committing";
-	sh->runToEnd("git commit -m 'Autosync commit'", 10000);
-	if(!sh->have("nothing to commit")) out << "Synchronized with local" << endl;
+	RunResult commitRes = Runner::run("git commit -m 'Autosync commit'", 10000);
+	if(commitRes.status){
+		qDebug() << "Commit failed with error:" << commitRes.error;
+		return;
+	}
+	qDebug() << "Commit output:" << commitRes.stdOut << commitRes.stdErr;
+	if(!commitRes.stdOut.contains("nothing to commit")) out << "Synchronized with local" << endl;
 	else return;
 
 	// git push
 
 	qDebug() << "Pushing";
-	sh->runToEnd("git push origin master", 235000);
+	RunResult pushRes = Runner::run("git push origin master", 235000);
+	if(pushRes.status){
+		qDebug() << "Push failed with error:" << pushRes.error;
+		return;
+	}
 	
-	if(!sh->have("Already up-to-date.")){
-		if(sh->have("fatal"))
-			out << "Error: " << sh->result().right(sh->result().size() - sh->result().indexOf("fatal:") - 6) << endl;
-		else if(sh->have("master -> master"))
+	if(!pushRes.stdOut.contains("Already up-to-date.")){
+		if(pushRes.stdErr.contains("fatal"))
+			out << "Error: " << pushRes.stdErr.right(pushRes.stdErr.size() - pushRes.stdErr.indexOf("fatal:") - 6) << endl;
+		else if(pushRes.stdOut.contains("master -> master"))
 			out << "Synchronized to server" << endl;
 		else
-			out << "Unknown Error: " << sh->result() << endl;
+			out << "Unknown Error: " << pushRes.stdOut << pushRes.stdErr << endl;
 		
 	}
 	

@@ -12,7 +12,7 @@
 #include <QSettings>
 #include <QDebug>
 
-#include "../shared/shellrunner.h"
+#include "../shared/runner.h"
 
 class GitLauncher : public QObject {
 	Q_OBJECT
@@ -26,7 +26,6 @@ class GitLauncher : public QObject {
 		
 	private:
 		QStringList recursePaths(QString baseDir);
-		ShellRunner* sh;
 		QFileSystemWatcher* watch;
 		QTimer* pushTimer;
 		QTimer* pullTimer;

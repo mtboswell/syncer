@@ -15,12 +15,18 @@ ShellRunner::ShellRunner(QString workingdir, QString shell){
 	if(!shProc->waitForStarted()){
 		qFatal("Shell did not start!");
 	}else{
-		expect("$");
+		if(!expect("$")){
+			qDebug() << "Error: did not find initial prompt.";
+			return ;
+		}
 		
 		shProc->write("PS1=$+$\n");
 		if(expect("PS1=$+$\n")){
 			buf = buf.right(buf.size() - (buf.indexOf("PS1=$+$\n") + 8));
 			state = Stopped;
+		}else{
+			qDebug() << "Error: did not set prompt";
+			return ;
 		}
 
 		runToEnd("PATH=$PATH:$PWD");

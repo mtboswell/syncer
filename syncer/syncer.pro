@@ -28,5 +28,5 @@ HEADERS += gitlauncher.h
 SOURCES += gitlauncher.cpp main.cpp
 
 # Shared
-HEADERS += ../shared/shellrunner.h
-SOURCES += ../shared/shellrunner.cpp
+HEADERS += ../shared/runner.h
+SOURCES += ../shared/runner.cpp

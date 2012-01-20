@@ -3,7 +3,7 @@
 class ShellRunner : public QObject {
 	Q_OBJECT
 	public:
-		ShellRunner(QString workingDirectory = ".", QString shell = "bash -i");
+		ShellRunner(QString workingDirectory = ".", QString shell = "bash --noediting --norc --noprofile -i");
 		~ShellRunner();
 		bool expect(QString lookFor, int timeout = 5000);
 		bool expectRegExp(QString lookFor, int timeout = 5000);
