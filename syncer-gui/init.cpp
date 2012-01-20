@@ -112,7 +112,7 @@ bool Init::validateServerPage(){
 			QMessageBox::critical (this, "Error", "Unable to send public key to server!");
 			return false;
 		}
-	}
+	}else qDebug() << "Pub key auth already set up.";
 
 	return true;
 }

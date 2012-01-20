@@ -144,6 +144,7 @@ bool RemoteShellRunner::run(QString cmd){
 		qDebug() << "Error running command " << cmd << ssh_get_error(session);
 		ssh_channel_close(channel);
 		ssh_channel_free(channel);
+		channel = NULL;
 		return false;//rc;
 	}
 
@@ -151,6 +152,7 @@ bool RemoteShellRunner::run(QString cmd){
 		ssh_channel_send_eof(channel);
 		ssh_channel_close(channel);
 		ssh_channel_free(channel);
+		channel = NULL;
 		state = Stopped;
 	}else state = Running;
 
@@ -313,6 +315,7 @@ bool RemoteShellRunner::expectEnd(int timeout){
 	ssh_channel_send_eof(channel);
 	ssh_channel_close(channel);
 	ssh_channel_free(channel);
+	channel = NULL;
 	state = Stopped;
 	
 	return cmdTimer.elapsed() < timeout;
