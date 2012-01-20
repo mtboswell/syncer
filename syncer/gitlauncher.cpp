@@ -82,14 +82,18 @@ void GitLauncher::doPush(){
 	// note that the commit happens in the last dir that git add was run in. This means we don't support multiple repos per process.
 
 	qDebug() << "Committing";
-	RunResult commitRes = Runner::run("git commit -m 'Autosync commit'", 10000);
+	RunResult commitRes = Runner::run("git commit -m \"Autosync commit\"");
 	if(commitRes.status){
 		qDebug() << "Commit failed with error:" << commitRes.error;
 		return;
 	}
 	qDebug() << "Commit output:" << commitRes.stdOut << commitRes.stdErr;
-	if(!commitRes.stdOut.contains("nothing to commit")) out << "Synchronized with local" << endl;
-	else return;
+	if(commitRes.stdOut.contains("[master")) out << "Synchronized with local" << endl;
+	else if(commitRes.stdOut.contains("nothing to commit")) return;
+	else{
+		qDebug() << "Error: unrecognized commit output";
+		return;
+	}
 
 	// git push
 
