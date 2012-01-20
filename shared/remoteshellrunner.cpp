@@ -37,7 +37,12 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 	qDebug() << "to host" << hostchar;
 
 	ssh_options_set(session, SSH_OPTIONS_HOST, hostchar);
+
+	qDebug() << "Set host";
+
 	ssh_options_set(session, SSH_OPTIONS_PORT, &port);
+
+	qDebug() << "Set port";
 
 	// Connect to server
 	rc = ssh_connect(session);
