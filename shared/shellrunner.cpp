@@ -49,8 +49,7 @@ bool ShellRunner::expect(QString lookFor, int timeout){
 	while((!buf.contains(lookFor)) && (timer.elapsed() < timeout)){
 		//qDebug() << "Waiting for read";
 		if(!shProc->waitForReadyRead(timeout)){
-			emit error("Command not responding", "Command " + currentCmd + " is not responding");
-			qDebug() << "Read timed out" << "Command " + currentCmd + " is not responding";
+			qDebug() << "Read timed out" << "Did not find " + lookFor + " in output";
 			return false;
 		}
 
@@ -169,6 +168,7 @@ bool ShellRunner::expectEnd(int timeout){
 
 bool ShellRunner::cd(QString path){
 	path.replace("\\","/");
+	// remove colon after drive letter
 	path.replace(QRegExp("([A-Z]):"), "/\\1");
 	run("cd " + path);
 	expectEnd();

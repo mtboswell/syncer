@@ -87,7 +87,8 @@ void GitLauncher::doPush(){
 
 	sh->runToEnd("git add --all");
 	if(sh->have("fatal")){
-		qDebug() << "Failed to add";
+		qDebug() << "Error: Failed to add";
+		return;
 	}
 
 	dirsChanged.clear();
