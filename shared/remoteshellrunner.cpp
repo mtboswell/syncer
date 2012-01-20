@@ -20,13 +20,11 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 
 	qDebug() << "Connecting to" << host;
 
-	if(session == NULL){
-		// Open session and set options
-		session = ssh_new();
-		if (session == NULL){
-			qDebug("Unable to open ssh session");
-			return false;
-		}
+	// Open session and set options
+	session = ssh_new();
+	if (session == NULL){
+		qDebug("Unable to open ssh session");
+		return false;
 	}
 
 	qDebug() << "Created session, connecting...";
