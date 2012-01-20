@@ -66,6 +66,8 @@ bool Init::validateComputerPage(){
 		QMessageBox::information (this, "Settings failed", "Could not set user info, please try again.");
 		return false;
 	}
+
+	return true;
 }
 
 bool Init::validateServerPage(){
@@ -151,8 +153,9 @@ void Init::initializeSharesPage(){
 
 	// get shares list
 	// find . | grep "/\\.git/" | sed "s/\(.*\)\.git.*/\1/" | sort -u
+	// find . | grep "HEAD" | sed "s/\.\/\(.*\)\/HEAD.*/\1/" | sort -u
 
-	if(!rsh->runToEnd("find . | grep \"/\\.git/\" | sed \"s/\\(.*\\)\\.git.*/\\1/\" | sort -u")){
+	if(!rsh->runToEnd("find . | grep \"/HEAD$\" | sed \"s/\\.\\/\\(.*\\)\\/HEAD/\\1/\" | sort -u")){
 		QMessageBox::critical (this, "Error", "Unable to find shares on server!");
 		return;
 	}
