@@ -170,6 +170,9 @@ bool ShellRunner::cd(QString path){
 	path.replace("\\","/");
 	// remove colon after drive letter
 	path.replace(QRegExp("([A-Z]):"), "/\\1");
+
+	while(path.endsWith("/")) path = path.left(path.size() - 1);
+
 	run("cd " + path);
 	expectEnd();
 	return run("pwd", path);
