@@ -87,7 +87,7 @@ void GitLauncher::doPush(){
 		qDebug() << "Commit failed with error:" << commitRes.error;
 		return;
 	}
-	qDebug() << "Commit output:" << commitRes.stdOut << commitRes.stdErr;
+	//qDebug() << "Commit output:" << commitRes.stdOut << commitRes.stdErr;
 	if(commitRes.stdOut.contains("[master")) out << "Synchronized with local" << endl;
 	else if(commitRes.stdOut.contains("nothing to commit")) return;
 	else{
