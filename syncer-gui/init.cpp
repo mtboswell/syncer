@@ -92,24 +92,24 @@ bool Init::validateServerPage(){
 	}
 
 
-	qDebug() << "Connecting to remote host";
+	//qDebug() << "Connecting to remote host";
 
 	if(!rsh->connect(host, username, password, port)){
 		QMessageBox::critical (this, "Error", "Unable to connect to server!");
 		return false;
 	}
 
-	qDebug() << "Generating ssh keys";
+	//qDebug() << "Generating ssh keys";
 
 	if(!sshKeyGen()){
 		QMessageBox::critical (this, "Error", "Unable to generate private key!");
 		return false;
 	}
 
-	qDebug() << "Checking if authorized on server";
+	//qDebug() << "Checking if authorized on server";
 
 	if(!pubKeyAuthorized()){
-		qDebug() << "Sending key to server";
+		//qDebug() << "Sending key to server";
 		if(!sendPubKey()){
 			QMessageBox::critical (this, "Error", "Unable to send public key to server!");
 			return false;
@@ -149,7 +149,7 @@ void Init::initializeServerPage(){
 }
 void Init::initializeSharesPage(){
 
-	qDebug() << "Initializing shares page";
+	//qDebug() << "Initializing shares page";
 
 	// get shares list
 	// find . | grep "/\\.git/" | sed "s/\(.*\)\.git.*/\1/" | sort -u
@@ -168,7 +168,7 @@ void Init::initializeSharesPage(){
 		return;
 	}
 
-	qDebug() << "Found shares" << shares;
+	//qDebug() << "Found shares" << shares;
 
 	sharesTreeWidget->clear();
 
@@ -274,7 +274,7 @@ bool Init::sshKeyGen(){
 		RunResult keygenRes = Runner::run("ssh-keygen -t rsa -N \"\" -f " + QDir::homePath() + "/.ssh/id_rsa");
 		if(keygenRes.status) {
 			QMessageBox::critical (this, "Error", "ssh-keygen did not finish properly!");
-			qDebug() << "ssh-keygen out:" << keygenRes.stdOut << keygenRes.stdErr;
+			//qDebug() << "ssh-keygen out:" << keygenRes.stdOut << keygenRes.stdErr;
 			return false;
 		}
 	}else{

@@ -21,7 +21,7 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 
 	int rc;
 
-	qDebug() << "Connecting to" << host;
+	//qDebug() << "Connecting to" << host;
 
 	// Open session and set options
 	session = ssh_new();
@@ -30,20 +30,20 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 		return false;
 	}
 
-	qDebug() << "Created session, connecting...";
+	//qDebug() << "Created session, connecting...";
 
 	QByteArray hostarray = host.toLatin1();
 	const char *hostchar = hostarray.data();
 
-	qDebug() << "to host" << hostchar;
+	//qDebug() << "to host" << hostchar;
 
 	ssh_options_set(session, SSH_OPTIONS_HOST, hostchar);
 
-	qDebug() << "Set host";
+	//qDebug() << "Set host";
 
 	ssh_options_set(session, SSH_OPTIONS_PORT, &port);
 
-	qDebug() << "Set port";
+	//qDebug() << "Set port";
 
 	// Connect to server
 	rc = ssh_connect(session);
@@ -54,7 +54,7 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 		return false;
 	}
 
-	qDebug() << "Verifying knownhost";
+	//qDebug() << "Verifying knownhost";
 
 	// Verify the server's identity
 	// For the source code of verify_knowhost(), check previous example
@@ -65,7 +65,7 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 		return false;
 	}
 
-	qDebug() << "Authenticating";
+	//qDebug() << "Authenticating";
 
 	// Authenticate ourselves
 	//password = getpass("Password: ");
@@ -113,7 +113,7 @@ bool RemoteShellRunner::run(QString cmd){
 		return false;
 	}
 
-	qDebug() << "Running:" << cmd << "on remote host";
+	//qDebug() << "Running:" << cmd << "on remote host";
 
 	int rc;
 
@@ -172,7 +172,7 @@ bool RemoteShellRunner::read(){
 	nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
 	while (nbytes > 0){
 		buf.write(buffer, nbytes);
-		qDebug() << "Read" << nbytes << "bytes from stdout:" << buf.buffer();
+		//qDebug() << "Read" << nbytes << "bytes from stdout:" << buf.buffer();
 		// writes to STDOUT
 		/*
 		if (write(1, buffer, nbytes) != nbytes){
@@ -189,14 +189,14 @@ bool RemoteShellRunner::read(){
 	{
 		//ssh_channel_close(channel);
 		//ssh_channel_free(channel);
-		qDebug() << "stdout did not contain EOF";
+		//qDebug() << "stdout did not contain EOF";
 		//return false;//SSH_ERROR;
 	}
 
 	nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 1);
 	while (nbytes > 0){
 		buf.write(buffer, nbytes);
-		qDebug() << "Read" << nbytes << "bytes from stderr:" << buf.buffer();
+		//qDebug() << "Read" << nbytes << "bytes from stderr:" << buf.buffer();
 		// writes to STDOUT
 		/*
 		if (write(1, buffer, nbytes) != nbytes){
@@ -213,7 +213,7 @@ bool RemoteShellRunner::read(){
 	{
 		//ssh_channel_close(channel);
 		//ssh_channel_free(channel);
-		qDebug() << "stderr did not contain EOF";
+		//qDebug() << "stderr did not contain EOF";
 		//return false;//SSH_ERROR;
 	}
 
