@@ -3,7 +3,6 @@
 Init::Init(QWidget* parent):QWizard(parent){
 	setupUi(this);
 
-	sh = new ShellRunner();
 	rsh = new RemoteShellRunner();
 
 	if(!getUserInfo()) this->reject();
@@ -11,20 +10,17 @@ Init::Init(QWidget* parent):QWizard(parent){
 }
 
 Init::~Init(){
-	sh->exit();
-	delete sh;
 	delete rsh;
 }
 
 bool Init::getUserInfo(){
 
-	sh->runToEnd("git config --global --get user.name");
+	RunResult configRes = Runner::run("git config --global --get user.name");
 
-	QString name = sh->result();
+	QString name = configRes.stdOut;
 
 	if(name.isEmpty()){
-		sh->runToEnd("hostname");
-		name = sh->result();
+		name = QHostInfo::localHostName();
 	}
 
 	nameField->setText(name);
@@ -65,8 +61,8 @@ bool Init::validateComputerPage(){
 		return false;
 	}
 
-
-	if(!sh->runToEnd("git config --global user.name \"" + name + "\"")) {
+	RunResult configRes = Runner::run("git config --global user.name \"" + name + "\"");
+	if(configRes.status) {
 		QMessageBox::information (this, "Settings failed", "Could not set user info, please try again.");
 		return false;
 	}
@@ -100,13 +96,6 @@ bool Init::validateServerPage(){
 		QMessageBox::critical (this, "Error", "Unable to connect to server!");
 		return false;
 	}
-
-/*
-	QString thisHostname = QHostInfo::localHostName();
-
-	sh->runToEnd("echo $USER");
-	QString thisUser = sh->result();
-*/
 
 	qDebug() << "Generating ssh keys";
 
@@ -240,10 +229,12 @@ bool Init::sshKeyGen(){
 	//if not exists '~/.ssh/id_rsa.pub' then ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
 	QFile pubKeyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
 	if(!pubKeyFile.exists()){
-		if(!sh->runToEnd("ssh-keygen -t rsa -N \"\" -f " + QDir::homePath() + "/.ssh/id_rsa"))
+		RunResult keygenRes = Runner::run("ssh-keygen -t rsa -N \"\" -f " + QDir::homePath() + "/.ssh/id_rsa");
+		if(keygenRes.status) {
 			QMessageBox::critical (this, "Error", "ssh-keygen did not finish properly!");
-
-		qDebug() << "ssh-keygen out:\n" << sh->result();
+			qDebug() << "ssh-keygen out:" << keygenRes.stdOut << keygenRes.stdErr;
+			return false;
+		}
 	}else{
 		qDebug() << "Skipping keygen";
 	}
@@ -305,21 +296,20 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
 
-	if(!sh->cd(localFolder)){
-		QMessageBox::critical (this, "Error", "cd " + localFolder + " did not finish");
-		return false;
-	}
+	Runner::setWorkingDirectory(localFolder);
 
 	// remote leading slashes
 	while(shareName.startsWith("/")) shareName = shareName.right(shareName.size() - 1);
 
-	if(!sh->runToEnd("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
-				+ "/~/" + shareName + " " + shareName)){
+	RunResult cloneRes = Runner::run("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
+				+ "/~/" + shareName + " " + shareName);
+
+	if(cloneRes.status){
 		QMessageBox::critical (this, "Error", "git clone did not finish");
 		return false;
 	}
 
-	QString gitOut = sh->result();
+	QString gitOut = cloneRes.stdOut + cloneRes.stdErr;
 	//QMessageBox::information(this, "Git:", gitOut);
 
 	if(!gitOut.isEmpty() && !gitOut.contains("Already up-to-date.")){

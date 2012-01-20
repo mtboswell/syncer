@@ -1,6 +1,9 @@
 TEMPLATE = app
 TARGET = syncer-gui
 
+QT += network
+CONFIG += QT
+
 CONFIG(debug, debug|release){
 	message("Debug")
         OBJECTS_DIR = debug
@@ -26,13 +29,13 @@ unix|macx:LIBS += -lssh
 SOURCES += main.cpp\
     syncerlauncher.cpp \
     init.cpp \
-    ../shared/shellrunner.cpp \
+    ../shared/runner.cpp \
     ../shared/remoteshellrunner.cpp
 
 HEADERS  += \
     syncerlauncher.h \
     init.h \
-    ../shared/shellrunner.h \
+    ../shared/runner.h \
     ../shared/remoteshellrunner.h
 
 FORMS    += initwizard.ui

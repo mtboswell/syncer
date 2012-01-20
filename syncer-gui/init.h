@@ -6,10 +6,11 @@
 #include <QFileDialog>
 #include <QProgressDialog>
 #include <QSettings>
+#include <QHostInfo>
 #include <QDebug>
 #include "ui_initwizard.h"
 
-#include "../shared/shellrunner.h"
+#include "../shared/runner.h"
 #include "../shared/remoteshellrunner.h"
 
 class Init : public QWizard , private Ui::initWizard {
@@ -43,7 +44,6 @@ class Init : public QWizard , private Ui::initWizard {
 
 		bool setupShare();
 
-		ShellRunner* sh;
 		RemoteShellRunner* rsh;
 
 };
