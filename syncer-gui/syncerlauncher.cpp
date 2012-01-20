@@ -13,6 +13,9 @@ SyncerLauncher::SyncerLauncher(QObject *parent) :
 	connect(procOutMapper, SIGNAL(mapped(const QString &)), this, SLOT(readProcOut(const QString &)));
 	connect(procFinishMapper, SIGNAL(mapped(const QString &)), this, SLOT(syncerCrashed(const QString &)));
 
+	// workaround for windows shortcut issue
+	QDir::setCurrent(QCoreApplication::applicationDirPath());
+
 	//syncerPath = "../../../syncer/build/release/syncer.exe";
 	// todo: use app->appPath(), etc.
 	if(settings->contains("syncerPath")){

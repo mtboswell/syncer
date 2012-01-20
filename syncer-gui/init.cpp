@@ -195,42 +195,72 @@ void Init::initializeSharesPage(){
 
 void Init::accept(){
 
+/*
 	QProgressDialog progress("Connecting to server...", "Cancel", 0, 5, this);
 	progress.setWindowModality(Qt::WindowModal);
 	progress.setValue(0);
 	progress.setLabelText("Generating SSH keys");
+	*/
 
-	// get shares from sharesTreeWidget
+	// get selected shares from sharesTreeWidget
 
-	// for each share, check to see if we already have it in settings and on filesystem
+	QTreeWidgetItem* item;
+	QStringList selectedShares;
 
-		// if not on filesystem, then clone the share
-
-		// if not in settings, then add to settings list
-
-/*
-	QString localDir = localFolder + QDir::separator() + shareName;
-
-	// Initial synchronization
-	if(!gitClone(localFolder, username, host, port, shareName)) return false;
-
-
-	// Check to see if localDir exists (created by clone)
-	QDir localRepo(localDir);
-	if(!localRepo.exists()){
-		QMessageBox::critical (this, "Error", "Initial synchronization error");
-		return false;
+	while((item = sharesTreeWidget->takeTopLevelItem(0)) != 0){
+		if(item->checkState(0) == Qt::Checked){
+			selectedShares << item->text(0);
+		}
 	}
 
-	// add to settings
+	QString localFolder = folderField->text();
+	QString host = hostField->text().simplified();
+	int port = portField->value();
+	QString username = usernameField->text().simplified();
+	QString password = passwordField->text().trimmed();
+	
+	if(!port) port = 22;
+
 
 	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
 	QStringList dirs = settings->value("syncDirs").toStringList();
 
-	dirs << localDir;
+	// for each share, check to see if we already have it in settings and on filesystem
+
+	foreach(QString shareName, selectedShares){
+
+		// if not on filesystem, then clone the share
+		QString localDir = localFolder + QDir::separator() + shareName;
+		QDir localRepo(localDir);
+
+		if(localRepo.exists()){
+			if(QDir(localDir+"/.git").exists()){
+				QMessageBox::information (this, "Notice", "Folder " + localDir + " already exists and is a share.");
+			}else{
+				QMessageBox::critical (this, "Error", "Folder " + localDir + " already exists!");
+				return;
+			}
+		}else{
+			// Initial synchronization
+			if(!gitClone(localFolder, username, host, port, shareName)){
+				QMessageBox::critical (this, "Error", "Was not able to sync " + shareName +"!");
+				return;
+			}
+			// Check to see if localDir exists (created by clone)
+			if(!localRepo.exists()){
+				QMessageBox::critical (this, "Error", "Initial synchronization error");
+				return;
+			}
+		}
+
+		// if not in settings, then add to settings list
+		if(!dirs.contains(localDir))
+			dirs << localDir;
+
+	}
 
 	settings->setValue("syncDirs", dirs);
-	*/
+
 }
 
 
