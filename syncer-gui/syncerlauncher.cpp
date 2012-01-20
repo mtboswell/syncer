@@ -67,8 +67,8 @@ void SyncerLauncher::refreshMenu(){
 
 void SyncerLauncher::initPath(){
 	Init* init = new Init;
-	connect(init, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(refreshMenu()));
-	connect(init, SIGNAL(finished(int, QProcess::ExitStatus)), init, SLOT(deleteLater()));
+	connect(init, SIGNAL(finished(int)), this, SLOT(refreshMenu()));
+	connect(init, SIGNAL(finished(int)), init, SLOT(deleteLater()));
 	init->show();
 }
 

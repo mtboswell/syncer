@@ -261,6 +261,8 @@ void Init::accept(){
 
 	settings->setValue("syncDirs", dirs);
 
+	QWizard::accept();
+
 }
 
 
