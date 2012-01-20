@@ -161,6 +161,13 @@ void Init::initializeSharesPage(){
 	}
 	QStringList shares = rsh->result().split('\n');
 
+	shares.removeAll("");
+
+	if(shares.isEmpty()){
+		QMessageBox::critical (this, "Error", "There are no shares on server!");
+		return;
+	}
+
 	qDebug() << "Found shares" << shares;
 
 	sharesTreeWidget->clear();
