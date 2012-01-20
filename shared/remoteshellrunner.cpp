@@ -7,6 +7,9 @@ RemoteShellRunner::RemoteShellRunner(){
 	buf.open(QBuffer::ReadWrite);
 
 	state = Stopped;
+
+	session = NULL;
+	channel = NULL;
 }
 
 RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString password, int port){
