@@ -97,9 +97,18 @@ bool RemoteShellRunner::isConnected(){
 
 bool RemoteShellRunner::run(QString cmd){
 
-	if(!connected) return false;
-	if(session == NULL) return false;
-	if(channel != NULL) return false;
+	if(!connected) {
+		qDebug() << "Error: not connected!";
+		return false;
+	}
+	if(session == NULL) {
+		qDebug() << "Error: no session!";
+		return false;
+	}
+	if(channel != NULL) {
+		qDebug() << "Error: another command in progress!";
+		return false;
+	}
 
 	qDebug() << "Running:" << cmd << "on remote host";
 
