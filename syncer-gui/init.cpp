@@ -173,7 +173,7 @@ void Init::initializeSharesPage(){
 
 		QTreeWidgetItem* treeItem = new QTreeWidgetItem((QTreeWidget*) 0, item);
 
-		treeItem->setFlags(Qt::ItemIsUserCheckable);
+		treeItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		treeItem->setCheckState(0, Qt::Unchecked);
 
 		items.append(treeItem);
