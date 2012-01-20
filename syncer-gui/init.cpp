@@ -152,7 +152,7 @@ void Init::initializeSharesPage(){
 	// get shares list
 	// find . | grep "/\\.git/" | sed "s/\(.*\)\.git.*/\1/" | sort -u
 
-	if(!rsh->runToEnd("find . | grep \"/\\.git/\" | sed \"s/\\(.*\\)\\.git.*/\1/\" | sort -u")){
+	if(!rsh->runToEnd("find . | grep \"/\\.git/\" | sed \"s/\\(.*\\)\\.git.*/\\1/\" | sort -u")){
 		QMessageBox::critical (this, "Error", "Unable to find shares on server!");
 		return;
 	}
