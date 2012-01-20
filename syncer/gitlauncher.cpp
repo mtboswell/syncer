@@ -104,10 +104,10 @@ void GitLauncher::doPush(){
 		return;
 	}
 	
-	if(!pushRes.stdOut.contains("Already up-to-date.")){
+	if(!pushRes.stdErr.contains("Already up-to-date.")){
 		if(pushRes.stdErr.contains("fatal"))
 			out << "Error: " << pushRes.stdErr.right(pushRes.stdErr.size() - pushRes.stdErr.indexOf("fatal:") - 6) << endl;
-		else if(pushRes.stdOut.contains("master -> master"))
+		else if(pushRes.stdErr.contains("master -> master"))
 			out << "Synchronized to server" << endl;
 		else
 			out << "Unknown Error: " << pushRes.stdOut << pushRes.stdErr << endl;
