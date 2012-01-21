@@ -13,5 +13,5 @@ int main(int argc, char *argv[])
 	QObject::connect(syncerLauncher, SIGNAL(quit()), &a, SLOT(quit()));
 
 
-    return a.exec();
+	return a.exec();
 }

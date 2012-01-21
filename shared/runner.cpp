@@ -20,11 +20,12 @@ RunResult Runner::run(QString cmd, int timeout){
 
 	procTimer.start();
 
-	while(procTimer.elapsed() < timeout && proc.state() != QProcess::NotRunning){
-		if(proc.waitForReadyRead(timeout/10)){
+	while(((procTimer.elapsed() < timeout) || (timeout == -1)) && proc.state() == QProcess::Running){
+		proc.waitForFinished(timeout/10);
+		//if(proc.waitForReadyRead(timeout/10)){
 			out.stdOut += proc.readAllStandardOutput();
 			out.stdErr += proc.readAllStandardError();
-		}
+		//}
 	}
 
 	if(proc.state() != QProcess::NotRunning){
