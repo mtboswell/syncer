@@ -1,0 +1,12 @@
+INPUT(
+./debug\main.o
+./debug\syncerlauncher.o
+./debug\init.o
+./debug\runner.o
+./debug\remoteshellrunner.o
+./debug\moc_syncerlauncher.o
+./debug\moc_init.o
+./debug\moc_runner.o
+./debug\moc_remoteshellrunner.o
+./debug\qrc_icons.o
+);
