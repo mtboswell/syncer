@@ -54,7 +54,7 @@ void GitLauncher::checkForUpdate(){
 	// git pull
 
 	qDebug() << "Pulling";
-	RunResult pullRes = Runner::run("git pull --rebase");
+	RunResult pullRes = Runner::run("git pull --rebase", -1);
 
 	if(!pullRes.stdOut.contains("Already up-to-date.") && !pullRes.stdOut.contains("up to date")){
 		if(pullRes.stdErr.contains("fatal"))
@@ -98,7 +98,7 @@ void GitLauncher::doPush(){
 	// git push
 
 	qDebug() << "Pushing";
-	RunResult pushRes = Runner::run("git push origin master");
+	RunResult pushRes = Runner::run("git push origin master", -1);
 	if(pushRes.status){
 		qDebug() << "Push failed with error:" << pushRes.error;
 		return;
