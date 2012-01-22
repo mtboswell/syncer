@@ -44,7 +44,11 @@ void GitLauncher::directoryChanged(QString path){
 	if(!dirsChanged.contains(path))
 		dirsChanged << path;
 	pushTimer->start(pushDelay);
-	watch->addPaths(recursePaths(path));
+	QStringList pathsThatCouldHaveBeenAdded = recursePaths(path);
+	foreach(QString pathThatCouldHaveBeenAdded, pathsThatCouldHaveBeenAdded){
+		if(!watch->directories().contains(pathThatCouldHaveBeenAdded))
+			watch->addPath(pathThatCouldHaveBeenAdded);
+	}
 }
 
 void GitLauncher::checkForUpdate(){
