@@ -44,7 +44,7 @@ void GitLauncher::directoryChanged(QString path){
 	if(!dirsChanged.contains(path))
 		dirsChanged << path;
 	pushTimer->start(pushDelay);
-
+	watch->addPaths(recursePaths(path));
 }
 
 void GitLauncher::checkForUpdate(){
