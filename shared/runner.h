@@ -9,6 +9,7 @@
 struct RunResult {
 	QProcess::ExitStatus status;
 	QProcess::ProcessError error;
+	int exitCode;
 	QString stdOut;
 	QString stdErr;
 };
