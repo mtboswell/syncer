@@ -80,7 +80,8 @@ void SyncerLauncher::addPath(){
 
 	QStringList dirs = settings->value("syncDirs").toStringList();
 
-	dirs << dir;
+	if(!dirs.contains(dir))
+		dirs << dir;
 
 	settings->setValue("syncDirs", dirs);
 }
@@ -107,6 +108,10 @@ void SyncerLauncher::addPath(QString dir){
 	connect(shredAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
 	menuMapper->setMapping(shredAction, "Shred:" + dir);
 
+	QAction* tagAction = dirMenus[dir]->addAction("Mark Milestone");
+	connect(tagAction, SIGNAL(triggered()), menuMapper, SLOT(map()));
+	menuMapper->setMapping(tagAction, "Tag:" + dir);
+
 	start(dir);
 }
 
@@ -117,6 +122,7 @@ void SyncerLauncher::doAction(QString action){
 	else if(action.startsWith("Restore:")) restore(action.right(action.length()-8));
 	else if(action.startsWith("Undelete:")) undelete(action.right(action.length()-9));
 	else if(action.startsWith("Shred:")) shred(action.right(action.length()-6));
+	else if(action.startsWith("Tag:")) tag(action.right(action.length()-4));
 }
 
 void SyncerLauncher::start(QString path){
@@ -172,7 +178,9 @@ void SyncerLauncher::restore(QString path){
 }
 
 void SyncerLauncher::undelete(QString path){
+	//stopAll();
 	QProcess* undeleteProc = new QProcess();
+	//connect(undeleteProc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(startAll()));
 	QStringList args;
 	args << path;
 	undeleteProc->start("syncer-undelete", args);
@@ -180,11 +188,22 @@ void SyncerLauncher::undelete(QString path){
 }
 
 void SyncerLauncher::shred(QString path){
+	stopAll();
 	QProcess* shredProc = new QProcess();
+	connect(shredProc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(startAll()));
 	QStringList args;
 	args << path;
 	shredProc->start("syncer-shred", args);
 	if(!shredProc->waitForStarted()) qWarning("Error: shred did not start");
+}
+
+void SyncerLauncher::tag(QString path){
+	Runner::setWorkingDirectory(path);
+
+	QString tagName = QInputDialog::getText(0, "Milestone Name", "Mark this milestone as:");
+
+	RunResult tagRes = Runner::run("git tag \"" + tagName.simplified() + "\"");
+	RunResult pushRes = Runner::run("git push --tags");
 }
 
 
@@ -220,5 +239,16 @@ void SyncerLauncher::syncerCrashed(const QString & path){
 	if(!syncers[path]->waitForStarted()){
 		trayIcon->showMessage("Error", "Syncer did not restart!");
 		//qFatal("Error: syncer did not start");
+	}
+}
+
+void SyncerLauncher::stopAll(){
+	foreach(QString dir, syncDirs){
+		stop(dir);
+	}
+}
+void SyncerLauncher::startAll(){
+	foreach(QString dir, syncDirs){
+		start(dir);
 	}
 }

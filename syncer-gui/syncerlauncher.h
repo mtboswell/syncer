@@ -13,6 +13,9 @@
 #include <QDir>
 #include <QSettings>
 #include <QMessageBox>
+#include <QInputDialog>
+
+#include "../shared/runner.h"
 
 #include "init.h"
 
@@ -39,9 +42,12 @@ class SyncerLauncher : public QObject
 		void restore(QString path);
 		void undelete(QString path);
 		void shred(QString path);
+		void tag(QString path);
 		void quitAll();
 		void readProcOut(const QString & path);
 		void syncerCrashed(const QString & path);
+		void startAll();
+		void stopAll();
 
 	private:
 		QAction* findMenuItem(QMenu* menu, QString item);
