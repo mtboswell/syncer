@@ -1,3 +1,6 @@
+#ifndef RUNNER_H
+#define RUNNER_H
+
 #include <QProcess>
 #include <QString>
 #include <QTime>
@@ -22,3 +25,4 @@ class Runner : public QObject
 		static QString workingDirectory;
 
 };
+#endif
