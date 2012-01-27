@@ -57,7 +57,6 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 	//qDebug() << "Verifying knownhost";
 
 	// Verify the server's identity
-	// For the source code of verify_knowhost(), check previous example
 	if (verify_knownhost() < 0)
 	{
 		ssh_disconnect(session);
