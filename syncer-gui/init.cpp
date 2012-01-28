@@ -344,7 +344,7 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 	while(shareName.startsWith("/")) shareName = shareName.right(shareName.size() - 1);
 
 	RunResult cloneRes = Runner::run("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
-				+ "/~/" + shareName + " " + shareName);
+                + "/~/" + shareName + " " + shareName, -1);
 
 	if(cloneRes.status){
 		QMessageBox::critical (this, "Error", "git clone did not finish");
