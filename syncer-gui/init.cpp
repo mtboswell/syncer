@@ -195,12 +195,6 @@ void Init::initializeSharesPage(){
 
 void Init::accept(){
 
-/*
-	QProgressDialog progress("Connecting to server...", "Cancel", 0, 5, this);
-	progress.setWindowModality(Qt::WindowModal);
-	progress.setValue(0);
-	progress.setLabelText("Generating SSH keys");
-	*/
 
 	// get selected shares from sharesTreeWidget
 
@@ -212,6 +206,13 @@ void Init::accept(){
 			selectedShares << item->text(0);
 		}
 	}
+
+	int shareCount = 0;
+
+	QProgressDialog progress("Synchronizing from server...", "Cancel", 0, selectedShares.size(), this);
+	progress.setWindowModality(Qt::WindowModal);
+	progress.setValue(shareCount);
+	progress.setLabelText("Synchronizing "+selectedShares.at(shareCount));
 
 	QString localFolder = folderField->text();
 	QString host = hostField->text().simplified();
@@ -241,6 +242,8 @@ void Init::accept(){
 				return;
 			}
 		}else{
+			progress.setValue(shareCount);
+			progress.setLabelText("Synchronizing "+shareName);
 			// Initial synchronization
 			if(!gitClone(localFolder, username, host, port, shareName)){
 				QMessageBox::critical (this, "Error", "Was not able to sync " + shareName +"!");
@@ -257,7 +260,11 @@ void Init::accept(){
 		if(!dirs.contains(localDir))
 			dirs << localDir;
 
+		shareCount++;
+
 	}
+
+	progress.setValue(selectedShares.size());
 
 	settings->setValue("syncDirs", dirs);
 
@@ -344,7 +351,7 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 	while(shareName.startsWith("/")) shareName = shareName.right(shareName.size() - 1);
 
 	RunResult cloneRes = Runner::run("git clone ssh://" + username + "@" + host + ":" + QString::number(port)
-                + "/~/" + shareName + " " + shareName, -1);
+				+ "/~/" + shareName + " " + shareName, -1);
 
 	if(cloneRes.status){
 		QMessageBox::critical (this, "Error", "git clone did not finish");
