@@ -58,7 +58,7 @@ void GitLauncher::checkForUpdate(){
 	// git pull
 
 	qDebug() << "Pulling";
-    RunResult pullRes = Runner::run("git pull --rebase origin master", -1);
+	RunResult pullRes = Runner::run("git pull --rebase origin master", -1);
 
 	if(!pullRes.stdOut.contains("Already up-to-date.") && !pullRes.stdOut.contains("up to date")){
 		if(pullRes.stdErr.contains("fatal"))
