@@ -163,7 +163,7 @@ void SyncerLauncher::stop(QString path){
 
 void SyncerLauncher::remove(QString path){
 	stop(path);
-	syncMenu->removeAction(findMenuItem(syncMenu, path));
+	syncMenu->removeAction(findMenuItem(syncMenu, QDir::toNativeSeparators(path)));
 
 	QStringList dirs = settings->value("syncDirs").toStringList();
 
