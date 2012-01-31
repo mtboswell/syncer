@@ -207,7 +207,9 @@ void Init::accept(){
 		}
 	}
 
-	int shareCount = 0;
+    int shareCount = 0;
+
+    this->setCursor(Qt::WaitCursor);
 
 	QProgressDialog progress("Synchronizing from server...", "Cancel", 0, selectedShares.size(), this);
 	progress.setWindowModality(Qt::WindowModal);
