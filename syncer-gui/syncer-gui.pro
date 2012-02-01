@@ -20,7 +20,8 @@ macx:target.path = /Applications/syncer
 unix|macx:INSTALLS += target
 
 win32 {
-	INCLUDEPATH += libssh
+	DEPENDPATH += .
+	INCLUDEPATH += . libssh
 	LIBS += -Llibssh/lib -llibssh
 }
 
