@@ -22,7 +22,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename=syncer_setup
-SetupIconFile=Z:\home\micah\working\syncer\syncer-gui\s_icon.ico
+SetupIconFile=C:\Users\micah\Documents\working\syncer\syncer-gui\s_icon.ico
 Compression=lzma
 SolidCompression=yes
 
