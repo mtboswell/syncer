@@ -114,8 +114,9 @@ Source: "C:\Users\micah\Documents\working\syncer\bin\msys-crypto-0.9.8.dll"; Des
 Source: "C:\Users\micah\Documents\working\syncer\bin\msys-minires.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\micah\Documents\working\syncer\bin\msys-z.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\micah\Documents\working\syncer\bin\QtCore4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\micah\Documents\working\syncer\bin\QtGui4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\micah\Documents\working\syncer\bin\QtGui4.dll"; DestDir: "{app}"; Flags: ignoreversion  
 Source: "C:\Users\micah\Documents\working\syncer\bin\QtSvg4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\micah\Documents\working\syncer\bin\QtNetwork4.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\micah\Documents\working\syncer\bin\rm.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\micah\Documents\working\syncer\bin\sed.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\micah\Documents\working\syncer\bin\sh.exe"; DestDir: "{app}"; Flags: ignoreversion
