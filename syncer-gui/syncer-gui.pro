@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = syncer-gui
 
-QT += network
+QT += gui network svg
 CONFIG += QT
 
 CONFIG(debug, debug|release){
