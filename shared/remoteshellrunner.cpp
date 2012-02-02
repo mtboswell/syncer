@@ -39,6 +39,12 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 
 	ssh_options_set(session, SSH_OPTIONS_HOST, hostchar);
 
+
+	QByteArray userArray = username.toLatin1();
+	const char *userchar = userArray.data();
+
+	ssh_options_set(session, SSH_OPTIONS_USER, userchar);
+
 	//qDebug() << "Set host";
 
 	ssh_options_set(session, SSH_OPTIONS_PORT, &port);
@@ -68,12 +74,10 @@ bool RemoteShellRunner::connect(QString host, QString username, QString password
 
 	// Authenticate ourselves
 	//password = getpass("Password: ");
-	QByteArray userArray = username.toLatin1();
-	const char *userchar = userArray.data();
 	QByteArray passArray = password.toLatin1();
 	const char *passchar = passArray.data();
 
-	rc = ssh_userauth_password(session, userchar, passchar);
+	rc = ssh_userauth_password(session, NULL, passchar);
 	if (rc != SSH_AUTH_SUCCESS)
 	{
 		qDebug() << "Error authenticating with password:" << ssh_get_error(session);
