@@ -148,13 +148,58 @@ void Upload::initializeServerPage(){
 }
 
 void Upload::accept(){
+	QString localFolder = folderField->text();
+	QString shareName = shareNameField->text();
+	QString host = hostField->text().simplified();
+	int port = portField->value();
+	QString username = usernameField->text().simplified();
+	
+	if(!port) port = 22;
 
 
 	// check to see if share exists on server
 
-	// check to see if local folder already has git
+	if(!rsh->runToEnd("ls ~/" + shareName)){
+		QMessageBox::critical (this, "Error", "Could not look for share on server.");
+		return;
+	}
 
-	// git init
+	if(!rsh->have("No such file or directory")){
+		QMessageBox::critical (this, "Error", "Share already exists!");
+		return;
+	}
+
+	// check to see if local folder already has git
+	QDir localRepo(localDir);
+
+	QDir localGitRepo(localDir + "/.git");
+
+	if(localGitRepo.exists()){
+		QMessageBox::critical (this, "Error", "Local folder is already a share!");
+		return;
+	}
+
+	// if so, check to see if it's already being synced
+
+	// mkdir -p ~/{share} on server
+	if(!rsh->runToEnd("mkdir -p ~/" + shareName)){
+		QMessageBox::critical (this, "Error", "Could not create share directory on server.");
+		return;
+	}
+
+	// cd ~/{share} on server
+	if(!rsh->runToEnd("cd ~/" + shareName)){
+		QMessageBox::critical (this, "Error", "Could not go to share directory on server.");
+		return;
+	}
+
+	// git init --bare on server
+	if(!rsh->runToEnd("git init --bare")){
+		QMessageBox::critical (this, "Error", "Could not initialize share directory on server.");
+		return;
+	}
+
+	// git init on local 
 
 	// git add all
 
@@ -170,18 +215,11 @@ void Upload::accept(){
 	progress.setValue(shareCount);
 	progress.setLabelText("Synchronizing "+selectedShares.at(shareCount));
 
-	QString localFolder = folderField->text();
-	QString host = hostField->text().simplified();
-	int port = portField->value();
-	QString username = usernameField->text().simplified();
-	
-	if(!port) port = 22;
 
 
 	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
 	QStringList dirs = settings->value("syncDirs").toStringList();
 
-	QDir localRepo(localDir);
 
 	// if not in settings, then add to settings list
 	if(!dirs.contains(localDir))
