@@ -8,7 +8,7 @@
 #include <QSettings>
 #include <QHostInfo>
 #include <QDebug>
-#include "ui_initwizard.h"
+#include "ui_uploadwizard.h"
 
 #include "../shared/runner.h"
 #include "../shared/remoteshellrunner.h"
