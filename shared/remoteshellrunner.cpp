@@ -17,6 +17,79 @@ RemoteShellRunner::RemoteShellRunner(QString host, QString username, QString pas
 	connect(host, username, password, port);
 }
 
+bool RemoteShellRunner::connect(QString host, QString username, int port){
+
+	int rc;
+
+	//qDebug() << "Connecting to" << host;
+
+	// Open session and set options
+	session = ssh_new();
+	if (session == NULL){
+		qDebug("Unable to open ssh session");
+		return false;
+	}
+
+	//qDebug() << "Created session, connecting...";
+
+	QByteArray hostarray = host.toLatin1();
+	const char *hostchar = hostarray.data();
+
+	//qDebug() << "to host" << hostchar;
+
+	ssh_options_set(session, SSH_OPTIONS_HOST, hostchar);
+
+
+	QByteArray userArray = username.toLatin1();
+	const char *userchar = userArray.data();
+
+	ssh_options_set(session, SSH_OPTIONS_USER, userchar);
+
+	//qDebug() << "Set host";
+
+	ssh_options_set(session, SSH_OPTIONS_PORT, &port);
+
+	//qDebug() << "Set port";
+
+	// Connect to server
+	rc = ssh_connect(session);
+	if (rc != SSH_OK)
+	{
+		qDebug() << "Error connecting to " << hostchar << ssh_get_error(session);
+		ssh_free(session);
+		return false;
+	}
+
+	//qDebug() << "Verifying knownhost";
+
+	// Verify the server's identity
+	if (verify_knownhost() < 0)
+	{
+		ssh_disconnect(session);
+		ssh_free(session);
+		return false;
+	}
+
+	//qDebug() << "Authenticating";
+
+	// Authenticate ourselves
+
+	rc = ssh_userauth_publickey_auto(session, NULL);
+
+	if (rc != SSH_AUTH_SUCCESS)
+	{
+		qDebug() << "Error authenticating with key:" << ssh_get_error(session);
+		ssh_disconnect(session);
+		ssh_free(session);
+		return false;
+	}
+
+	connected = true;
+
+	return true;
+
+}
+
 bool RemoteShellRunner::connect(QString host, QString username, QString password, int port){
 
 	int rc;
