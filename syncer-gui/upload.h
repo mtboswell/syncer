@@ -13,11 +13,11 @@
 #include "../shared/runner.h"
 #include "../shared/remoteshellrunner.h"
 
-class Init : public QWizard , private Ui::initWizard {
+class Upload : public QWizard , private Ui::uploadWizard {
 	Q_OBJECT
 	public:
-		Init(QWidget* parent = 0);
-		~Init();
+		Upload(QWidget* parent = 0);
+		~Upload();
 
 		bool validateCurrentPage();
 	private slots:
@@ -29,18 +29,16 @@ class Init : public QWizard , private Ui::initWizard {
 
 		void initializeComputerPage();
 		void initializeServerPage();
-		void initializeSharesPage();
 
 		bool validateComputerPage();
 		bool validateServerPage();
-		bool validateSharesPage();
 
 		bool getUserInfo();
 
 		bool sshKeyGen();
 		bool pubKeyAuthorized();
 		bool sendPubKey();
-		bool gitClone(QString localFolder, QString username, QString host, int port, QString shareName);
+		bool gitPush(QString localFolder, QString username, QString host, int port, QString shareName);
 
 		bool setupShare();
 
