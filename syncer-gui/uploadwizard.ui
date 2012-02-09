@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>initWizard</class>
- <widget class="QWizard" name="initWizard">
+ <class>uploadWizard</class>
+ <widget class="QWizard" name="uploadWizard">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -46,7 +46,7 @@
        <string>Folder to put the shared folder into.</string>
       </property>
       <property name="text">
-       <string>Put Share in Folder:</string>
+       <string>Folder to sync:</string>
       </property>
       <property name="buddy">
        <cstring>folderField</cstring>
@@ -77,6 +77,16 @@
       </item>
      </layout>
     </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>New Share name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="lineEdit"/>
+    </item>
    </layout>
   </widget>
   <widget class="QWizardPage" name="serverPage">
@@ -87,6 +97,9 @@
     <string notr="true">1</string>
    </attribute>
    <layout class="QFormLayout" name="formLayout_3">
+    <property name="fieldGrowthPolicy">
+     <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+    </property>
     <item row="0" column="0">
      <widget class="QLabel" name="label_3">
       <property name="text">
@@ -131,30 +144,6 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="usernameField">
-      <property name="inputMethodHints">
-       <set>Qt::ImhDialableCharactersOnly</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="passwordField">
-      <property name="echoMode">
-       <enum>QLineEdit::Password</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_6">
-      <property name="text">
-       <string>Password</string>
-      </property>
-      <property name="buddy">
-       <cstring>passwordField</cstring>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_5">
       <property name="text">
@@ -165,28 +154,11 @@
       </property>
      </widget>
     </item>
-   </layout>
-  </widget>
-  <widget class="QWizardPage" name="sharesPage">
-   <property name="title">
-    <string>Select shares to synchronize</string>
-   </property>
-   <attribute name="pageId">
-    <string notr="true">2</string>
-   </attribute>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QTreeWidget" name="sharesTreeWidget">
-      <column>
-       <property name="text">
-        <string>Share Name</string>
-       </property>
-      </column>
-      <item>
-       <property name="text">
-        <string/>
-       </property>
-      </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="usernameField">
+      <property name="inputMethodHints">
+       <set>Qt::ImhDialableCharactersOnly</set>
+      </property>
      </widget>
     </item>
    </layout>
@@ -199,8 +171,6 @@
   <tabstop>hostField</tabstop>
   <tabstop>portField</tabstop>
   <tabstop>usernameField</tabstop>
-  <tabstop>passwordField</tabstop>
-  <tabstop>sharesTreeWidget</tabstop>
  </tabstops>
  <resources/>
  <connections/>
