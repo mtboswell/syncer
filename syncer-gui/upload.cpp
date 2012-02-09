@@ -1,6 +1,6 @@
-#include "init.h"
+#include "upload.h"
 
-Init::Init(QWidget* parent):QWizard(parent){
+Upload::Upload(QWidget* parent):QWizard(parent){
 	setupUi(this);
 
 	rsh = new RemoteShellRunner();
@@ -9,11 +9,11 @@ Init::Init(QWidget* parent):QWizard(parent){
 
 }
 
-Init::~Init(){
+Upload::~Upload(){
 	delete rsh;
 }
 
-bool Init::getUserInfo(){
+bool Upload::getUserInfo(){
 
 	RunResult configRes = Runner::run("git config --global --get user.name");
 
@@ -28,16 +28,13 @@ bool Init::getUserInfo(){
 	return true;
 }
 
-bool Init::validateCurrentPage(){
+bool Upload::validateCurrentPage(){
 	switch(currentId()){
 		case 0:
 			return validateComputerPage();
 			break;
 		case 1:
 			return validateServerPage();
-			break;
-		case 2:
-			return validateSharesPage();
 			break;
 		default:
 			qDebug() << "Error: Invalid page ID";
@@ -48,9 +45,10 @@ bool Init::validateCurrentPage(){
 }
 
 
-bool Init::validateComputerPage(){
+bool Upload::validateComputerPage(){
 	QString name = nameField->text().simplified();
 	QString localFolder = folderField->text();
+	QString shareName = shareNameField->text().simplified();
 
 	if(name.isEmpty()){
 		QMessageBox::critical (this, "Error", "You must specify a computer name!");
@@ -58,6 +56,10 @@ bool Init::validateComputerPage(){
 	}
 	if(localFolder.isEmpty()){
 		QMessageBox::critical (this, "Error", "You must specify a folder to put the shared folder in!");
+		return false;
+	}
+	if(shareName.isEmpty()){
+		QMessageBox::critical (this, "Error", "You must specify a share name!");
 		return false;
 	}
 
@@ -70,11 +72,10 @@ bool Init::validateComputerPage(){
 	return true;
 }
 
-bool Init::validateServerPage(){
+bool Upload::validateServerPage(){
 	QString host = hostField->text().simplified();
 	int port = portField->value();
 	QString username = usernameField->text().simplified();
-	QString password = passwordField->text().trimmed();
 	
 	if(!port) port = 22;
 
@@ -86,53 +87,51 @@ bool Init::validateServerPage(){
 		QMessageBox::critical (this, "Error", "You must specify a username!");
 		return false;
 	}
-	if(password.isEmpty()){
-		QMessageBox::critical (this, "Error", "You must specify a password!");
-		return false;
-	}
 
+	bool usingKey = false;
 
 	//qDebug() << "Connecting to remote host";
 
-	if(!rsh->connect(host, username, password, port)){
-		QMessageBox::critical (this, "Error", "Unable to connect to server!");
-		return false;
-	}
-
-	//qDebug() << "Generating ssh keys";
-
-	if(!sshKeyGen()){
-		QMessageBox::critical (this, "Error", "Unable to generate private key!");
-		return false;
-	}
-
-	//qDebug() << "Checking if authorized on server";
-
-	if(!pubKeyAuthorized()){
-		//qDebug() << "Sending key to server";
-		if(!sendPubKey()){
-			QMessageBox::critical (this, "Error", "Unable to send public key to server!");
+	if(!rsh->connect(host, username, port)){
+		bool ok;
+		QString password = QInputDialog::getText(this, "Server password", "Password:", QLineEdit::Password, "", &ok);
+		if(!ok || !rsh->connect(host, username, password, port)){
+			QMessageBox::critical (this, "Error", "Unable to connect to server!");
 			return false;
 		}
-	}else qDebug() << "Pub key auth already set up.";
+	}else{
+		usingKey = true;
+	}
+
+	if(!usingKey){
+		//qDebug() << "Generating ssh keys";
+
+		if(!sshKeyGen()){
+			QMessageBox::critical (this, "Error", "Unable to generate private key!");
+			return false;
+		}
+
+		//qDebug() << "Checking if authorized on server";
+
+		if(!pubKeyAuthorized()){
+			//qDebug() << "Sending key to server";
+			if(!sendPubKey()){
+				QMessageBox::critical (this, "Error", "Unable to send public key to server!");
+				return false;
+			}
+		}else qDebug() << "Pub key auth already set up.";
+	}
 
 	return true;
 }
 
-bool Init::validateSharesPage(){
-	return true;
-}
-
-void Init::initializePage(int id){
+void Upload::initializePage(int id){
 	switch(id){
 		case 0:
 			initializeComputerPage();
 			break;
 		case 1:
 			initializeServerPage();
-			break;
-		case 2:
-			initializeSharesPage();
 			break;
 		default:
 			qDebug() << "Error: Invalid page ID";
@@ -141,75 +140,30 @@ void Init::initializePage(int id){
 
 }
 
-void Init::initializeComputerPage(){
+void Upload::initializeComputerPage(){
 
 }
-void Init::initializeServerPage(){
-
-}
-void Init::initializeSharesPage(){
-
-	//qDebug() << "Initializing shares page";
-
-	// get shares list
-	// find . | grep "/\\.git/" | sed "s/\(.*\)\.git.*/\1/" | sort -u
-	// find . | grep "HEAD" | sed "s/\.\/\(.*\)\/HEAD.*/\1/" | sort -u
-
-	if(!rsh->runToEnd("bash -c 'find . -name HEAD | sed \"s/\\.\\/\\(.*\\)\\/HEAD/\\1/\" | sort -u'")){
-		QMessageBox::critical (this, "Error", "Unable to find shares on server!");
-		return;
-	}
-	QStringList shares = rsh->result().split('\n');
-
-	shares.removeAll("");
-
-	if(shares.isEmpty()){
-		QMessageBox::critical (this, "Error", "There are no shares on server!");
-		return;
-	}
-
-	//qDebug() << "Found shares" << shares;
-
-	sharesTreeWidget->clear();
-
-	QList<QTreeWidgetItem *> items;
-
-	foreach(QString share, shares){
-		QStringList item;
-		item << share;
-
-		QTreeWidgetItem* treeItem = new QTreeWidgetItem((QTreeWidget*) 0, item);
-
-		treeItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		treeItem->setCheckState(0, Qt::Unchecked);
-
-		items.append(treeItem);
-	}
-
-	sharesTreeWidget->insertTopLevelItems(0, items);
+void Upload::initializeServerPage(){
 
 }
 
+void Upload::accept(){
 
 
+	// check to see if share exists on server
 
-void Init::accept(){
+	// check to see if local folder already has git
+
+	// git init
+
+	// git add all
+
+	// git set remote
+
+	// git push
 
 
-	// get selected shares from sharesTreeWidget
-
-	QTreeWidgetItem* item;
-	QStringList selectedShares;
-
-	while((item = sharesTreeWidget->takeTopLevelItem(0)) != 0){
-		if(item->checkState(0) == Qt::Checked){
-			selectedShares << item->text(0);
-		}
-	}
-
-    int shareCount = 0;
-
-    this->setCursor(Qt::WaitCursor);
+	this->setCursor(Qt::WaitCursor);
 
 	QProgressDialog progress("Synchronizing from server...", "Cancel", 0, selectedShares.size(), this);
 	progress.setWindowModality(Qt::WindowModal);
@@ -220,7 +174,6 @@ void Init::accept(){
 	QString host = hostField->text().simplified();
 	int port = portField->value();
 	QString username = usernameField->text().simplified();
-	QString password = passwordField->text().trimmed();
 	
 	if(!port) port = 22;
 
@@ -228,43 +181,12 @@ void Init::accept(){
 	QSettings* settings = new QSettings("MiBoSoft", "Syncer");
 	QStringList dirs = settings->value("syncDirs").toStringList();
 
-	// for each share, check to see if we already have it in settings and on filesystem
+	QDir localRepo(localDir);
 
-	foreach(QString shareName, selectedShares){
+	// if not in settings, then add to settings list
+	if(!dirs.contains(localDir))
+		dirs << localDir;
 
-		// if not on filesystem, then clone the share
-		QString localDir = localFolder + QDir::separator() + shareName;
-		QDir localRepo(localDir);
-
-		if(localRepo.exists()){
-			if(QDir(localDir+"/.git").exists()){
-				QMessageBox::information (this, "Notice", "Folder " + localDir + " already exists and is a share.");
-			}else{
-				QMessageBox::critical (this, "Error", "Folder " + localDir + " already exists!");
-				return;
-			}
-		}else{
-			progress.setValue(shareCount);
-			progress.setLabelText("Synchronizing "+shareName);
-			// Initial synchronization
-			if(!gitClone(localFolder, username, host, port, shareName)){
-				QMessageBox::critical (this, "Error", "Was not able to sync " + shareName +"!");
-				return;
-			}
-			// Check to see if localDir exists (created by clone)
-			if(!localRepo.exists()){
-				QMessageBox::critical (this, "Error", "Initial synchronization error");
-				return;
-			}
-		}
-
-		// if not in settings, then add to settings list
-		if(!dirs.contains(localDir))
-			dirs << localDir;
-
-		shareCount++;
-
-	}
 
 	progress.setValue(selectedShares.size());
 
@@ -275,7 +197,7 @@ void Init::accept(){
 }
 
 
-bool Init::sshKeyGen(){
+bool Upload::sshKeyGen(){
 
 	//if not exists '~/.ssh/id_rsa.pub' then ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
 	QFile pubKeyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
@@ -294,7 +216,7 @@ bool Init::sshKeyGen(){
 
 }
 
-bool Init::pubKeyAuthorized(){
+bool Upload::pubKeyAuthorized(){
 	QString key;
 	QFile keyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
 	if (!keyFile.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -315,7 +237,7 @@ bool Init::pubKeyAuthorized(){
 	return authorized_keys.contains(key);
 }
 
-bool Init::sendPubKey(){
+bool Upload::sendPubKey(){
 	//ssh user@host -p port 'echo "key" >> ~/.ssh/authorized_keys', enter password
 	QString key;
 	QFile keyFile(QDir::homePath() + "/.ssh/id_rsa.pub");
@@ -343,7 +265,7 @@ bool Init::sendPubKey(){
 	return true;
 }
 
-bool Init::gitClone(QString localFolder, QString username, QString host, int port, QString shareName){
+bool Upload::gitClone(QString localFolder, QString username, QString host, int port, QString shareName){
 
 	//git clone ssh://user@host:port/~/share /path/to/share (should not need anything)
 
@@ -383,7 +305,7 @@ bool Init::gitClone(QString localFolder, QString username, QString host, int por
 	return true;
 }
 
-void Init::on_folderSelectButton_clicked(){
+void Upload::on_folderSelectButton_clicked(){
 	QString path = QFileDialog::getExistingDirectory(this, "Open Shared Folder Base Directory",
 			QDir::homePath(),
 			QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
