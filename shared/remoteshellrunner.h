@@ -14,6 +14,7 @@ class RemoteShellRunner : public QObject {
 		~RemoteShellRunner();
 
 		bool isConnected();
+		bool connect(QString host, QString username, int port = 22);
 		bool connect(QString host, QString username, QString password, int port = 22);
 
 		bool run(QString cmd);
