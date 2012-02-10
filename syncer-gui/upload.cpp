@@ -187,14 +187,8 @@ void Upload::accept(){
 		return;
 	}
 
-	// cd ~/{share} on server
-	if(!rsh->runToEnd("cd ~/" + shareName)){
-		QMessageBox::critical (this, "Error", "Could not go to share directory on server.");
-		return;
-	}
-
 	// git init --bare on server
-	if(!rsh->runToEnd("git init --bare")){
+	if(!rsh->runToEnd("cd ~/" + shareName + " && git init --bare")){
 		QMessageBox::critical (this, "Error", "Could not initialize share directory on server.");
 		return;
 	}
